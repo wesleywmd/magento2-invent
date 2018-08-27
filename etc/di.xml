@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <type name="Magento\Framework\Console\CommandList">
+        <arguments>
+            <argument name="commands" xsi:type="array">
+                <item name="invent_module" xsi:type="object">Wesleywmd\Invent\Console\Command\InventModuleCommand</item>
+                <item name="invent_status" xsi:type="object">Wesleywmd\Invent\Console\Command\InventStatusCommand</item>
+                <item name="invent_command" xsi:type="object">Wesleywmd\Invent\Console\Command\InventCommandCommand</item>
+                <item name="invent_controller" xsi:type="object">Wesleywmd\Invent\Console\Command\InventControllerCommand</item>
+                <item name="invent_block" xsi:type="object">Wesleywmd\Invent\Console\Command\InventBlockCommand</item>
+            </argument>
+        </arguments>
+    </type>
+</config>
