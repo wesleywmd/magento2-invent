@@ -1,0 +1,15 @@
+{
+    "name": "wesleywmd/invent2",
+    "description": "Magento Boilerplating Module",
+    "require": {},
+    "type": "magento2-module",
+    "version": "0.0.1",
+    "autoload": {
+        "files": [
+            "registration.php"
+        ],
+        "psr-4": {
+            "Wesleywmd\\Invent\\": ""
+        }
+    }
+}
