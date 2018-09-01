@@ -8,6 +8,7 @@
                 <item name="invent_command" xsi:type="object">Wesleywmd\Invent\Console\Command\InventCommandCommand</item>
                 <item name="invent_controller" xsi:type="object">Wesleywmd\Invent\Console\Command\InventControllerCommand</item>
                 <item name="invent_block" xsi:type="object">Wesleywmd\Invent\Console\Command\InventBlockCommand</item>
+                <item name="invent_cron" xsi:type="object">Wesleywmd\Invent\Console\Command\InventCronCommand</item>
             </argument>
         </arguments>
     </type>

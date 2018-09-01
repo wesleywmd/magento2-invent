@@ -106,9 +106,16 @@ class ModuleService
         return $xml->asXML();
     }
 
-    public function getNamespace($moduleName)
+    public function getNamespace($moduleName, $directories = [], $className = null)
     {
-        return str_replace("_", "\\", $moduleName);
+        $namespace = str_replace("_", "\\", $moduleName);
+        foreach( $directories as $dir ) {
+            $namespace .= "\\" . ucfirst($dir);
+        }
+        if( !is_null($className) ) {
+            $namespace .= "\\" . ucfirst($className);
+        }
+        return $namespace;
     }
 
 }

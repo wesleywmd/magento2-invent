@@ -6,6 +6,7 @@ class XmlHandler
     const TYPE_DI = "di.xml";
     const TYPE_ROUTE = "route.xml";
     const TYPE_MODULE = "module.xml";
+    const TYPE_CRONTAB = "crontab.xml";
 
     private $moduleService;
 
