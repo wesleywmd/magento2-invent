@@ -43,8 +43,8 @@ This command will create your module with 2 cron jobs and a controller prebuilt 
 
 ## Create a new Controller 
 
-    bin/magento invent:controller <module_name> <controller_url>
+    bin/magento invent:controller <module_name> <controller_url> <--router standard>
 
 ## Create a new Cron 
 
-    bin/mangento
+    bin/mangento invent:cron <module_name> <cron_name> <--method execute> <--schedule "* * * * *"> <--group default>
