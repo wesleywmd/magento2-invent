@@ -1,5 +1,5 @@
 {
-    "name": "wesleywmd/invent2",
+    "name": "wesleywmd/magento-invent2",
     "description": "Magento Boilerplating Module",
     "require": {},
     "type": "magento2-module",
