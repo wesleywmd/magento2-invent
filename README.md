@@ -2,13 +2,11 @@
 File templating engine for magento modules
 
 # How to install this Module
-First, add a repository reference to you composer.json file
+It's packagist now! https://packagist.org/packages/wesleywmd/magento2-invent
 
-    composer config repositories.invent2 vcs https://github.com/wesleywmd/Invent2
+To install this library is as simple as 
 
-Then allow composer to install the library
-
-    composer require wesleywmd/invent2 dev-master --dev
+    composer require wesleywmd/magento2-invent dev-master --dev
     
 # Current Version
 Currently this module is a proof of concept. I appreciate feedback, feature requests, and bug reports. Please open issues on this repository.
