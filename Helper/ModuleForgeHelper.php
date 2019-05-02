@@ -1,10 +1,9 @@
 <?php
-namespace Wesleywmd\Invent\Service\Php;
+namespace Wesleywmd\Invent\Helper;
 
-class RegistrationRenderer
+class ModuleForgeHelper extends \Magento\Framework\App\Helper\AbstractHelper
 {
-
-    public function render($moduleName)
+    public function getRegistrationPhpContent($moduleName)
     {
         return "<?php
 \\Magento\\Framework\\Component\\ComponentRegistrar::register(
@@ -13,5 +12,4 @@ class RegistrationRenderer
     __DIR__
 );";
     }
-
 }

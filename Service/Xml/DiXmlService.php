@@ -1,16 +1,14 @@
 <?php
 namespace Wesleywmd\Invent\Service\Xml;
 
+use Wesleywmd\Invent\Api\Data\PhpClassInterface;
+
 class DiXmlService extends AbstractXmlService
 {
-    private $commandClassRenderer;
-
     public function __construct(
         \Wesleywmd\Invent\Service\ModuleService $moduleService,
-        \Wesleywmd\Invent\Service\Xml\XmlHandler $xmlHandler,
-        \Wesleywmd\Invent\Service\Php\CommandClassRenderer $commandClassRenderer
+        \Wesleywmd\Invent\Service\Xml\XmlHandler $xmlHandler
     ) {
-        $this->commandClassRenderer = $commandClassRenderer;
         parent::__construct($moduleService, $xmlHandler);
         $this->fileName = XmlHandler::TYPE_DI;
         $this->fileDirs = ["etc"];
@@ -21,18 +19,17 @@ class DiXmlService extends AbstractXmlService
 HTML;
     }
 
-    public function addConsoleCommand($moduleName, $commandName)
+    public function addConsoleCommand($commandName, PhpClassInterface $phpClass)
     {
-        $objectName = $this->commandClassRenderer->getNamespace($moduleName, $commandName);
+        $objectName = $phpClass->getNamespace() . "\\" . $phpClass->getClassName();
         $itemName = str_replace(":", "_", $commandName);
-        $xml = $this->loadFile($moduleName);
+        $xml = $this->loadFile($phpClass->getModule());
         $xpath = "/config";
         $xpath = $this->xmlHandler->loadElementIfNotExists($xml, $xpath, "type", "name", "Magento\\Framework\\Console\\CommandList");
         $xpath = $this->xmlHandler->loadElementIfNotExists($xml, $xpath, "arguments");
         $xpath = $this->xmlHandler->loadElementIfNotExists($xml, $xpath, "argument", "name", "commands");
         $xpath = $this->xmlHandler->loadElementIfNotExists($xml, $xpath, "item", "name", $itemName, $objectName);
         $this->xmlHandler->updateAttribute($xml, $xpath, "xsi:type", "object");
-        $this->saveFile($moduleName, $xml->asXML());
+        $this->saveFile($phpClass->getModule(), $xml->asXML());
     }
-
 }

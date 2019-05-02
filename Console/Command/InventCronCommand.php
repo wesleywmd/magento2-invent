@@ -10,12 +10,12 @@ use Wesleywmd\Invent\Exception\ModuleServiceException;
 
 class InventCronCommand extends Command
 {
-    private $addCronService;
+    private $moduleForge;
 
     public function __construct(
-        \Wesleywmd\Invent\Service\AddCronService $addCronService
+        \Wesleywmd\Invent\Model\ModuleForge $moduleForge
     ) {
-        $this->addCronService = $addCronService;
+        $this->moduleForge = $moduleForge;
         parent::__construct();
     }
 
@@ -38,7 +38,7 @@ class InventCronCommand extends Command
             $method = $input->getOption("method");
             $schedule = $input->getOption("schedule");
             $group = $input->getOption("group");
-            $this->addCronService->execute($moduleName, $cronName, $method, $schedule, $group);
+            $this->moduleForge->addCron($moduleName, $cronName, $method, $schedule, $group);
             $output->writeln("{$cronName} Created Successfully!");
         } catch(ModuleServiceException $e) {
             $output->writeln($e->getMessage());

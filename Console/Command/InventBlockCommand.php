@@ -1,40 +1,41 @@
 <?php
 namespace Wesleywmd\Invent\Console\Command;
 
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Wesleywmd\Invent\Exception\ModuleServiceException;
 
-class InventBlockCommand extends Command
+class InventBlockCommand extends \Symfony\Component\Console\Command\Command
 {
-    private $addBlockService;
+    const ARGUMENT_MODULE_NAME = "module_name";
+    const ARGUMENT_BLOCK_NAME = "block_name";
 
+    private $moduleForge;
+    
     public function __construct(
-        \Wesleywmd\Invent\Service\AddBlockService $addBlockService
+        \Wesleywmd\Invent\Model\ModuleForge $moduleForge
     ) {
-        $this->addBlockService = $addBlockService;
+        $this->moduleForge = $moduleForge;
         parent::__construct();
     }
 
     protected function configure()
     {
-        $this->setName('invent:block')
-            ->setDescription('Create Block')
-            ->addArgument("module_name", InputArgument::REQUIRED, "Module Name")
-            ->addArgument("block_name", InputArgument::REQUIRED, "Block Name");
+        $this->setName("invent:block")
+            ->setDescription("Create Block")
+            ->addArgument(self::ARGUMENT_MODULE_NAME, InputArgument::REQUIRED, "Module Name")
+            ->addArgument(self::ARGUMENT_BLOCK_NAME, InputArgument::REQUIRED, "Block Name");
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $moduleName = $input->getArgument(self::ARGUMENT_MODULE_NAME);
+        $blockName = $input->getArgument(self::ARGUMENT_BLOCK_NAME);
         try {
-            $moduleName = $input->getArgument("module_name");
-            $blockName = $input->getArgument("block_name");
-            $this->addBlockService->execute($moduleName, $blockName);
-            $output->writeln("{$blockName} Created Successfully!");
-        } catch(ModuleServiceException $e) {
+            $this->moduleForge->addBlock($moduleName, $blockName);
+            $output->writeln(sprintf("%s Created Successfully!", $blockName));
+        } catch(\Exception $e) {
             $output->writeln($e->getMessage());
             return 1;
         }

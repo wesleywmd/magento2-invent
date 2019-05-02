@@ -10,12 +10,12 @@ use Wesleywmd\Invent\Exception\ModuleServiceException;
 
 class InventControllerCommand extends Command
 {
-    private $addControllerService;
+    private $moduleForge;
 
     public function __construct(
-        \Wesleywmd\Invent\Service\AddControllerService $addControllerService
+        \Wesleywmd\Invent\Model\ModuleForge $moduleForge
     ) {
-        $this->addControllerService = $addControllerService;
+        $this->moduleForge = $moduleForge;
         parent::__construct();
     }
 
@@ -34,7 +34,7 @@ class InventControllerCommand extends Command
             $moduleName = $input->getArgument("module_name");
             $controllerUrl = $input->getArgument("controller_url");
             $router = $input->getOption("router");
-            $this->addControllerService->execute($moduleName, $controllerUrl, $router);
+            $this->moduleForge->addController($moduleName, $controllerUrl, $router);
             $output->writeln("{$controllerUrl} Created Successfully!");
         } catch(ModuleServiceException $e) {
             $output->writeln($e->getMessage());

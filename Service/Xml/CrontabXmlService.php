@@ -21,7 +21,7 @@ HTML;
     public function addJob($moduleName, $instance, $method, $schedule, $group)
     {
         $xml = $this->loadFile($moduleName);
-        $jobName = strtolower(str_replace("\\", "_", $instance));
+        $jobName = trim(strtolower(str_replace("\\", "_", $instance)), "_");
 
         $xpath = "/config";
         $xpath = $this->xmlHandler->loadElementIfNotExists($xml, $xpath, "group", "id", $group);
