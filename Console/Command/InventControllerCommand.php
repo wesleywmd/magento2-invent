@@ -6,7 +6,6 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Wesleywmd\Invent\Exception\ModuleServiceException;
 
 class InventControllerCommand extends Command
 {
@@ -36,7 +35,7 @@ class InventControllerCommand extends Command
             $router = $input->getOption("router");
             $this->moduleForge->addController($moduleName, $controllerUrl, $router);
             $output->writeln("{$controllerUrl} Created Successfully!");
-        } catch(ModuleServiceException $e) {
+        } catch(\Exception $e) {
             $output->writeln($e->getMessage());
             return 1;
         }

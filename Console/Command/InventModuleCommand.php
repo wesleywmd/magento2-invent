@@ -9,14 +9,11 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class InventModuleCommand extends Command
 {
-    private $moduleService;
     private $moduleForge;
 
     public function __construct(
-        \Wesleywmd\Invent\Service\ModuleService $moduleService,
         \Wesleywmd\Invent\Model\ModuleForge $moduleForge
     ) {
-        $this->moduleService = $moduleService;
         $this->moduleForge = $moduleForge;
         parent::__construct();
     }
@@ -29,7 +26,8 @@ class InventModuleCommand extends Command
             ->addOption("controller", null, InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, "Controller Urls to add", [])
             ->addOption("command", null, InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, "Command name to add", [])
             ->addOption("block", null, InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, "Blocks to add", [])
-            ->addOption("cron", null, InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, "Cron Tasks to add", []);
+            ->addOption("cron", null, InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, "Cron Tasks to add", [])
+            ->addOption("model", null, InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, "Models to add", []);
     }
 
     /**
@@ -63,6 +61,11 @@ class InventModuleCommand extends Command
             foreach( $input->getOption("cron") as $cron ) {
                 $this->moduleForge->addCron($moduleName, $cron, "execute", "* * * * *", "default");
                 $output->writeln("{$cron} Created Successfully!");
+            }
+
+            foreach( $input->getOption("model") as $model ) {
+                $this->moduleForge->addModel($moduleName, $model, []);
+                $output->writeln("{$model} Created Successfully!");
             }
         } catch( \Exception $e ) {
             $output->writeln($e->getMessage());

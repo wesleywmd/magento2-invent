@@ -7,7 +7,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class InventCronCommand extends Command
+class InventModelCommand extends Command
 {
     private $moduleForge;
 
@@ -20,25 +20,22 @@ class InventCronCommand extends Command
 
     protected function configure()
     {
-        $this->setName('invent:cron')
-            ->setDescription('Create Cron Task')
+        $this->setName('invent:model')
+            ->setDescription('Create Model')
             ->addArgument("module_name", InputArgument::REQUIRED, "Module Name")
-            ->addArgument("cron_name", InputArgument::REQUIRED, "Cron Name")
-            ->addOption("method", null, InputOption::VALUE_REQUIRED, "Mathod Name", "execute")
-            ->addOption("schedule", null, InputOption::VALUE_REQUIRED, "Cron Schedule", "* * * * *")
-            ->addOption("group", null, InputOption::VALUE_REQUIRED, "Cron Runtime Group", "default");
+            ->addArgument("model_name", InputArgument::REQUIRED, "Model Name")
+            ->addOption("column", null, InputOption::VALUE_REQUIRED|InputOption::VALUE_IS_ARRAY, "Columns on database table.");
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         try {
             $moduleName = $input->getArgument("module_name");
-            $cronName = $input->getArgument("cron_name");
-            $method = $input->getOption("method");
-            $schedule = $input->getOption("schedule");
-            $group = $input->getOption("group");
-            $this->moduleForge->addCron($moduleName, $cronName, $method, $schedule, $group);
-            $output->writeln("{$cronName} Created Successfully!");
+            $modelName = $input->getArgument("model_name");
+            $columns = $input->getOption("column");
+            $this->moduleForge->addModel($moduleName, $modelName, $columns);
+            $output->writeln("{$modelName} Created Successfully!");
+            return 0;
         } catch(\Exception $e) {
             $output->writeln($e->getMessage());
             return 1;

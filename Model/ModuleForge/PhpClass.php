@@ -1,6 +1,8 @@
 <?php
 namespace Wesleywmd\Invent\Model\ModuleForge;
 
+use Wesleywmd\Invent\Api\Data\PhpClassInterface;
+
 class PhpClass implements \Wesleywmd\Invent\Api\Data\PhpClassInterface
 {
     protected $fileName;
@@ -17,9 +19,16 @@ class PhpClass implements \Wesleywmd\Invent\Api\Data\PhpClassInterface
 
     protected $extends = "";
 
+    protected $implements = "";
+
     protected $fields = [];
 
     protected $methods = [];
+
+    public function __construct($moduleName)
+    {
+        $this->moduleName = $moduleName;
+    }
 
     public function getFileName()
     {
@@ -58,9 +67,9 @@ class PhpClass implements \Wesleywmd\Invent\Api\Data\PhpClassInterface
         return $prefix . $namespace;
     }
 
-    public function getInstance()
+    public function getInstance($prefix = false)
     {
-        return $this->getNamespace() . "\\" . $this->getClassName();
+        return $this->getNamespace($prefix) . "\\" . $this->getClassName();
     }
 
     public function getUseStatements()
@@ -96,14 +105,29 @@ class PhpClass implements \Wesleywmd\Invent\Api\Data\PhpClassInterface
         return $this;
     }
 
+
+    public function getImplements()
+    {
+        return $this->implements;
+    }
+
+    public function setImplements($implements)
+    {
+        $this->implements = $implements;
+        return $this;
+    }
+
     public function getFields()
     {
         return $this->fields;
     }
 
-    public function addField($name, $privilege = \Wesleywmd\Invent\Api\Data\PhpClassInterface::PRIV_PRIVATE)
+    public function addField($name, $privilege = \Wesleywmd\Invent\Api\Data\PhpClassInterface::PRIV_PRIVATE, $value = null)
     {
-        $this->fields[$name] = ["priv"=>$privilege];
+        $this->fields[$name]["priv"] = $privilege;
+        if( ! is_null($value) ) {
+            $this->fields[$name]["value"] = $value;
+        }
         return $this;
     }
 
@@ -120,6 +144,26 @@ class PhpClass implements \Wesleywmd\Invent\Api\Data\PhpClassInterface
     public function addMethod($name, $privilege = \Wesleywmd\Invent\Api\Data\PhpClassInterface::PRIV_PRIVATE, $params = [], $contents = [])
     {
         $this->methods[$name] = ["priv" => $privilege, "params" => $params, "contents" => $contents];
+        return $this;
+    }
+
+    public function addSetterMethod($interface, $attribute)
+    {
+        $camelAttribute = implode("", array_map("ucfirst", explode("_", $attribute)));
+        $this->addMethod("set".$camelAttribute, PhpClassInterface::PRIV_PUBLIC, [
+            $attribute => []
+        ], [
+            "return \$this->setData($interface::".strtoupper($attribute).", \${$attribute});"
+        ]);
+        return $this;
+    }
+
+    public function addGetterMethod($interface, $attribute)
+    {
+        $camelAttribute = implode("", array_map("ucfirst", explode("_", $attribute)));
+        $this->addMethod("get".$camelAttribute, PhpClassInterface::PRIV_PUBLIC, [], [
+            "return \$this->_getData($interface::".strtoupper($attribute).");"
+        ]);
         return $this;
     }
 

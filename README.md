@@ -9,7 +9,12 @@ To install this library is as simple as
     composer require wesleywmd/magento2-invent dev-master --dev
     
 # Current Version
-Currently this module is a proof of concept. I appreciate feedback, feature requests, and bug reports. Please open issues on this repository.
+### 1.1.0
+
+- added `invent:model` command
+- added `--model` option to `invent:module` command
+- added `invent:preference` command
+- restructured xml file generation to use a standard class instead of separate ones.
  
 # How to use this Module
 This module can be used with new and existing modules and even appends to existing xml files. This module makes skeleton classes and does not populate anything specific to your module. It is meant to create a standard of what different components should look like. Feedback or this standard is appreciated.
@@ -46,3 +51,17 @@ This command will create your module with 2 cron jobs and a controller prebuilt 
 ## Create a new Cron 
 
     bin/mangento invent:cron <module_name> <cron_name> <--method execute> <--schedule "* * * * *"> <--group default>
+
+## Create a new Model
+
+    bin/magento invent:model <module_name> <model_name>
+    
+## Create a new Preference
+
+    bin/magento invent:preference <module_name> <for> <type>
+    
+# Changelog
+
+### 1.0.0
+
+- Initial Launch
