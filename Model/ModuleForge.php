@@ -170,8 +170,8 @@ class ModuleForge
         $jobName = strtolower(str_replace("\\", "_", $cron->getInstance()));
         $crontabXmlDom->updateElement("group", "id", $group)
             ->updateElement("job", "name", $jobName, null, ["group[@id=\"$group\"]"])
-            ->updateAttribute("instance", $cron->getInstance(), ["group[@id=\"$group\"]"])
-            ->updateAttribute("method", $method, ["group[@id=\"$group\"]"])
+            ->updateAttribute("instance", $cron->getInstance(), ["group[@id=\"$group\"]", "job[@name=\"$jobName\"]"])
+            ->updateAttribute("method", $method, ["group[@id=\"$group\"]", "job[@name=\"$jobName\"]"])
             ->updateElement("schedule", null, null, $schedule, ["group[@id=\"$group\"]", "job[@name=\"$jobName\"]"]);
         $this->moduleHelper->makeXmlFile($crontabXml, $crontabXmlDom);
     }
