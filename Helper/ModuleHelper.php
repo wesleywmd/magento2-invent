@@ -107,7 +107,7 @@ class ModuleHelper
         $this->makeFile($xmlFile->getModule(), $dom->toString(), $xmlFile->getFileName(), $xmlFile->getDirectories());
     }
 
-    private function makeFile($moduleName, $contents, $fileName, $directories = [])
+    public function makeFile($moduleName, $contents, $fileName, $directories = [])
     {
         $directoryPath = $this->getDirectoryPath($moduleName, $directories);
         if( !is_dir( $directoryPath) ) {

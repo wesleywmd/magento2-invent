@@ -6,15 +6,15 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Wesleywmd\Invent\Model\Component\CronFactory;
 
 class InventCronCommand extends Command
 {
-    private $moduleForge;
+    private $cronFactory;
 
-    public function __construct(
-        \Wesleywmd\Invent\Model\ModuleForge $moduleForge
-    ) {
-        $this->moduleForge = $moduleForge;
+    public function __construct(CronFactory $cronFactory)
+    {
+        $this->cronFactory = $cronFactory;
         parent::__construct();
     }
 
@@ -32,13 +32,15 @@ class InventCronCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         try {
-            $moduleName = $input->getArgument("module_name");
-            $cronName = $input->getArgument("cron_name");
-            $method = $input->getOption("method");
-            $schedule = $input->getOption("schedule");
-            $group = $input->getOption("group");
-            $this->moduleForge->addCron($moduleName, $cronName, $method, $schedule, $group);
-            $output->writeln("{$cronName} Created Successfully!");
+            $cron = $this->cronFactory->create(['data'=>[
+                'moduleName'=>$input->getArgument("module_name"),
+                'cronName'=>$input->getArgument("cron_name"),
+                'method'=>$input->getOption("method"),
+                'schedule'=>$input->getOption("schedule"),
+                'group'=>$input->getOption("group")
+            ]]);
+            $cron->addToModule();
+            $output->writeln("{$input->getArgument("cron_name")} Created Successfully!");
         } catch(\Exception $e) {
             $output->writeln($e->getMessage());
             return 1;

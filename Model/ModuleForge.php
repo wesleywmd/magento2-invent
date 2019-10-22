@@ -17,13 +17,22 @@ class ModuleForge
     private $moduleHelper;
 
     private $xmlFileFactory;
+    
+    private $phpBuilderFactory;
+
+    private $prettyPrinter;
+    
+    private $cronFactory;
 
     public function __construct(
         \Wesleywmd\Invent\Model\ModuleForge\PhpClassFactory $phpClassFactory,
         \Wesleywmd\Invent\Model\ModuleForge\PhpClass\Renderer $phpClassRenderer,
         \Wesleywmd\Invent\Model\ModuleForge\XmlFileFactory $xmlFileFactory,
         \Wesleywmd\Invent\Model\ModuleForge\XmlFile\DomFactory $xmlDomFactory,
-        \Wesleywmd\Invent\Helper\ModuleHelper $moduleHelper
+        \Wesleywmd\Invent\Helper\ModuleHelper $moduleHelper,
+        \Wesleywmd\Invent\Model\PhpParser\PhpBuilderFactory $phpBuilderFactory,
+        \Wesleywmd\Invent\Model\PhpParser\PrettyPrinter $prettyPrinter,
+        \Wesleywmd\Invent\Model\Component\CronFactory $cronFactory
 
     ) {
         $this->phpClassRender = $phpClassRenderer;
@@ -31,6 +40,9 @@ class ModuleForge
         $this->xmlFileFactory = $xmlFileFactory;
         $this->moduleHelper = $moduleHelper;
         $this->xmlDomFactory = $xmlDomFactory;
+        $this->phpBuilderFactory = $phpBuilderFactory;
+        $this->prettyPrinter = $prettyPrinter;
+        $this->cronFactory = $cronFactory;
     }
 
     public function addModule($moduleName)
@@ -136,44 +148,6 @@ class ModuleForge
         // register model interface preference
         $this->addPreference($moduleName, $modelInterface->getInstance(), $model->getInstance());
         // register repository interface preference
-    }
-
-    public function addCron($moduleName, $cronName, $method, $schedule, $group)
-    {
-        $directories = explode("/", $cronName);
-        $className = ucfirst(array_pop($directories));
-        $directories = array_map( function($dir) { return ucfirst($dir); }, $directories);
-        $directories = array_merge(["Cron"], $directories);
-
-        /** @var \Wesleywmd\Invent\Model\ModuleForge\phpClass $cron */
-        $cron = $this->phpClassFactory->create(["moduleName"=>$moduleName]);
-        $cron->setClassName($className)
-            ->setDirectories($directories);
-        $cron->addField("logger", PhpClassInterface::PRIV_PROTECTED)
-            ->addMethod("__construct", PhpClassInterface::PRIV_PUBLIC, [
-                "logger" => ["type" => "\\Psr\\Log\\LoggerInterface"]
-            ], [
-                "\$this->logger = \$logger;"
-            ])
-            ->addMethod("execute", PhpClassInterface::PRIV_PUBLIC, [], [
-                "\$this->logger->info(__METHOD__);",
-                "// @TODO implement {$method} method for {$cron->getInstance()}",
-                "return \$this;"
-            ]);
-
-        $this->moduleHelper->makePhpClass($cron);
-
-        /** @var XmlClassInterface $crontabXml */
-        $crontabXml = $this->xmlFileFactory->create(["moduleName"=>$moduleName, "type"=>XmlFileInterface::TYPE_CRONTAB]);
-        /** @var DomInterface $crontabXmlDom */
-        $crontabXmlDom = $this->xmlDomFactory->create(["xmlFile"=>$crontabXml]);
-        $jobName = strtolower(str_replace("\\", "_", $cron->getInstance()));
-        $crontabXmlDom->updateElement("group", "id", $group)
-            ->updateElement("job", "name", $jobName, null, ["group[@id=\"$group\"]"])
-            ->updateAttribute("instance", $cron->getInstance(), ["group[@id=\"$group\"]"])
-            ->updateAttribute("method", $method, ["group[@id=\"$group\"]"])
-            ->updateElement("schedule", null, null, $schedule, ["group[@id=\"$group\"]", "job[@name=\"$jobName\"]"]);
-        $this->moduleHelper->makeXmlFile($crontabXml, $crontabXmlDom);
     }
 
     public function addController($moduleName, $controllerUrl, $routerId)

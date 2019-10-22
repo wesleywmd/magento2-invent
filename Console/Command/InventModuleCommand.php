@@ -6,14 +6,20 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Wesleywmd\Invent\Model\Component\CronFactory;
+
 
 class InventModuleCommand extends Command
 {
+    private $cronFactory;
+
     private $moduleForge;
 
     public function __construct(
+        CronFactory $cronFactory,
         \Wesleywmd\Invent\Model\ModuleForge $moduleForge
     ) {
+        $this->cronFactory = $cronFactory;
         $this->moduleForge = $moduleForge;
         parent::__construct();
     }
@@ -58,9 +64,16 @@ class InventModuleCommand extends Command
                 $output->writeln("{$block} Created Successfully!");
             }
 
-            foreach( $input->getOption("cron") as $cron ) {
-                $this->moduleForge->addCron($moduleName, $cron, "execute", "* * * * *", "default");
-                $output->writeln("{$cron} Created Successfully!");
+            foreach( $input->getOption("cron") as $cronName ) {
+                $cron = $this->cronFactory->create(['data'=>[
+                    'moduleName'=>$input->getArgument("module_name"),
+                    'cronName'=>$cronName,
+                    'method'=>'execute',
+                    'schedule'=>'* * * * *',
+                    'group'=>'default'
+                ]]);
+                $cron->addToModule();
+                $output->writeln("{$cronName} Created Successfully!");
             }
 
             foreach( $input->getOption("model") as $model ) {
