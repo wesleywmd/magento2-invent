@@ -15,6 +15,7 @@ class Location
     const TYPE_CRONTAB = 'crontab';
     const TYPE_ROUTE = 'route';
     const TYPE_DB_SCHEMA = 'db_schema';
+    const TYPE_ACL = 'acl';
 
     private $pathHelper;
 
@@ -29,7 +30,8 @@ class Location
         self::TYPE_DI, 
         self::TYPE_CRONTAB, 
         self::TYPE_ROUTE, 
-        self::TYPE_DB_SCHEMA
+        self::TYPE_DB_SCHEMA,
+        self::TYPE_ACL
     ];
 
     public function __construct(PathHelper $pathHelper)
