@@ -8,7 +8,6 @@ use Wesleywmd\Invent\Helper\FileHelper;
 use Wesleywmd\Invent\Helper\PathHelper;
 use Wesleywmd\Invent\Model\XmlParser\DomFactory;
 use Wesleywmd\Invent\Model\XmlParser\Location;
-use Zend\Validator\Sitemap\Loc;
 
 class Acl implements ComponentInterface
 {

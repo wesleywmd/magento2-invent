@@ -4,6 +4,7 @@
         <arguments>
             <argument name="commands" xsi:type="array">
                 <item name="invent_acl" xsi:type="object">Wesleywmd\Invent\Console\Command\InventAclCommand</item>
+                <item name="invent_admin_menu" xsi:type="object">Wesleywmd\Invent\Console\Command\InventAdminMenuCommand</item>
                 <item name="invent_module" xsi:type="object">Wesleywmd\Invent\Console\Command\InventModuleCommand</item>
                 <item name="invent_command" xsi:type="object">Wesleywmd\Invent\Console\Command\InventCommandCommand</item>
                 <item name="invent_controller" xsi:type="object">Wesleywmd\Invent\Console\Command\InventControllerCommand</item>

@@ -60,7 +60,8 @@ class DomFactory
             Location::TYPE_CRONTAB   => 'urn:magento:module:Magento_Cron:etc/crontab.xsd',
             Location::TYPE_ROUTE     => 'urn:magento:framework:App/etc/routes.xsd',
             Location::TYPE_DB_SCHEMA => 'urn:magento:framework:Setup/Declaration/Schema/etc/schema.xsd',
-            Location::TYPE_ACL       => 'urn:magento:framework:Acl/etc/acl.xsd'
+            Location::TYPE_ACL       => 'urn:magento:framework:Acl/etc/acl.xsd',
+            Location::TYPE_MENU      => 'urn:magento:module:Magento_Backend:etc/menu.xsd'
         ];
         return $xsdLocations[$type];
     }
@@ -73,6 +74,7 @@ class DomFactory
             Location::TYPE_CRONTAB   => 'config',
             Location::TYPE_ROUTE     => 'config',
             Location::TYPE_ACL       => 'config',
+            Location::TYPE_MENU      => 'config',
             Location::TYPE_DB_SCHEMA => 'schema'
         ];
         return $xmlNode[$type];
