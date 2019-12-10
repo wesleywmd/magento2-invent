@@ -47,7 +47,8 @@ class Module implements ComponentInterface
         $location = $this->location->getPath($data->getModuleName(), Location::TYPE_MODULE, Location::AREA_GLOBAL);
         $contents = $this->domFactory->create($location, Location::TYPE_MODULE)
             ->updateElement('module', 'name', $data->getModuleName()->getName())
-            ->updateAttribute('setup_version', '0.0.1', ['module[@name="'.$data->getModuleName()->getName().'"]']);
+            ->updateAttribute('setup_version', '0.0.1', ['module[@name="'.$data->getModuleName()->getName().'"]'])
+            ->print();
         $this->fileHelper->saveFile($location, $contents, true);
     }
 }
