@@ -4,12 +4,12 @@
         <arguments>
             <argument name="commands" xsi:type="array">
                 <item name="invent_module" xsi:type="object">Wesleywmd\Invent\Console\Command\InventModuleCommand</item>
-                <item name="invent_status" xsi:type="object">Wesleywmd\Invent\Console\Command\InventStatusCommand</item>
                 <item name="invent_command" xsi:type="object">Wesleywmd\Invent\Console\Command\InventCommandCommand</item>
                 <item name="invent_controller" xsi:type="object">Wesleywmd\Invent\Console\Command\InventControllerCommand</item>
                 <item name="invent_block" xsi:type="object">Wesleywmd\Invent\Console\Command\InventBlockCommand</item>
                 <item name="invent_cron" xsi:type="object">Wesleywmd\Invent\Console\Command\InventCronCommand</item>
                 <item name="invent_model" xsi:type="object">Wesleywmd\Invent\Console\Command\InventModelCommand</item>
+                <item name="invent_preference" xsi:type="object">Wesleywmd\Invent\Console\Command\InventPreferenceCommand</item>
             </argument>
         </arguments>
     </type>

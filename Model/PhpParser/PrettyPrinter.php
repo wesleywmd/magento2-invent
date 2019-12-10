@@ -60,7 +60,7 @@ class PrettyPrinter extends Standard
     
     protected function isNorthSpaced($node)
     {
-        $classNames = ['\PhpParser\Node\Stmt\Class_', '\PhpParser\Node\Stmt\Property', '\PhpParser\Node\Stmt\ClassMethod'];
+        $classNames = ['\PhpParser\Node\Stmt\Class_', '\PhpParser\Node\Stmt\Interface_', '\PhpParser\Node\Stmt\Property', '\PhpParser\Node\Stmt\ClassMethod'];
         foreach ($classNames as $className) {
             if (is_a($node, $className)) {
                 return true;

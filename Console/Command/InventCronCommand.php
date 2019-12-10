@@ -7,40 +7,53 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Wesleywmd\Invent\Model\Component\CronFactory;
+use Wesleywmd\Invent\Model\Cron;
+use Wesleywmd\Invent\Model\ModuleNameFactory;
+use Wesleywmd\Invent\Model\ModuleFactory;
 
 class InventCronCommand extends Command
 {
-    private $cronFactory;
+    private $cron;
 
-    public function __construct(CronFactory $cronFactory)
-    {
-        $this->cronFactory = $cronFactory;
+    private $cronDataFactory;
+
+    private $moduleNameFactory;
+
+    public function __construct(
+        Cron $cron,
+        Cron\DataFactory $cronDataFactory,
+        ModuleNameFactory $moduleNameFactory
+    ) {
         parent::__construct();
+        $this->cron = $cron;
+        $this->cronDataFactory = $cronDataFactory;
+        $this->moduleNameFactory = $moduleNameFactory;
     }
 
     protected function configure()
     {
+        parent::configure();
         $this->setName('invent:cron')
             ->setDescription('Create Cron Task')
-            ->addArgument("module_name", InputArgument::REQUIRED, "Module Name")
-            ->addArgument("cron_name", InputArgument::REQUIRED, "Cron Name")
-            ->addOption("method", null, InputOption::VALUE_REQUIRED, "Mathod Name", "execute")
-            ->addOption("schedule", null, InputOption::VALUE_REQUIRED, "Cron Schedule", "* * * * *")
-            ->addOption("group", null, InputOption::VALUE_REQUIRED, "Cron Runtime Group", "default");
+            ->addArgument('moduleName', InputArgument::REQUIRED, 'Module Name')
+            ->addArgument('cronName', InputArgument::REQUIRED, 'Cron Name')
+            ->addOption('method', null, InputOption::VALUE_REQUIRED, 'Method Name', 'execute')
+            ->addOption('schedule', null, InputOption::VALUE_REQUIRED, 'Cron Schedule', '* * * * *')
+            ->addOption('group', null, InputOption::VALUE_REQUIRED, 'Cron Runtime Group', 'default');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         try {
-            $cron = $this->cronFactory->create(['data'=>[
-                'moduleName'=>$input->getArgument("module_name"),
-                'cronName'=>$input->getArgument("cron_name"),
-                'method'=>$input->getOption("method"),
-                'schedule'=>$input->getOption("schedule"),
-                'group'=>$input->getOption("group")
-            ]]);
-            $cron->addToModule();
-            $output->writeln("{$input->getArgument("cron_name")} Created Successfully!");
+            $cronData = $this->cronDataFactory->create([
+                'moduleName' => $this->moduleNameFactory->create($input->getArgument('moduleName')),
+                'cronName' => $input->getArgument('cronName'),
+                'method' => $input->getOption('method'),
+                'schedule' => $input->getOption('schedule'),
+                'group' => $input->getOption('group')
+            ]);
+            $this->cron->addToModule($cronData);
+            $output->writeln('Cron Created Successfully!');
         } catch(\Exception $e) {
             $output->writeln($e->getMessage());
             return 1;
