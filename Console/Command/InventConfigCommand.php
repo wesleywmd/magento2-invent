@@ -44,8 +44,6 @@ class InventConfigCommand extends Command
             ->setDescription('Create Store Config')
             ->addArgument('moduleName', InputArgument::REQUIRED, 'Module Name')
             ->addArgument('configName', InputArgument::REQUIRED, 'Config Name')
-            ->addOption('createSection', null, InputOption::VALUE_NONE, 'Create New Section Definition')
-            ->addOption('createGroup', null, InputOption::VALUE_NONE, 'Create New Group Definition')
             ->addOption('tabId', null, InputOption::VALUE_REQUIRED, 'New Tab Id')
             ->addOption('tabLabel', null, InputOption::VALUE_REQUIRED, 'New Tab Label')
             ->addOption('tabSortOrder', null, InputOption::VALUE_REQUIRED, 'New Tab Sort Order', 10)
