@@ -17,23 +17,25 @@ class Location
     const TYPE_DB_SCHEMA = 'db_schema';
     const TYPE_ACL = 'acl';
     const TYPE_MENU = 'menu';
+    const TYPE_SYSTEM = 'system';
 
     private $pathHelper;
 
     private $validAreas = [
-        self::AREA_FRONTEND, 
-        self::AREA_ADMINHTML, 
+        self::AREA_FRONTEND,
+        self::AREA_ADMINHTML,
         self::AREA_GLOBAL
     ];
-    
+
     private $validTypes = [
-        self::TYPE_MODULE, 
-        self::TYPE_DI, 
-        self::TYPE_CRONTAB, 
-        self::TYPE_ROUTE, 
+        self::TYPE_MODULE,
+        self::TYPE_DI,
+        self::TYPE_CRONTAB,
+        self::TYPE_ROUTE,
         self::TYPE_DB_SCHEMA,
         self::TYPE_ACL,
-        self::TYPE_MENU
+        self::TYPE_MENU,
+        self::TYPE_SYSTEM
     ];
 
     public function __construct(PathHelper $pathHelper)

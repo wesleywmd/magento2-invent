@@ -61,7 +61,8 @@ class DomFactory
             Location::TYPE_ROUTE     => 'urn:magento:framework:App/etc/routes.xsd',
             Location::TYPE_DB_SCHEMA => 'urn:magento:framework:Setup/Declaration/Schema/etc/schema.xsd',
             Location::TYPE_ACL       => 'urn:magento:framework:Acl/etc/acl.xsd',
-            Location::TYPE_MENU      => 'urn:magento:module:Magento_Backend:etc/menu.xsd'
+            Location::TYPE_MENU      => 'urn:magento:module:Magento_Backend:etc/menu.xsd',
+            Location::TYPE_SYSTEM    => 'urn:magento:module:Magento_Config:etc/system_file.xsd'
         ];
         return $xsdLocations[$type];
     }
@@ -75,6 +76,7 @@ class DomFactory
             Location::TYPE_ROUTE     => 'config',
             Location::TYPE_ACL       => 'config',
             Location::TYPE_MENU      => 'config',
+            Location::TYPE_SYSTEM    => 'config',
             Location::TYPE_DB_SCHEMA => 'schema'
         ];
         return $xmlNode[$type];
