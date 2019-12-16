@@ -40,8 +40,7 @@ class ModuleNameFactory
     public function create($name)
     {
         list($vendor, $component) = $this->splitName($name);
-        $data = compact('vendor', 'component');
-        return $this->_objectManager->create($this->_instanceName, compact('data'));
+        return $this->_objectManager->create($this->_instanceName, compact('vendor', 'component'));
     }
 
     /**
@@ -55,7 +54,7 @@ class ModuleNameFactory
     {
         $pieces = explode('_', $name);
         if( count($pieces) !== 2 ) {
-            throw new \Exception('Invalid module name supplied: '.$name);
+            throw new ModuleNameException('Invalid module name supplied: '.$name);
         }
         return $pieces;
     }

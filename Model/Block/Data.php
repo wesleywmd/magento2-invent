@@ -19,7 +19,8 @@ class Data implements DataInterface
         $this->blockName = $blockName;
         $this->moduleName = $moduleName;
         $this->directories = explode('/', $this->blockName);
-        $this->className = ucfirst(array_pop($this->directories));
+        $this->directories = array_map( function($dir) { return ucfirst($dir); }, $this->directories);
+        $this->className = array_pop($this->directories);
         $this->directories = array_merge(['Block'], $this->directories);
     }
 
@@ -48,8 +49,8 @@ class Data implements DataInterface
         return $this->moduleName->getNamespace($this->directories);
     }
 
-    public function getPathPieces()
+    public function getPath()
     {
-        return array_merge($this->directories, [$this->className.'.php']);
+        return $this->moduleName->getPath(array_merge($this->directories, [$this->className.'.php']));
     }
 }

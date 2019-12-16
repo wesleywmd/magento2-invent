@@ -1,16 +1,21 @@
 <?php
 namespace Wesleywmd\Invent\Model;
 
+use Magento\Framework\App\Filesystem\DirectoryList;
+
 class ModuleName
 {
     private $vendor;
 
     private $component;
 
-    public function __construct($data = [])
+    private $directoryList;
+
+    public function __construct(DirectoryList $directoryList, $vendor, $component)
     {
-        $this->vendor = $data['vendor'];
-        $this->component = $data['component'];
+        $this->directoryList = $directoryList;
+        $this->vendor = ucfirst($vendor);
+        $this->component = ucfirst($component);
     }
 
     public function getVendor()
@@ -25,34 +30,31 @@ class ModuleName
 
     public function getName($extras = [])
     {
-        return $this->getUcString('_', $extras);
+        return $this->glue('_', $extras, true);
     }
-    
+
     public function getNamespace($extras = [])
     {
-        return $this->getUcString('\\', $extras);
+        return $this->glue('\\', $extras, true);
     }
 
-    public function getLocation($extras = [])
+    public function getPath($extras = [])
     {
-        return $this->getUcString(DIRECTORY_SEPARATOR, $extras);
+        $app = $this->directoryList->getPath('app');
+        $pieces = [$app, 'code', $this->glue(DIRECTORY_SEPARATOR, $extras, false)];
+        return implode(DIRECTORY_SEPARATOR, $pieces);
     }
-    
+
     public function getSlug($extras = [])
     {
-        $slug = strtolower($this->getName());
-        foreach( $extras as $extra ) {
-            $slug .= '_' . strtolower($extra);
-        }
-        return $slug;
+        return strtolower($this->getName($extras));
     }
 
-    protected function getUcString($separator, $extras = [])
+    protected function glue($separator, $extras, $ucExtras)
     {
-        $string = ucfirst($this->vendor) . $separator . ucfirst($this->component);
-        foreach( $extras as $extra ) {
-            $string .= $separator . ucfirst($extra);
+        if ($ucExtras) {
+            $extras = array_map( function($extra) { return ucfirst($extra); }, $extras);
         }
-        return $string;
+        return implode($separator, array_merge([$this->vendor, $this->component], $extras));
     }
 }
