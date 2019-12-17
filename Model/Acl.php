@@ -5,15 +5,12 @@ use Wesleywmd\Invent\Api\ComponentInterface;
 use Wesleywmd\Invent\Api\DataInterface;
 use Wesleywmd\Invent\Helper\AclHelper;
 use Wesleywmd\Invent\Helper\FileHelper;
-use Wesleywmd\Invent\Helper\PathHelper;
 use Wesleywmd\Invent\Model\XmlParser\DomFactory;
 use Wesleywmd\Invent\Model\XmlParser\Location;
 
 class Acl implements ComponentInterface
 {
     private $fileHelper;
-
-    private $pathHelper;
 
     private $domFactory;
 
@@ -23,13 +20,11 @@ class Acl implements ComponentInterface
 
     public function __construct(
         FileHelper $fileHelper,
-        PathHelper $pathHelper,
         DomFactory $domFactory,
         Location $location,
         AclHelper $aclHelper
     ) {
         $this->fileHelper = $fileHelper;
-        $this->pathHelper = $pathHelper;
         $this->domFactory = $domFactory;
         $this->location = $location;
         $this->aclHelper = $aclHelper;

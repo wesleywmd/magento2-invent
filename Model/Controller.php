@@ -4,7 +4,6 @@ namespace Wesleywmd\Invent\Model;
 use Wesleywmd\Invent\Api\ComponentInterface;
 use Wesleywmd\Invent\Api\DataInterface;
 use Wesleywmd\Invent\Helper\FileHelper;
-use Wesleywmd\Invent\Helper\PathHelper;
 use Wesleywmd\Invent\Model\Cron\PhpRenderer;
 use Wesleywmd\Invent\Model\XmlParser\DomFactory;
 use Wesleywmd\Invent\Model\XmlParser\Location;

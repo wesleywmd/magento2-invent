@@ -35,6 +35,20 @@ abstract class AbstractValidator
         }
     }
 
+    public function validateAlphaWithSpecial($value, $special)
+    {
+        if (!preg_match('/^[a-zA-Z'.$special.']*$/', $value)) {
+            throw new InputValidationException($this->key.' must only contain alpha characters or characters in '.$special);
+        }
+    }
+
+    public function validateNumeric($value)
+    {
+        if (!preg_match('/^[0-9]*$/', $value)) {
+            throw new InputValidationException($this->key.' must only contain alpha characters');
+        }
+    }
+
     public function validateAlphaNumeric($value)
     {
         if (!preg_match('/^[a-zA-Z0-9]*$/', $value)) {
@@ -48,7 +62,7 @@ abstract class AbstractValidator
             throw new InputValidationException($this->key.' must only contain alpha-numeric characters or characters in '.$special);
         }
     }
-    
+
     public function validateMustContain($value, $characters)
     {
         if (!preg_match('/'.$characters.'/', $value)) {

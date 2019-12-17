@@ -395,11 +395,11 @@ class InventStyle extends OutputStyle implements MagentoStyleInterface
     ) {
         try {
             if (!is_null($this->input->getArgument($argument))) {
-                $validator($input->getArgument($argument));
+                $validator($this->input->getArgument($argument));
             }
         } catch(InputValidationException $e) {
             $this->error($e->getMessage());
-            $input->setArgument($argument, null);
+            $this->input->setArgument($argument, null);
         }
         $this->askForMissingArgument($argument, $question, $default, $validator, $maxAttempts, $comment, $commentFormat);
     }
@@ -460,11 +460,11 @@ class InventStyle extends OutputStyle implements MagentoStyleInterface
     ) {
         try {
             if (!is_null($this->input->getOption($option))) {
-                $validator($input->getOption($option));
+                $validator($this->input->getOption($option));
             }
         } catch(InputValidationException $e) {
             $this->error($e->getMessage());
-            $input->setOption($option, null);
+            $this->input->setOption($option, null);
         }
         $this->askForMissingOption($option, $question, $default, $validator, $maxAttempts, $comment, $commentFormat);
     }

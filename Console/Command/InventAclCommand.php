@@ -1,14 +1,17 @@
 <?php
 namespace Wesleywmd\Invent\Console\Command;
 
-use Magento\Setup\Console\Style\MagentoStyleFactory;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Wesleywmd\Invent\Console\InventStyle;
+use Wesleywmd\Invent\Console\InventStyleFactory;
 use Wesleywmd\Invent\Helper\AclHelper;
 use Wesleywmd\Invent\Model\Acl;
+use Wesleywmd\Invent\Model\Module\ModuleNameValidator;
+use Wesleywmd\Invent\Model\Module\SortOrderValidator;
 use Wesleywmd\Invent\Model\ModuleNameFactory;
 
 class InventAclCommand extends Command
@@ -19,23 +22,39 @@ class InventAclCommand extends Command
 
     private $moduleNameFactory;
 
-    private $magentoStyleFactory;
+    private $inventStyleFactory;
 
     private $aclHelper;
+
+    private $moduleNameValidator;
+
+    private $aclNameValidator;
+
+    private $titleValidator;
+
+    private $sortOrderValidator;
 
     public function __construct(
         Acl $acl,
         Acl\DataFactory $aclDataFactory,
         ModuleNameFactory $moduleNameFactory,
-        MagentoStyleFactory $magentoStyleFactory,
-        AclHelper $aclHelper
+        InventStyleFactory $inventStyleFactory,
+        AclHelper $aclHelper,
+        ModuleNameValidator $moduleNameValidator,
+        Acl\AclNameValidator $aclNameValidator,
+        Acl\TitleValidator $titleValidator,
+        SortOrderValidator $sortOrderValidator
     ) {
         parent::__construct();
         $this->acl = $acl;
         $this->aclDataFactory = $aclDataFactory;
         $this->moduleNameFactory = $moduleNameFactory;
-        $this->magentoStyleFactory = $magentoStyleFactory;
+        $this->inventStyleFactory = $inventStyleFactory;
         $this->aclHelper = $aclHelper;
+        $this->moduleNameValidator = $moduleNameValidator;
+        $this->aclNameValidator = $aclNameValidator;
+        $this->titleValidator = $titleValidator;
+        $this->sortOrderValidator = $sortOrderValidator;
     }
 
     protected function configure()
@@ -51,8 +70,16 @@ class InventAclCommand extends Command
 
     protected function interact(InputInterface $input, OutputInterface $output)
     {
-        parent::interact($input, $output);
-        $io = $this->magentoStyleFactory->create(['input'=>$input,'output'=>$output]);
+        $io = $this->inventStyleFactory->create(compact('input','output'));
+
+        $question = 'What module do you want to add an ACL to?';
+        $io->askForValidatedArgument('moduleName', $question, null, $this->moduleNameValidator, 3);
+
+        $moduleName = $this->moduleNameFactory->create($input->getArgument('moduleName'));
+
+        $question = 'What is the name for the new ACL? (Prefix will be added for you: '.$moduleName->getName().':: )';
+        $io->askForValidatedArgument('aclName', $question, null, $this->aclNameValidator, 3);
+
         if (!$this->aclHelper->findInTree($input->getOption('parent'))) {
             if (is_null($input->getOption('parent'))) {
                 $io->comment('Looks like you didn\'t specify a parent resource. Lets find the correct one together');
@@ -73,6 +100,24 @@ class InventAclCommand extends Command
                 $stop = ['Stop Here'];
             }
         }
+
+        $aclData = $this->aclDataFactory->create([
+            'moduleName' => $moduleName,
+            'aclName' => $input->getArgument('aclName'),
+            'parentAcl' => $input->getOption('parent'),
+            'title' => null,
+            'sortOrder' => $input->getOption('sortOrder')
+        ]);
+
+        if (is_null($input->getOption('title'))) {
+            if (!$io->confirm('Do you want to use the generated title? "'.$aclData->getTitle().'"', false)) {
+                $question = 'What title do you want to use?';
+                $io->askForValidatedOption('title', $question, null, $this->titleValidator, 3);
+            }
+        }
+
+        $question = 'What is the sortOrder of the ACL?';
+        $io->askForValidatedOption('sortOrder', $question, 10, $this->sortOrderValidator, 3);
     }
 
     /**
@@ -82,6 +127,8 @@ class InventAclCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        /** @var InventStyle $io */
+        $io = $this->inventStyleFactory->create(compact('input', 'output'));
         try {
             $aclData = $this->aclDataFactory->create([
                 'moduleName' => $this->moduleNameFactory->create($input->getArgument('moduleName')),
@@ -91,9 +138,9 @@ class InventAclCommand extends Command
                 'sortOrder' => $input->getOption('sortOrder')
             ]);
             $this->acl->addToModule($aclData);
-            $output->writeln('ACL Created Successfully!');
+            $io->success('ACL Created Successfully!');
         } catch (\Exception $e) {
-            $output->writeln($e->getMessage());
+            $io->error($e->getMessage());
             return 1;
         }
     }
