@@ -15,8 +15,6 @@ class Controller implements ComponentInterface
 
     private $fileHelper;
 
-    private $pathHelper;
-
     private $domFactory;
 
     private $location;
@@ -24,31 +22,25 @@ class Controller implements ComponentInterface
     public function __construct(
         Controller\PhpRenderer $phpRenderer,
         FileHelper $fileHelper,
-        PathHelper $pathHelper,
         DomFactory $domFactory,
         Location $location
     ) {
         $this->phpRenderer = $phpRenderer;
         $this->fileHelper = $fileHelper;
-        $this->pathHelper = $pathHelper;
         $this->domFactory = $domFactory;
         $this->location = $location;
     }
 
     public function addToModule(DataInterface $data)
     {
-        if (!$this->pathHelper->fullPathExists($data->getModuleName())) {
-            throw new \Exception('Module does not exist');
-        }
         $this->createPhpFile($data);
         $this->createXmlFile($data);
     }
 
     public function createPhpFile(Controller\Data $data)
     {
-        $location = $this->pathHelper->fullPath($data->getModuleName(), $data->getPathPieces());
         $contents = $this->phpRenderer->getContents($data);
-        $this->fileHelper->saveFile($location, $contents);
+        $this->fileHelper->saveFile($data->getPath(), $contents);
     }
 
     public function createXmlFile(Controller\Data $data)

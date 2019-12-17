@@ -28,6 +28,13 @@ abstract class AbstractValidator
         }
     }
 
+    public function validateAlpha($value)
+    {
+        if (!preg_match('/^[a-zA-Z]*$/', $value)) {
+            throw new InputValidationException($this->key.' must only contain alpha characters');
+        }
+    }
+
     public function validateAlphaNumeric($value)
     {
         if (!preg_match('/^[a-zA-Z0-9]*$/', $value)) {

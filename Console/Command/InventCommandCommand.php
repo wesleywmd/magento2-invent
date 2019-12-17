@@ -63,7 +63,7 @@ class InventCommandCommand extends ConsoleCommand
             $question = 'What is the console command\'s name?';
             $io->askForValidatedArgument('commandName', $question, null, $this->blockNameValidator, 3);
             $commandData = $this->commandDataFactory->create([
-                'moduleName' => $this->moduleNameFactory->create($input->getArgument('commandName')),
+                'moduleName' => $this->moduleNameFactory->create($input->getArgument('moduleName')),
                 'commandName' => $input->getArgument('commandName')
             ]);
             if (is_file($commandData->getPath())) {
