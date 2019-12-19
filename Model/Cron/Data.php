@@ -83,9 +83,9 @@ class Data implements DataInterface
     {
         return $this->directories;
     }
-
-    public function getPathPieces()
+    
+    public function getPath()
     {
-        return array_merge($this->directories, [$this->className.'.php']);
+        return $this->moduleName->getPath(array_merge($this->directories, [$this->className.'.php']));
     }
 }

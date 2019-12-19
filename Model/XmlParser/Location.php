@@ -2,7 +2,7 @@
 namespace Wesleywmd\Invent\Model\XmlParser;
 
 use Magento\Framework\Filesystem\DirectoryList;
-use Wesleywmd\Invent\Helper\PathHelper;
+use Wesleywmd\Invent\Model\ModuleName;
 
 class Location
 {
@@ -18,8 +18,6 @@ class Location
     const TYPE_ACL = 'acl';
     const TYPE_MENU = 'menu';
     const TYPE_SYSTEM = 'system';
-
-    private $pathHelper;
 
     private $validAreas = [
         self::AREA_FRONTEND,
@@ -38,17 +36,12 @@ class Location
         self::TYPE_SYSTEM
     ];
 
-    public function __construct(PathHelper $pathHelper)
-    {
-        $this->pathHelper = $pathHelper;
-    }
-
-    public function getPath($moduleName, $type, $area)
+    public function getPath(ModuleName $moduleName, $type, $area)
     {
         $this->validateType($type);
         $this->validateArea($area);
         $directories = $this->getDirectories($area);
-        return $this->pathHelper->fullPath($moduleName, array_merge($directories, [$type.'.xml']));
+        return $moduleName->getPath(array_merge($directories, [$type.'.xml']));
     }
 
     private function getDirectories($area)
