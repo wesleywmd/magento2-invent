@@ -1,18 +1,18 @@
 <?php
 namespace Wesleywmd\Invent\Model\Preference;
 
+
 use Wesleywmd\Invent\Api\DataInterface;
+use Wesleywmd\Invent\Model\Component\AbstractData;
 use Wesleywmd\Invent\Model\ModuleName;
 
-class Data implements DataInterface
+class Data extends AbstractData implements DataInterface
 {
     private $area;
 
     private $for;
 
     private $type;
-
-    private $moduleName;
 
     public function __construct(ModuleName $moduleName, $for, $type, $area)
     {
@@ -35,10 +35,5 @@ class Data implements DataInterface
     public function getArea()
     {
         return $this->area;
-    }
-
-    public function getModuleName()
-    {
-        return $this->moduleName;
     }
 }

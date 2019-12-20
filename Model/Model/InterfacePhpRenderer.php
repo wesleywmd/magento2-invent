@@ -3,36 +3,22 @@ namespace Wesleywmd\Invent\Model\Model;
 
 use Wesleywmd\Invent\Api\DataInterface;
 use Wesleywmd\Invent\Api\PhpRendererInterface;
+use Wesleywmd\Invent\Model\Component\AbstractPhpRenderer;
 use Wesleywmd\Invent\Model\PhpParser\PhpBuilder;
 use Wesleywmd\Invent\Model\PhpParser\PrettyPrinter;
 
-class InterfacePhpRenderer implements PhpRendererInterface
+class InterfacePhpRenderer extends AbstractPhpRenderer implements PhpRendererInterface
 {
-    private $phpBuilder;
-
-    private $prettyPrinter;
-
-    public function __construct(PhpBuilder $phpBuilder, PrettyPrinter $prettyPrinter)
+    protected function getNamespace(DataInterface $data)
     {
-        $this->phpBuilder = $phpBuilder;
-        $this->prettyPrinter = $prettyPrinter;
+        /** @var Data $data */
+        return $data->getModuleName()->getNamespace(['Api', 'Data']);
     }
 
-    public function getContents(DataInterface $data)
+    protected function getClassStatement(DataInterface $data)
     {
-        return $this->prettyPrinter->print([$this->getBuilderNode($data)]);
-    }
-
-    private function getBuilderNode(Data $data)
-    {
-        return $this->phpBuilder->namespace($data->getModuleName()->getNamespace(['Api', 'Data']))
-            ->addStmt($this->getInterfaceStatement($data))
-            ->getNode();
-    }
-
-    private function getInterfaceStatement(Data $data)
-    {
-        $interface = $this->phpBuilder->interface($data->getModelName().'Interface')
+        /** @var Data $data */
+        $interface = $this->phpBuilder->interface($data->getInterfaceName())
             ->addStmt($this->phpBuilder->const('DB_MAIN_TABLE', $data->getTableName()));
         if (!$data->getNoEntityId()) {
             $interface->addStmt($this->phpBuilder->const('ENTITY_ID', 'entity_id'))

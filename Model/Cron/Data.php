@@ -2,12 +2,11 @@
 namespace Wesleywmd\Invent\Model\Cron;
 
 use Wesleywmd\Invent\Api\DataInterface;
+use Wesleywmd\Invent\Model\Component\AbstractData;
 use Wesleywmd\Invent\Model\ModuleName;
 
-class Data implements DataInterface
+class Data extends AbstractData implements DataInterface
 {
-    private $moduleName;
-
     private $cronName;
 
     private $method;
@@ -15,10 +14,6 @@ class Data implements DataInterface
     private $schedule;
 
     private $group;
-
-    private $className;
-
-    private $directories;
 
     public function __construct(ModuleName $moduleName, $cronName, $method, $schedule, $group)
     {
@@ -32,11 +27,6 @@ class Data implements DataInterface
         $this->className = ucfirst(array_pop($this->directories));
         $this->directories = array_map( function($dir) { return ucfirst($dir); }, $this->directories);
         $this->directories = array_merge(['Cron'], $this->directories);
-    }
-
-    public function getModuleName()
-    {
-        return $this->moduleName;
     }
 
     public function getCronName()
@@ -58,34 +48,9 @@ class Data implements DataInterface
     {
         return $this->group;
     }
-
-    public function getNamespace()
-    {
-        return $this->moduleName->getNamespace($this->directories);
-    }
-
-    public function getClassName()
-    {
-        return $this->className;
-    }
     
     public function getJobName()
     {
         return $this->moduleName->getSlug(array_merge($this->directories,[$this->cronName]));
-    }
-    
-    public function getInstance()
-    {
-        return $this->moduleName->getNamespace(array_merge($this->directories,[$this->className]));
-    }
-
-    public function getDirectories()
-    {
-        return $this->directories;
-    }
-    
-    public function getPath()
-    {
-        return $this->moduleName->getPath(array_merge($this->directories, [$this->className.'.php']));
     }
 }

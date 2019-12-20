@@ -92,9 +92,8 @@ class Model implements ComponentInterface
 
     private function createModelPhpFile(Model\Data $data)
     {
-        $location = $this->pathHelper->fullPath($data->getModuleName(), ['Model', $data->getModelName().'.php']);
         $contents = $this->phpRenderer->getContents($data);
-        $this->fileHelper->saveFile($location, $contents);
+        $this->fileHelper->saveFile($data->getPath(), $contents);
     }
 
     private function createModelResourcePhpFile(Model\Data $data)
@@ -129,6 +128,8 @@ class Model implements ComponentInterface
     {
         $location = $this->pathHelper->fullPath($data->getModuleName(), ['Model', $data->getModelName().'Repository.php']);
         $contents = $this->repositoryPhpRenderer->getContents($data);
+        $contents = str_replace('$this->resource->save($'.$data->getModelVarName().')', '$this->resource->save($'.$data->getModelVarName().');', $contents);
+        $contents = str_replace('$this->resource->delete($'.$data->getModelVarName().')', '$this->resource->delete($'.$data->getModelVarName().');', $contents);
         $this->fileHelper->saveFile($location, $contents);
     }
 

@@ -3,45 +3,35 @@ namespace Wesleywmd\Invent\Model\Model;
 
 use Wesleywmd\Invent\Api\DataInterface;
 use Wesleywmd\Invent\Api\PhpRendererInterface;
+use Wesleywmd\Invent\Model\Component\AbstractPhpRenderer;
 use Wesleywmd\Invent\Model\PhpParser\PhpBuilder;
 use Wesleywmd\Invent\Model\PhpParser\PrettyPrinter;
 
-class ResourcePhpRenderer implements PhpRendererInterface
+class ResourcePhpRenderer extends AbstractPhpRenderer implements PhpRendererInterface
 {
-    private $phpBuilder;
-
-    private $prettyPrinter;
-
-    public function __construct(PhpBuilder $phpBuilder, PrettyPrinter $prettyPrinter)
+    protected function getNamespace(DataInterface $data)
     {
-        $this->phpBuilder = $phpBuilder;
-        $this->prettyPrinter = $prettyPrinter;
+        /** @var Data $data */
+        return $data->getModuleName()->getNamespace(['Model','ResourceModel']);
     }
 
-    public function getContents(DataInterface $data)
+    protected function getUseStatements(DataInterface $data)
     {
-        return $this->prettyPrinter->print([$this->getBuilderNode($data)]);
+        /** @var Data $data */
+        return [
+            'Magento\Framework\Model\ResourceModel\Db\AbstractDb',
+            $data->getInterfaceInstance()
+        ];
     }
 
-    private function getBuilderNode(Data $data)
+    protected function getClassStatement(Data $data)
     {
-        return $this->phpBuilder->namespace($data->getModuleName()->getNamespace(['Model','ResourceModel']))
-            ->addStmt($this->phpBuilder->use('Magento\Framework\Model\ResourceModel\Db\AbstractDb'))
-            ->addStmt($this->phpBuilder->use($data->getModuleName()->getNamespace(['Api','Data',$data->getModelName().'Interface'])))
-            ->addStmt($this->getClassStatement($data))
-            ->getNode();
-    }
-
-    private function getClassStatement(Data $data)
-    {
-        $tableName = $data->getModuleName()->getSlug([$data->getModelName()]);
-        $class = $this->phpBuilder->class($data->getModelName())
+        $class = $this->phpBuilder->class($data->getClassName())
             ->extend('AbstractDb')
-            ->addStmt($this->phpBuilder->method('_construct')
-                ->makeProtected()
+            ->addStmt($this->phpBuilder->method('_construct')->makeProtected()
                 ->addStmt($this->phpBuilder->methodCall($this->phpBuilder->var('this'), '_init', [
-                    $this->phpBuilder->classConstFetch($data->getModelName().'Interface','DB_MAIN_TABLE'),
-                    $this->phpBuilder->classConstFetch($data->getModelName().'Interface','ENTITY_ID')
+                    $this->phpBuilder->classConstFetch($data->getInterfaceName(), 'DB_MAIN_TABLE'),
+                    $this->phpBuilder->classConstFetch($data->getInterfaceName(), 'ENTITY_ID')
                 ]))
             );
         return $class;

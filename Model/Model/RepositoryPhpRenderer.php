@@ -5,65 +5,57 @@ use PhpParser\Node\Expr\BooleanNot;
 use PhpParser\Node\Stmt\If_;
 use Wesleywmd\Invent\Api\DataInterface;
 use Wesleywmd\Invent\Api\PhpRendererInterface;
+use Wesleywmd\Invent\Model\Component\AbstractPhpRenderer;
 use Wesleywmd\Invent\Model\PhpParser\PhpBuilder;
 use Wesleywmd\Invent\Model\PhpParser\PrettyPrinter;
 
-class RepositoryPhpRenderer implements PhpRendererInterface
+class RepositoryPhpRenderer extends AbstractPhpRenderer implements PhpRendererInterface
 {
-    private $phpBuilder;
-
-    private $prettyPrinter;
-
-    public function __construct(PhpBuilder $phpBuilder, PrettyPrinter $prettyPrinter)
+    protected function getNamespace(DataInterface $data)
     {
-        $this->phpBuilder = $phpBuilder;
-        $this->prettyPrinter = $prettyPrinter;
+        /** @var Data $data */
+        return $data->getModuleName()->getNamespace(['Model']);
     }
 
-    public function getContents(DataInterface $data)
+    protected function getUseStatements(DataInterface $data)
     {
-        return $this->prettyPrinter->print([$this->getBuilderNode($data)]);
+        /** @var Data $data */
+        return [
+            $data->getInterfaceInstance(),
+            $data->getRepositoryInterfaceInstance(),
+            $data->getSearchResultsInterfaceFactoryInstance(),
+            $data->getResourceModelName() => $data->getResourceModelInstance(),
+            $data->getCollectionFactoryInstance(),
+            'Magento\Framework\Api\FilterFactory',
+            'Magento\Framework\Api\Search\FilterGroupFactory',
+            'Magento\Framework\Api\SearchCriteriaFactory',
+            'Magento\Framework\Api\SearchCriteriaInterface',
+            'Magento\Framework\Api\SearchCriteria\CollectionProcessorInterface',
+            'Magento\Framework\Exception\CouldNotDeleteException',
+            'Magento\Framework\Exception\CouldNotSaveException',
+            'Magento\Framework\Exception\NoSuchEntityException'
+        ];
     }
 
-    private function getBuilderNode(Data $data)
+    protected function getClassStatement(DataInterface $data)
     {
-        return $this->phpBuilder->namespace($data->getModuleName()->getNamespace(['Model']))
-            ->addStmt($this->phpBuilder->use($data->getModuleName()->getNamespace(['Api', 'Data', $data->getModelName() . 'Interface'])))
-            ->addStmt($this->phpBuilder->use($data->getModuleName()->getNamespace(['Api', $data->getModelName() . 'RepositoryInterface'])))
-            ->addStmt($this->phpBuilder->use($data->getModuleName()->getNamespace(['Api', 'Data', $data->getModelName() . 'SearchResultsInterfaceFactory'])))
-            ->addStmt($this->phpBuilder->use($data->getModuleName()->getNamespace(['Model', 'ResourceModel', $data->getModelName()]))->as($data->getModelName() . 'Resource'))
-            ->addStmt($this->phpBuilder->use($data->getModuleName()->getNamespace(['Model', 'ResourceModel', $data->getModelName(), 'CollectionFactory'])))
-            ->addStmt($this->phpBuilder->use('Magento\Framework\Api\FilterFactory'))
-            ->addStmt($this->phpBuilder->use('Magento\Framework\Api\Search\FilterGroupFactory'))
-            ->addStmt($this->phpBuilder->use('Magento\Framework\Api\SearchCriteriaFactory'))
-            ->addStmt($this->phpBuilder->use('Magento\Framework\Api\SearchCriteriaInterface'))
-            ->addStmt($this->phpBuilder->use('Magento\Framework\Api\SearchCriteria\CollectionProcessorInterface'))
-            ->addStmt($this->phpBuilder->use('Magento\Framework\Exception\CouldNotDeleteException'))
-            ->addStmt($this->phpBuilder->use('Magento\Framework\Exception\CouldNotSaveException'))
-            ->addStmt($this->phpBuilder->use('Magento\Framework\Exception\NoSuchEntityException'))
-            ->addStmt($this->phpBuilder->use('Magento\Framework\Api\SearchCriteriaInterface'))
-            ->addStmt($this->phpBuilder->use('Magento\Framework\Api\SearchCriteriaInterface'))
-            ->addStmt($this->getClassStatement($data))
-            ->getNode();
-    }
-
-    private function getClassStatement(Data $data)
-    {
-        return $this->phpBuilder->class($data->getModelName() . 'Repository')
+        /** @var Data $data */
+        return $this->phpBuilder->class($data->getModelName().'Repository')
+            ->implement($data->getModelName().'RepositoryInterface')
             ->addStmt($this->phpBuilder->property('resource')->makePrivate())
-            ->addStmt($this->phpBuilder->property($data->getModelName() . 'Factory')->makePrivate())
-            ->addStmt($this->phpBuilder->property($data->getModelName() . 'CollectionFactory')->makePrivate())
+            ->addStmt($this->phpBuilder->property($data->getModelVarName().'Factory')->makePrivate())
+            ->addStmt($this->phpBuilder->property($data->getModelVarName().'CollectionFactory')->makePrivate())
             ->addStmt($this->phpBuilder->property('collectionProcessor')->makePrivate())
             ->addStmt($this->phpBuilder->property('searchResultsFactory')->makePrivate())
             ->addStmt($this->phpBuilder->property('searchCriteriaFactory')->makePrivate())
             ->addStmt($this->phpBuilder->property('filterFactory')->makePrivate())
             ->addStmt($this->phpBuilder->property('filterGroupFactory')->makePrivate())
             ->addStmt($this->phpBuilder->constructor([
-                'resource' => $data->getModelName() . 'Resource',
-                $data->getModelVarName() . 'Factory' => $data->getModelName() . 'Factory',
-                $data->getModelVarName() . 'CollectionFactory' => 'CollectionFactory',
+                'resource' => $data->getResourceModelName(),
+                $data->getModelVarName().'Factory' => $data->getModelName().'Factory',
+                $data->getModelVarName().'CollectionFactory' => 'CollectionFactory',
                 'collectionProcessor' => 'CollectionProcessorInterface',
-                'searchResultsFactory' => $data->getModelName() . 'SearchResultsInterfaceFactory',
+                'searchResultsFactory' => $data->getModelName().'SearchResultsInterfaceFactory',
                 'searchCriteriaFactory' => 'SearchCriteriaFactory',
                 'filterFactory' => 'FilterFactory',
                 'filterGroupFactory' => 'FilterGroupFactory'
@@ -80,14 +72,18 @@ class RepositoryPhpRenderer implements PhpRendererInterface
         $modelVar = $this->phpBuilder->var($data->getModelVarName());
         $exceptionVar = $this->phpBuilder->var('exception');
         $throwNewStmt = $this->phpBuilder->throwNew('CouldNotSaveException', [
-            $this->getTranslateFuncCall('Could not save the '.$data->getModelName().': %1', [$this->phpBuilder->methodCall($exceptionVar, 'getMessage')]),
+            $this->getTranslateFuncCall('Could not save the '.$data->getModelName().': %1', [
+                $this->phpBuilder->methodCall($exceptionVar, 'getMessage')
+            ]), 
             $exceptionVar
         ]);
         return $this->phpBuilder->method('save')
             ->makePublic()
-            ->addParam($this->phpBuilder->param($data->getModelVarName())->setType($data->getModelName() . 'Interface'))
+            ->addParam($this->phpBuilder->param($data->getModelVarName())->setType($data->getInterfaceName()))
             ->addStmt($this->phpBuilder->tryCatch([
-                $this->phpBuilder->methodCall($this->getThisFetch('resource'), 'save', [$this->phpBuilder->nodeArg($modelVar)])
+                $this->phpBuilder->methodCall($this->getThisFetch('resource'), 'save', [
+                    $this->phpBuilder->nodeArg($modelVar)
+                ])
             ], [
                 $this->phpBuilder->catch('\Exception', 'exception', [$throwNewStmt])
             ]))
@@ -120,7 +116,7 @@ class RepositoryPhpRenderer implements PhpRendererInterface
         $searchResultsVar = $this->phpBuilder->var('searchResults');
         return $this->phpBuilder->method('getList')
             ->makePublic()
-            ->addParam($this->phpBuilder->param('searchCriteriaInterface')->setType('searchCriteria'))
+            ->addParam($this->phpBuilder->param('searchCriteria')->setType('SearchCriteriaInterface'))
             ->addStmt($this->phpBuilder->assign($collectionVar,
                 $this->phpBuilder->methodCall($this->getThisFetch($data->getModelVarName().'CollectionFactory'), 'create')
             ))

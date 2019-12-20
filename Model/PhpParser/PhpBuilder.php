@@ -97,6 +97,19 @@ class PhpBuilder extends BuilderFactory
             ->addStmt($this->returnStmt($this->propertyFetch($this->var('this'),lcfirst($methodName))));
     }
 
+    public function methodModelGetter($value, $interface)
+    {
+        $methodName = explode('_', $value);
+        $constName = array_map( function($piece) { return strtoupper($piece); }, $methodName);
+        $constName = implode('_', $constName);
+        $methodName = array_map( function($piece) { return ucfirst($piece); }, $methodName);
+        $methodName = implode('', $methodName);
+        return $this->method('get'.$methodName)->makePublic()
+            ->addStmt($this->returnStmt($this->methodCall($this->var('this'),'_getData', [
+                $this->classConstFetch($interface, $constName)
+            ])));
+    }
+
     public function methodSetter($value)
     {
         $methodName = explode('_', $value);
@@ -105,6 +118,22 @@ class PhpBuilder extends BuilderFactory
         return $this->method('set'.$methodName)->makePublic()
             ->addParam($this->param(lcfirst($methodName)))
             ->addStmt($this->assign($this->propertyFetch($this->var('this'),lcfirst($methodName)), $this->var(lcfirst($methodName))))
+            ->addStmt($this->returnStmt($this->var('this')));
+    }
+
+    public function methodModelSetter($value, $interface)
+    {
+        $methodName = explode('_', $value);
+        $constName = array_map( function($piece) { return strtoupper($piece); }, $methodName);
+        $constName = implode('_', $constName);
+        $methodName = array_map( function($piece) { return ucfirst($piece); }, $methodName);
+        $methodName = implode('', $methodName);
+        return $this->method('set'.$methodName)->makePublic()
+            ->addParam($this->param(lcfirst($methodName)))
+            ->addStmt($this->methodCall($this->var('this'),'setData', [
+                $this->classConstFetch($interface, $constName),
+                $this->param(lcfirst($methodName))
+            ]))
             ->addStmt($this->returnStmt($this->var('this')));
     }
 
@@ -128,12 +157,12 @@ class PhpBuilder extends BuilderFactory
     {
         return new \PhpParser\Node\Stmt\TryCatch($stmts, $catches, $finally, $attributes);
     }
-    
+
     public function booleanNot(\PhpParser\Node\Expr $expr, $attributes = [])
     {
         return new \PhpParser\Node\Expr\BooleanNot($expr, $attributes);
     }
-    
+
     public function if(\PhpParser\Node\Expr $cond, $subNodes = [], $attributes = [])
     {
         return new \PhpParser\Node\Stmt\If_($cond, $subNodes, $attributes);

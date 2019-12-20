@@ -2,12 +2,11 @@
 namespace Wesleywmd\Invent\Model\Model;
 
 use Wesleywmd\Invent\Api\DataInterface;
+use Wesleywmd\Invent\Model\Component\AbstractData;
 use Wesleywmd\Invent\Model\ModuleName;
 
-class Data implements DataInterface
+class Data extends AbstractData implements DataInterface
 {
-    private $moduleName;
-
     private $modelName;
 
     private $columns;
@@ -26,11 +25,9 @@ class Data implements DataInterface
         $this->noEntityId = $noEntityId;
         $this->noCreatedAt = $noCreatedAt;
         $this->noUpdatedAt = $noUpdatedAt;
-    }
+        $this->className = $modelName;
+        $this->directories = ['Model'];
 
-    public function getModuleName()
-    {
-        return $this->moduleName;
     }
 
     public function getModelName()
@@ -67,9 +64,44 @@ class Data implements DataInterface
     {
         return $this->getModelVarName().'Id';
     }
-    
+
     public function getTableName()
     {
         return $this->moduleName->getSlug([$this->modelName]);
+    }
+
+    public function getInterfaceInstance()
+    {
+        return $this->moduleName->getNamespace(['Api', 'Data', $this->modelName.'Interface']);
+    }
+
+    public function getRepositoryInterfaceInstance()
+    {
+        return $this->moduleName->getNamespace(['Api', $this->modelName.'RepositoryInterface']);
+    }
+
+    public function getSearchResultsInterfaceFactoryInstance()
+    {
+        return $this->moduleName->getNamespace(['Api', 'Data', $this->modelName.'SearchResultsInterfaceFactory']);
+    }
+
+    public function getResourceModelInstance()
+    {
+        return $this->moduleName->getNamespace(['Model', 'ResourceModel', $this->modelName]);
+    }
+
+    public function getCollectionFactoryInstance()
+    {
+        return $this->moduleName->getNamespace(['Model', 'resourceModel', $this->modelName, 'CollectionFactory']);
+    }
+
+    public function getResourceModelName()
+    {
+        return $this->modelName.'Resource';
+    }
+
+    public function getInterfaceName()
+    {
+        return $this->modelName.'Interface';
     }
 }

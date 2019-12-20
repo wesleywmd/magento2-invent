@@ -3,56 +3,42 @@ namespace Wesleywmd\Invent\Model\Model;
 
 use Wesleywmd\Invent\Api\DataInterface;
 use Wesleywmd\Invent\Api\PhpRendererInterface;
+use Wesleywmd\Invent\Model\Component\AbstractPhpRenderer;
 use Wesleywmd\Invent\Model\PhpParser\PhpBuilder;
 use Wesleywmd\Invent\Model\PhpParser\PrettyPrinter;
 
-class PhpRenderer implements PhpRendererInterface
+class PhpRenderer extends AbstractPhpRenderer implements PhpRendererInterface
 {
-    private $phpBuilder;
-
-    private $prettyPrinter;
-
-    public function __construct(PhpBuilder $phpBuilder, PrettyPrinter $prettyPrinter)
+    protected function getUseStatements(DataInterface $data)
     {
-        $this->phpBuilder = $phpBuilder;
-        $this->prettyPrinter = $prettyPrinter;
+        /** @var Data $data */
+        return [
+            'Magento\Framework\Model\AbstractModel',
+            $data->getInterfaceInstance()
+        ];
     }
 
-    public function getContents(DataInterface $data)
+    protected function getClassStatement(DataInterface $data)
     {
-        return $this->prettyPrinter->print([$this->getBuilderNode($data)]);
-    }
-
-    private function getBuilderNode(Data $data)
-    {
-        return $this->phpBuilder->namespace($data->getModuleName()->getNamespace(['Model']))
-            ->addStmt($this->phpBuilder->use('Magento\Framework\Model\AbstractModel'))
-            ->addStmt($this->phpBuilder->use($data->getModuleName()->getNamespace(['Api','Data',$data->getModelName().'Interface'])))
-            ->addStmt($this->getClassStatement($data))
-            ->getNode();
-    }
-
-    private function getClassStatement(Data $data)
-    {
-        $tableName = $data->getModuleName()->getSlug([$data->getModelName()]);
-        $class = $this->phpBuilder->class($data->getModelName())
+        /** @var Data $data */
+        $class = $this->phpBuilder->class($data->getClassName())
             ->extend('AbstractModel')
-            ->implement($data->getModelName().'Interface');
+            ->implement($data->getInterfaceName());
         if (!$data->getNoEntityId()) {
-            $class->addStmt($this->phpBuilder->methodGetter('entity_id'))
-                ->addStmt($this->phpBuilder->methodSetter('entity_id'));
+            $class->addStmt($this->phpBuilder->methodModelGetter('entity_id', $data->getInterfaceName()))
+                ->addStmt($this->phpBuilder->methodModelSetter('entity_id', $data->getInterfaceName()));
         }
         foreach ($data->getColumns() as $column) {
-            $class->addStmt($this->phpBuilder->methodGetter($column))
-                ->addStmt($this->phpBuilder->methodSetter($column));
+            $class->addStmt($this->phpBuilder->methodModelGetter($column, $data->getInterfaceName()))
+                ->addStmt($this->phpBuilder->methodModelSetter($column, $data->getInterfaceName()));
         }
         if (!$data->getNoCreatedAt()) {
-            $class->addStmt($this->phpBuilder->methodGetter('created_at'))
-                ->addStmt($this->phpBuilder->methodSetter('created_at'));
+            $class->addStmt($this->phpBuilder->methodModelGetter('created_at', $data->getInterfaceName()))
+                ->addStmt($this->phpBuilder->methodModelSetter('created_at', $data->getInterfaceName()));
         }
         if (!$data->getNoUpdatedAt()) {
-            $class->addStmt($this->phpBuilder->methodGetter('updated_at'))
-                ->addStmt($this->phpBuilder->methodSetter('updated_at'));
+            $class->addStmt($this->phpBuilder->methodModelGetter('updated_at', $data->getInterfaceName()))
+                ->addStmt($this->phpBuilder->methodModelSetter('updated_at', $data->getInterfaceName()));
         }
         return $class;
     }

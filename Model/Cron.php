@@ -32,7 +32,8 @@ class Cron implements ComponentInterface
 
     public function addToModule(DataInterface $data)
     {
-        if (!$this->pathHelper->fullPathExists($data->getModuleName())) {
+        /** @var Cron/Data $data */
+        if (!is_dir($data->getModuleName()->getPath())) {
             throw new \Exception('Module does not exist');
         }
 
