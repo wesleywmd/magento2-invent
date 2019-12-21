@@ -636,4 +636,9 @@ class InventStyle extends OutputStyle implements MagentoStyleInterface
 
         return $lines;
     }
+
+    public function getInput()
+    {
+        return $this->input;
+    }
 }

@@ -2,44 +2,35 @@
 namespace Wesleywmd\Invent\Console\Command;
 
 use Magento\Setup\Console\InputValidationException;
-use Symfony\Component\Console\Command\Command;
+use Magento\Setup\Console\Style\MagentoStyleInterface;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Wesleywmd\Invent\Api\ComponentInterface;
 use Wesleywmd\Invent\Console\InventStyleFactory;
 use Wesleywmd\Invent\Model\Block;
 use Wesleywmd\Invent\Model\Module\ModuleNameValidator;
 use Wesleywmd\Invent\Model\ModuleNameException;
 use Wesleywmd\Invent\Model\ModuleNameFactory;
 
-class InventBlockCommand extends Command
+class InventBlockCommand extends InventCommandBase
 {
-    private $block;
-
+    protected $successMessage = 'Block Created Successfully!';
+    
     private $blockDataFactory;
 
-    private $moduleNameFactory;
-
-    private $inventStyleFactory;
-
-    private $moduleNameValidator;
-
     private $blockNameValidator;
-
+    
     public function __construct(
-        Block $block,
-        Block\DataFactory $blockDataFactory,
-        ModuleNameFactory $moduleNameFactory,
-        InventStyleFactory $inventStyleFactory,
+        Block $component, 
+        ModuleNameFactory $moduleNameFactory, 
+        InventStyleFactory $inventStyleFactory, 
         ModuleNameValidator $moduleNameValidator,
+        Block\DataFactory $blockDataFactory,
         Block\BlockNameValidator $blockNameValidator
     ) {
-        parent::__construct();
-        $this->block = $block;
+        parent::__construct($component, $moduleNameFactory, $inventStyleFactory, $moduleNameValidator);
         $this->blockDataFactory = $blockDataFactory;
-        $this->moduleNameFactory = $moduleNameFactory;
-        $this->inventStyleFactory = $inventStyleFactory;
-        $this->moduleNameValidator = $moduleNameValidator;
         $this->blockNameValidator = $blockNameValidator;
     }
 
@@ -58,38 +49,16 @@ class InventBlockCommand extends Command
         $question = 'What module do you want to add a block to?';
         $io->askForValidatedArgument('moduleName', $question, null, $this->moduleNameValidator, 3);
 
-        do {
-            $question = 'What is the block\'s name?';
-            $io->askForValidatedArgument('blockName', $question, null, $this->blockNameValidator, 3);
-            $blockData = $this->blockDataFactory->create([
-                'moduleName' => $this->moduleNameFactory->create($input->getArgument('moduleName')),
-                'blockName' => $input->getArgument('blockName')
-            ]);
-            if (is_file($blockData->getPath())) {
-                $io->error('Specified Block already exists');
-                $input->setArgument('blockName', null);
-            }
-        } while(is_null($input->getArgument('blockName')));
+        $question = 'What is the block\'s name?';
+        $errorMessage = 'Specified Block already exists';
+        $this->verifyFileNameArgument($io, $this->blockNameValidator, $question, 'blockName', $errorMessage);
     }
 
-    /**
-     * @param InputInterface $input
-     * @param OutputInterface $output
-     * @return int|null
-     */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function getData(InputInterface $input)
     {
-        $io = $this->inventStyleFactory->create(compact('input', 'output'));
-        try {
-            $blockData = $this->blockDataFactory->create([
-                'moduleName' => $this->moduleNameFactory->create($input->getArgument('moduleName')),
-                'blockName' => $input->getArgument('blockName')
-            ]);
-            $this->block->addToModule($blockData);
-            $io->success('Block Created Successfully!');
-        } catch (\Exception $e) {
-            $io->error($e->getMessage());
-            return 1;
-        }
+        return $this->blockDataFactory->create([
+            'moduleName' => $this->moduleNameFactory->create($input->getArgument('moduleName')),
+            'blockName' => $input->getArgument('blockName')
+        ]);
     }
 }

@@ -2,55 +2,25 @@
 namespace Wesleywmd\Invent\Model\Block;
 
 use Wesleywmd\Invent\Api\DataInterface;
+use Wesleywmd\Invent\Model\Component\AbstractData;
 use Wesleywmd\Invent\Model\ModuleName;
 
-class Data implements DataInterface
+class Data extends AbstractData implements DataInterface
 {
     private $blockName;
 
-    private $className;
-
-    private $directories;
-
-    private $moduleName;
-
     public function __construct(ModuleName $moduleName, $blockName)
     {
+        $directories = explode('/', $blockName);
+        $directories = array_map( function($dir) { return ucfirst($dir); }, $directories);
+        $className = array_pop($directories);
+        $directories = array_merge(['Block'], $directories);
+        parent::__construct($moduleName, $className, $directories);
         $this->blockName = $blockName;
-        $this->moduleName = $moduleName;
-        $this->directories = explode('/', $this->blockName);
-        $this->directories = array_map( function($dir) { return ucfirst($dir); }, $this->directories);
-        $this->className = array_pop($this->directories);
-        $this->directories = array_merge(['Block'], $this->directories);
     }
 
     public function getBlockName()
     {
         return $this->blockName;
-    }
-
-    public function getClassName()
-    {
-        return $this->className;
-    }
-
-    public function getDirectories()
-    {
-        return $this->directories;
-    }
-
-    public function getModuleName()
-    {
-        return $this->moduleName;
-    }
-
-    public function getNamespace()
-    {
-        return $this->moduleName->getNamespace($this->directories);
-    }
-
-    public function getPath()
-    {
-        return $this->moduleName->getPath(array_merge($this->directories, [$this->className.'.php']));
     }
 }

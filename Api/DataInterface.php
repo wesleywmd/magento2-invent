@@ -1,6 +1,8 @@
 <?php
 namespace Wesleywmd\Invent\Api;
 
+use Wesleywmd\Invent\Model\ModuleName;
+
 interface DataInterface
 {
     public function getClassName();
@@ -9,6 +11,9 @@ interface DataInterface
 
     public function getInstance();
 
+    /**
+     * @return ModuleName
+     */
     public function getModuleName();
 
     public function getNamespace();

@@ -3,36 +3,20 @@ namespace Wesleywmd\Invent\Model\Block;
 
 use Wesleywmd\Invent\Api\DataInterface;
 use Wesleywmd\Invent\Api\PhpRendererInterface;
+use Wesleywmd\Invent\Model\Component\AbstractPhpRenderer;
 use Wesleywmd\Invent\Model\PhpParser\PhpBuilder;
 use Wesleywmd\Invent\Model\PhpParser\PrettyPrinter;
 
-class PhpRenderer implements PhpRendererInterface
+class PhpRenderer extends AbstractPhpRenderer implements PhpRendererInterface
 {
-    private $phpBuilder;
-
-    private $prettyPrinter;
-
-    public function __construct(PhpBuilder $phpBuilder, PrettyPrinter $prettyPrinter)
+    protected function getUseStatements(DataInterface $data)
     {
-        $this->phpBuilder = $phpBuilder;
-        $this->prettyPrinter = $prettyPrinter;
+        return ['Magento\Framework\View\Element\Template'];
     }
 
-    public function getContents(DataInterface $data)
+    protected function getClassStatement(DataInterface $data)
     {
-        return $this->prettyPrinter->print([$this->getBuilderNode($data)]);
-    }
-
-    private function getBuilderNode(Data $data)
-    {
-        return $this->phpBuilder->namespace($data->getNamespace())
-            ->addStmt($this->phpBuilder->use('Magento\\Framework\\View\\Element\\Template'))
-            ->addStmt($this->getClassStatement($data))
-            ->getNode();
-    }
-
-    private function getClassStatement(Data $data)
-    {
+        /** @var Data $data */
         return $this->phpBuilder->class($data->getClassName())
             ->extend('Template')
             ->setDocComment('/**
