@@ -11,7 +11,7 @@ class Block implements ComponentInterface
 
     private $fileHelper;
 
-    public function __construct(Block\PhpRenderer $phpRenderer, FileHelper $fileHelper) 
+    public function __construct(Block\PhpRenderer $phpRenderer, FileHelper $fileHelper)
     {
         $this->phpRenderer = $phpRenderer;
         $this->fileHelper = $fileHelper;
@@ -20,6 +20,7 @@ class Block implements ComponentInterface
     public function addToModule(DataInterface $data)
     {
         /** @var Block\Data $data */
-        $this->fileHelper->saveFile($data->getPath(), $this->phpRenderer->getContents($data));
+        $contents = $this->phpRenderer->getContents($data);
+        $this->fileHelper->saveFile($data->getPath(), $contents);
     }
 }

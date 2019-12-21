@@ -1,16 +1,12 @@
 <?php
 namespace Wesleywmd\Invent\Console\Command;
 
-use Magento\Setup\Console\InputValidationException;
-use Magento\Setup\Console\Style\MagentoStyleInterface;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Wesleywmd\Invent\Api\ComponentInterface;
 use Wesleywmd\Invent\Console\InventStyleFactory;
 use Wesleywmd\Invent\Model\Block;
 use Wesleywmd\Invent\Model\Module\ModuleNameValidator;
-use Wesleywmd\Invent\Model\ModuleNameException;
 use Wesleywmd\Invent\Model\ModuleNameFactory;
 
 class InventBlockCommand extends InventCommandBase
