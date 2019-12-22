@@ -16,8 +16,8 @@ abstract class AbstractComponent
 
     public function __construct(
         FileHelper $fileHelper,
-        PhpRendererInterface $phpRenderer,
-        XmlRendererInterface $xmlRenderer
+        PhpRendererInterface $phpRenderer = null,
+        XmlRendererInterface $xmlRenderer = null
     ) {
         $this->phpRenderer = $phpRenderer;
         $this->fileHelper = $fileHelper;

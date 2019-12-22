@@ -1,7 +1,6 @@
 <?php
 namespace Wesleywmd\Invent\Model\Controller;
 
-use Magento\Setup\Console\InputValidationException;
 use Wesleywmd\Invent\Model\Component\AbstractValidator;
 
 class RouterValidator extends AbstractValidator

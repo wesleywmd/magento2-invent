@@ -16,15 +16,10 @@ class XmlRenderer extends AbstractXmlRenderer implements XmlRendererInterface
 
     protected function updateDom(Dom &$dom, DataInterface $data)
     {
-        $groupNodeXpath = $this->addGroupNode($dom, $data);
+        /** @var Data $data */
+        $groupNodeXpath = $this->addKeyedNode($dom, 'group', 'id', $data->getGroup());
         $jobNodeXpath = $this->addJobNode($dom, $data, $groupNodeXpath);
         $this->addScheduleNode($dom, $data, $jobNodeXpath);
-    }
-
-    private function addGroupNode(Dom &$dom, DataInterface $data)
-    {
-        $dom->updateElement('group', 'id', $data->getGroup());
-        return ['group[@id="'.$data->getGroup().'"]'];
     }
 
     private function addJobNode(Dom &$dom, DataInterface $data, $groupNodeXpath)

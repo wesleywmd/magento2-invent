@@ -4,51 +4,21 @@ namespace Wesleywmd\Invent\Model;
 use Wesleywmd\Invent\Api\ComponentInterface;
 use Wesleywmd\Invent\Api\DataInterface;
 use Wesleywmd\Invent\Helper\FileHelper;
-use Wesleywmd\Invent\Model\XmlParser\DomFactory;
-use Wesleywmd\Invent\Model\XmlParser\Location;
+use Wesleywmd\Invent\Model\Component\AbstractComponent;
 
-class Controller implements ComponentInterface
+class Controller extends AbstractComponent implements ComponentInterface
 {
-    private $phpRenderer;
-
-    private $fileHelper;
-
-    private $domFactory;
-
-    private $location;
-
     public function __construct(
-        Controller\PhpRenderer $phpRenderer,
         FileHelper $fileHelper,
-        DomFactory $domFactory,
-        Location $location
+        Controller\PhpRenderer $phpRenderer,
+        Controller\XmlRenderer $xmlRenderer
     ) {
-        $this->phpRenderer = $phpRenderer;
-        $this->fileHelper = $fileHelper;
-        $this->domFactory = $domFactory;
-        $this->location = $location;
+        parent::__construct($fileHelper, $phpRenderer, $xmlRenderer);
     }
 
     public function addToModule(DataInterface $data)
     {
         $this->createPhpFile($data);
         $this->createXmlFile($data);
-    }
-
-    private function createPhpFile(Controller\Data $data)
-    {
-        $contents = $this->phpRenderer->getContents($data);
-        $this->fileHelper->saveFile($data->getPath(), $contents);
-    }
-
-    private function createXmlFile(Controller\Data $data)
-    {
-        $location = $this->location->getPath($data->getModuleName(), Location::TYPE_ROUTE, Location::AREA_FRONTEND);
-        $contents = $this->domFactory->create($location, Location::TYPE_ROUTE)
-            ->updateElement('router', 'id', $data->getRouter())
-            ->updateElement('route', 'id', $data->getFrontName(), null, ['router[@id="'.$data->getRouter().'"]'])
-            ->updateElement('module', 'name', $data->getModuleName()->getName(), null, ['router[@id="'.$data->getRouter().'"]', 'route[@id="'.$data->getFrontName().'"]'])
-            ->print();
-        $this->fileHelper->saveFile($location, $contents, true);
     }
 }

@@ -4,23 +4,19 @@ namespace Wesleywmd\Invent\Model;
 use Wesleywmd\Invent\Api\ComponentInterface;
 use Wesleywmd\Invent\Api\DataInterface;
 use Wesleywmd\Invent\Helper\FileHelper;
+use Wesleywmd\Invent\Model\Component\AbstractComponent;
 
-class Block implements ComponentInterface
+class Block extends AbstractComponent implements ComponentInterface
 {
-    private $phpRenderer;
-
-    private $fileHelper;
-
-    public function __construct(Block\PhpRenderer $phpRenderer, FileHelper $fileHelper)
-    {
-        $this->phpRenderer = $phpRenderer;
-        $this->fileHelper = $fileHelper;
+    public function __construct(
+        FileHelper $fileHelper,
+        Block\PhpRenderer $phpRenderer
+    ) {
+        parent::__construct($fileHelper, $phpRenderer);
     }
 
     public function addToModule(DataInterface $data)
     {
-        /** @var Block\Data $data */
-        $contents = $this->phpRenderer->getContents($data);
-        $this->fileHelper->saveFile($data->getPath(), $contents);
+        $this->createPhpFile($data);
     }
 }

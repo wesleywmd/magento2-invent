@@ -38,4 +38,10 @@ abstract class AbstractXmlRenderer
     {
         return Location::AREA_GLOBAL;
     }
+
+    protected function addKeyedNode(Dom &$dom, $node, $key, $value, $xpath = [])
+    {
+        $dom->updateElement($node, $key, $value, null, $xpath);
+        return array_merge($xpath, [$node.'[@'.$key.'="'.$value.'"]']);
+    }
 }
