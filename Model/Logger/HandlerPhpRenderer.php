@@ -3,37 +3,21 @@ namespace Wesleywmd\Invent\Model\Logger;
 
 use Wesleywmd\Invent\Api\DataInterface;
 use Wesleywmd\Invent\Api\PhpRendererInterface;
-use Wesleywmd\Invent\Model\PhpParser\PhpBuilder;
-use Wesleywmd\Invent\Model\PhpParser\PrettyPrinter;
+use Wesleywmd\Invent\Model\Component\AbstractPhpRenderer;
 
-class HandlerPhpRenderer implements PhpRendererInterface
+class HandlerPhpRenderer extends AbstractPhpRenderer implements PhpRendererInterface
 {
-    private $phpBuilder;
-
-    private $prettyPrinter;
-
-    public function __construct(PhpBuilder $phpBuilder, PrettyPrinter $prettyPrinter)
+    protected function getUseStatements(DataInterface $data)
     {
-        $this->phpBuilder = $phpBuilder;
-        $this->prettyPrinter = $prettyPrinter;
+        return [
+            'Magento\Framework\Logger\Handler\Base',
+            'Monolog\Logger'
+        ];
     }
 
-    public function getContents(DataInterface $data)
+    protected function getClassStatement(DataInterface $data)
     {
-        return $this->prettyPrinter->print([$this->getBuilderNode($data)]);
-    }
-
-    private function getBuilderNode(Data $data)
-    {
-        return $this->phpBuilder->namespace($data->getModuleName()->getNamespace(['Logger']))
-            ->addStmt($this->phpBuilder->use('Magento\Framework\Logger\Handler\Base'))
-            ->addStmt($this->phpBuilder->use('Monolog\Logger'))
-            ->addStmt($this->getClassStatement($data))
-            ->getNode();
-    }
-
-    private function getClassStatement(Data $data)
-    {
+        /** @var Data $data */
         return $this->phpBuilder->class('Handler')
             ->extend('Base')
             ->addStmt($this->phpBuilder->property('loggerType')

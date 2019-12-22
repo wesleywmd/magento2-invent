@@ -2,12 +2,11 @@
 namespace Wesleywmd\Invent\Model\Logger;
 
 use Wesleywmd\Invent\Api\DataInterface;
+use Wesleywmd\Invent\Model\Component\AbstractData;
 use Wesleywmd\Invent\Model\ModuleName;
 
-class Data implements DataInterface
+class Data extends AbstractData implements DataInterface
 {
-    private $moduleName;
-
     private $loggerName;
 
     private $fileName;
@@ -16,15 +15,10 @@ class Data implements DataInterface
 
     public function __construct(ModuleName $moduleName, $loggerName, $fileName = null, $type = 'INFO')
     {
-        $this->moduleName = $moduleName;
+        parent::__construct($moduleName, 'Logger', ['Logger']);
         $this->loggerName = $loggerName;
         $this->fileName = $fileName;
         $this->type = $type;
-    }
-
-    public function getModuleName()
-    {
-        return $this->moduleName;
     }
 
     public function getLoggerName()
@@ -44,9 +38,14 @@ class Data implements DataInterface
     {
         return $this->type;
     }
-    
-    public function getPath($file)
+
+    public function getHandlerPath()
     {
-        return $this->moduleName->getPath(['Logger', $file]);
+        return $this->moduleName->getPath(array_merge($this->directories, ['Handler.php']));
+    }
+
+    public function getHandlerInstance()
+    {
+        return $this->moduleName->getNamespace(array_merge($this->directories,['Handler']));
     }
 }
