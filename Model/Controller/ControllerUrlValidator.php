@@ -2,7 +2,7 @@
 namespace Wesleywmd\Invent\Model\Controller;
 
 use Magento\Setup\Console\InputValidationException;
-use Wesleywmd\Invent\Console\AbstractValidator;
+use Wesleywmd\Invent\Model\Component\AbstractValidator;
 
 class ControllerUrlValidator extends AbstractValidator
 {

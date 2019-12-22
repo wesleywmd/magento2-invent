@@ -3,38 +3,22 @@ namespace Wesleywmd\Invent\Model\Controller;
 
 use Wesleywmd\Invent\Api\DataInterface;
 use Wesleywmd\Invent\Api\PhpRendererInterface;
-use Wesleywmd\Invent\Model\PhpParser\PhpBuilder;
-use Wesleywmd\Invent\Model\PhpParser\PrettyPrinter;
+use Wesleywmd\Invent\Model\Component\AbstractPhpRenderer;
 
-class PhpRenderer implements PhpRendererInterface
+class PhpRenderer extends AbstractPhpRenderer implements PhpRendererInterface
 {
-    private $phpBuilder;
-
-    private $prettyPrinter;
-
-    public function __construct(PhpBuilder $phpBuilder, PrettyPrinter $prettyPrinter)
+    protected function getUseStatements(DataInterface $data)
     {
-        $this->phpBuilder = $phpBuilder;
-        $this->prettyPrinter = $prettyPrinter;
+        return [
+            'Magento\Framework\App\Action\Action',
+            'Magento\Framework\App\Action\Context',
+            'Magento\Framework\View\Result\PageFactory'
+        ];
     }
 
-    public function getContents(DataInterface $data)
+    protected function getClassStatement(DataInterface $data)
     {
-        return $this->prettyPrinter->print([$this->getBuilderNode($data)]);
-    }
-
-    private function getBuilderNode(Data $data)
-    {
-        return $this->phpBuilder->namespace($data->getNamespace())
-            ->addStmt($this->phpBuilder->use('Magento\\Framework\\App\\Action\\Action'))
-            ->addStmt($this->phpBuilder->use('Magento\\Framework\\App\\Action\\Context'))
-            ->addStmt($this->phpBuilder->use('Magento\\Framework\\View\\Result\\PageFactory'))
-            ->addStmt($this->getClassStatement($data))
-            ->getNode();
-    }
-
-    private function getClassStatement(Data $data)
-    {
+        /** @var Data $data */
         return $this->phpBuilder->class($data->getClassName())
             ->extend('Action')
             ->setDocComment('/**
@@ -45,15 +29,18 @@ class PhpRenderer implements PhpRendererInterface
             ->addStmt($this->getExecuteMethod($data));
     }
 
-    private function getExecuteMethod(Data $data)
+    private function getExecuteMethod(DataInterface $data)
     {
-        $resultPageVar = $this->phpBuilder->var('resultPage');
-        $thisVar = $this->phpBuilder->var('this');
-        $resultPageFetch = $this->phpBuilder->propertyFetch($thisVar, 'resultPageFactory');
-        $createMethodCall = $this->phpBuilder->methodCall($resultPageFetch, 'create');
+        /** @var Data $data */
         return $this->phpBuilder->method('execute')
             ->makePublic()
-            ->addStmt($this->phpBuilder->assign($resultPageVar, $createMethodCall))
-            ->addStmt($this->phpBuilder->returnStmt($resultPageVar));
+            ->addStmt($this->phpBuilder->assign(
+                $this->phpBuilder->var('resultPage'),
+                $this->phpBuilder->methodCall(
+                    $this->phpBuilder->thisPropertyFetch('resultPageFactory'),
+                    'create'
+                )
+            ))
+            ->addStmt($this->phpBuilder->returnStmt($this->phpBuilder->var('resultPage')));
     }
 }

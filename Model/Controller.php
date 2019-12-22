@@ -4,7 +4,6 @@ namespace Wesleywmd\Invent\Model;
 use Wesleywmd\Invent\Api\ComponentInterface;
 use Wesleywmd\Invent\Api\DataInterface;
 use Wesleywmd\Invent\Helper\FileHelper;
-use Wesleywmd\Invent\Model\Cron\PhpRenderer;
 use Wesleywmd\Invent\Model\XmlParser\DomFactory;
 use Wesleywmd\Invent\Model\XmlParser\Location;
 
@@ -36,13 +35,13 @@ class Controller implements ComponentInterface
         $this->createXmlFile($data);
     }
 
-    public function createPhpFile(Controller\Data $data)
+    private function createPhpFile(Controller\Data $data)
     {
         $contents = $this->phpRenderer->getContents($data);
         $this->fileHelper->saveFile($data->getPath(), $contents);
     }
 
-    public function createXmlFile(Controller\Data $data)
+    private function createXmlFile(Controller\Data $data)
     {
         $location = $this->location->getPath($data->getModuleName(), Location::TYPE_ROUTE, Location::AREA_FRONTEND);
         $contents = $this->domFactory->create($location, Location::TYPE_ROUTE)
