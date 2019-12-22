@@ -2,7 +2,6 @@
 namespace Wesleywmd\Invent\Model\Component;
 
 use Wesleywmd\Invent\Api\DataInterface;
-use Wesleywmd\Invent\Api\PhpRendererInterface;
 use Wesleywmd\Invent\Model\PhpParser\PhpBuilder;
 use Wesleywmd\Invent\Model\PhpParser\PrettyPrinter;
 

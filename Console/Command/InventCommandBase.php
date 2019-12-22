@@ -3,6 +3,7 @@ namespace Wesleywmd\Invent\Console\Command;
 
 use Magento\Setup\Console\Style\MagentoStyleInterface;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Wesleywmd\Invent\Api\ComponentInterface;
@@ -67,4 +68,17 @@ abstract class InventCommandBase extends Command
             }
         } while(is_null($io->getInput()->getArgument($argument)));
     }
+
+    protected function verifyModuleName(MagentoStyleInterface $io, $to = 'component')
+    {
+        $question = 'What module do you want to add a '.$to.' to?';
+        $io->askForValidatedArgument('moduleName', $question, null, $this->moduleNameValidator, 3);
+    }
+
+    protected function addModuleNameArgument()
+    {
+        $this->addArgument('moduleName', InputArgument::REQUIRED, 'Module Name');
+        return $this;
+    }
+
 }

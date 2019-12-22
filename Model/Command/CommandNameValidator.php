@@ -1,7 +1,6 @@
 <?php
 namespace Wesleywmd\Invent\Model\Command;
 
-use Magento\Setup\Console\InputValidationException;
 use Wesleywmd\Invent\Console\AbstractValidator;
 
 class CommandNameValidator extends AbstractValidator

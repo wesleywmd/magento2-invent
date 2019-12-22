@@ -167,10 +167,14 @@ class PhpBuilder extends BuilderFactory
     {
         return new \PhpParser\Node\Stmt\If_($cond, $subNodes, $attributes);
     }
-    
+
     public function thisPropertyFetch($name)
     {
         return $this->propertyFetch($this->var('this'), $name);
     }
-    
+
+    public function thisMethodCall($name, $args = [])
+    {
+        return $this->methodCall($this->var('this'), $name, $args);
+    }
 }

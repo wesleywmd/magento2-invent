@@ -34,7 +34,7 @@ class InventBlockCommand extends InventCommandBase
     {
         $this->setName('invent:block')
             ->setDescription('Create Block')
-            ->addArgument('moduleName', InputArgument::REQUIRED, 'Module Name')
+            ->addModuleNameArgument()
             ->addArgument('blockName', InputArgument::REQUIRED, 'Block Name');
     }
 
@@ -42,8 +42,7 @@ class InventBlockCommand extends InventCommandBase
     {
         $io = $this->inventStyleFactory->create(compact('input','output'));
 
-        $question = 'What module do you want to add a block to?';
-        $io->askForValidatedArgument('moduleName', $question, null, $this->moduleNameValidator, 3);
+        $this->verifyModuleName($io, 'block');
 
         $question = 'What is the block\'s name?';
         $errorMessage = 'Specified Block already exists';
