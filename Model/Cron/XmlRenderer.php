@@ -2,38 +2,32 @@
 namespace Wesleywmd\Invent\Model\Cron;
 
 use Wesleywmd\Invent\Api\DataInterface;
+use Wesleywmd\Invent\Api\XmlRendererInterface;
+use Wesleywmd\Invent\Model\Component\AbstractXmlRenderer;
 use Wesleywmd\Invent\Model\XmlParser\Dom;
-use Wesleywmd\Invent\Model\XmlParser\DomFactory;
 use Wesleywmd\Invent\Model\XmlParser\Location;
 
-class XmlRenderer
+class XmlRenderer extends AbstractXmlRenderer implements XmlRendererInterface
 {
-    private $domFactory;
-
-    private $location;
-
-    public function __construct(DomFactory $domFactory, Location $location)
+    protected function getType()
     {
-        $this->domFactory = $domFactory;
-        $this->location = $location;
+        return Location::TYPE_CRONTAB;
     }
 
-    public function getContents($location, DataInterface $data)
+    protected function updateDom(Dom &$dom, DataInterface $data)
     {
-        $dom = $this->domFactory->create($location, Location::TYPE_CRONTAB);
         $groupNodeXpath = $this->addGroupNode($dom, $data);
         $jobNodeXpath = $this->addJobNode($dom, $data, $groupNodeXpath);
         $this->addScheduleNode($dom, $data, $jobNodeXpath);
-        return $dom->print();
     }
 
-    private function addGroupNode(Dom &$dom, Data $data)
+    private function addGroupNode(Dom &$dom, DataInterface $data)
     {
         $dom->updateElement('group', 'id', $data->getGroup());
         return ['group[@id="'.$data->getGroup().'"]'];
     }
 
-    private function addJobNode(Dom &$dom, $data, $groupNodeXpath)
+    private function addJobNode(Dom &$dom, DataInterface $data, $groupNodeXpath)
     {
         $jobNodeXpath = array_merge($groupNodeXpath, ['job[@name="'.$data->getJobName().'"]']);
         $dom->updateElement('job', 'name', $data->getJobName(), null, $groupNodeXpath)
@@ -44,7 +38,7 @@ class XmlRenderer
         return $jobNodeXpath;
     }
 
-    private function addScheduleNode(&$dom, $data, $jobNodeXpath)
+    private function addScheduleNode(Dom &$dom, DataInterface $data, $jobNodeXpath)
     {
         $dom->updateElement('schedule', null, null, $data->getSchedule(), $jobNodeXpath);
         return array_merge($jobNodeXpath, ['schedule']);

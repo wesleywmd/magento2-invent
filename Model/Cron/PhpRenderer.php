@@ -3,36 +3,19 @@ namespace Wesleywmd\Invent\Model\Cron;
 
 use Wesleywmd\Invent\Api\DataInterface;
 use Wesleywmd\Invent\Api\PhpRendererInterface;
+use Wesleywmd\Invent\Model\Component\AbstractPhpRenderer;
 use Wesleywmd\Invent\Model\PhpParser\PhpBuilder;
-use Wesleywmd\Invent\Model\PhpParser\PrettyPrinter;
 
-class PhpRenderer implements PhpRendererInterface
+class PhpRenderer extends AbstractPhpRenderer implements PhpRendererInterface
 {
-    private $phpBuilder;
-
-    private $prettyPrinter;
-
-    public function __construct(PhpBuilder $phpBuilder, PrettyPrinter $prettyPrinter)
+    protected function getUseStatements(DataInterface $data)
     {
-        $this->phpBuilder = $phpBuilder;
-        $this->prettyPrinter = $prettyPrinter;
+        return ['Psr\Log\LoggerInterface'];
     }
 
-    public function getContents(DataInterface $data)
+    protected function getClassStatement(DataInterface $data)
     {
-        return $this->prettyPrinter->print([$this->getBuilderNode($data)]);
-    }
-
-    private function getBuilderNode(Data $data)
-    {
-        return $this->phpBuilder->namespace($data->getNamespace())
-            ->addStmt($this->phpBuilder->use('Psr\\Log\\LoggerInterface'))
-            ->addStmt($this->getClassStatement($data))
-            ->getNode();
-    }
-
-    private function getClassStatement(Data $data)
-    {
+        /** @var Data $data */
         return $this->phpBuilder->class($data->getClassName())
             ->setDocComment('/**
                               * TODO implement '.$data->getCronName().' class body
@@ -42,19 +25,22 @@ class PhpRenderer implements PhpRendererInterface
             ->addStmt($this->getExecuteMethod($data));
     }
 
-    private function getExecuteMethod(Data $data)
+    private function getExecuteMethod(DataInterface $data)
     {
-        $thisVar = $this->phpBuilder->var('this');
-        $loggerFetch = $this->phpBuilder->propertyFetch($thisVar, 'logger');
-        $loggerArgs = [$this->phpBuilder->nodeArg($this->phpBuilder->magicConstant(PhpBuilder::MAGIC_CONST_METHOD))];
+        /** @var Data $data */
         return $this->phpBuilder->method($data->getMethod())
             ->makePublic()
             ->setDocComment('/**
                               * TODO implement '.$data->getMethod().' method
                               */')
             ->addStmts([
-                $this->phpBuilder->methodCall($loggerFetch, 'info', $loggerArgs),
-                $this->phpBuilder->returnStmt($thisVar)
+                $this->phpBuilder->methodCall(
+                    $this->phpBuilder->thisPropertyFetch('logger'),
+                    'info', [
+                        $this->phpBuilder->magicConstant(PhpBuilder::MAGIC_CONST_METHOD)
+                    ]
+                ),
+                $this->phpBuilder->returnStmt($this->phpBuilder->var('this'))
             ]);
     }
 }

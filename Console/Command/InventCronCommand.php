@@ -1,63 +1,66 @@
 <?php
 namespace Wesleywmd\Invent\Console\Command;
 
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Wesleywmd\Invent\Model\Component\CronFactory;
+use Wesleywmd\Invent\Console\InventStyleFactory;
 use Wesleywmd\Invent\Model\Cron;
+use Wesleywmd\Invent\Model\Module\ModuleNameValidator;
 use Wesleywmd\Invent\Model\ModuleNameFactory;
-use Wesleywmd\Invent\Model\ModuleFactory;
 
-class InventCronCommand extends Command
+class InventCronCommand extends InventCommandBase
 {
-    private $cron;
+    protected $successMessage = 'Cron Created Successfully!';
 
     private $cronDataFactory;
 
-    private $moduleNameFactory;
+    private $cronNameValidator;
 
     public function __construct(
-        Cron $cron,
+        Cron $component,
+        ModuleNameFactory $moduleNameFactory,
+        InventStyleFactory $inventStyleFactory,
+        ModuleNameValidator $moduleNameValidator,
         Cron\DataFactory $cronDataFactory,
-        ModuleNameFactory $moduleNameFactory
+        Cron\CronNameValidator $cronNameValidator
     ) {
-        parent::__construct();
-        $this->cron = $cron;
+        parent::__construct($component, $moduleNameFactory, $inventStyleFactory, $moduleNameValidator);
         $this->cronDataFactory = $cronDataFactory;
-        $this->moduleNameFactory = $moduleNameFactory;
+        $this->cronNameValidator = $cronNameValidator;
     }
 
     protected function configure()
     {
-        parent::configure();
         $this->setName('invent:cron')
             ->setDescription('Create Cron Task')
-            ->addArgument('moduleName', InputArgument::REQUIRED, 'Module Name')
+            ->addModuleNameArgument()
             ->addArgument('cronName', InputArgument::REQUIRED, 'Cron Name')
             ->addOption('method', null, InputOption::VALUE_REQUIRED, 'Method Name', 'execute')
             ->addOption('schedule', null, InputOption::VALUE_REQUIRED, 'Cron Schedule', '* * * * *')
             ->addOption('group', null, InputOption::VALUE_REQUIRED, 'Cron Runtime Group', 'default');
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function interact(InputInterface $input, OutputInterface $output)
     {
-        try {
-            $cronData = $this->cronDataFactory->create([
-                'moduleName' => $this->moduleNameFactory->create($input->getArgument('moduleName')),
-                'cronName' => $input->getArgument('cronName'),
-                'method' => $input->getOption('method'),
-                'schedule' => $input->getOption('schedule'),
-                'group' => $input->getOption('group')
-            ]);
-            $this->cron->addToModule($cronData);
-            $output->writeln('Cron Created Successfully!');
-        } catch(\Exception $e) {
-            $output->writeln($e->getMessage());
-            return 1;
-        }
+        $io = $this->inventStyleFactory->create(compact('input', 'output'));
+
+        $this->verifyModuleName($io, 'cron');
+
+        $question = 'What is the Cron\'s name?';
+        $errorMessage = 'Specified Cron already exists';
+        $this->verifyFileNameArgument($io, $this->cronNameValidator, $question, 'cronName', $errorMessage);
     }
 
+    protected function getData(InputInterface $input)
+    {
+        return $this->cronDataFactory->create([
+            'moduleName' => $this->moduleNameFactory->create($input->getArgument('moduleName')),
+            'cronName' => $input->getArgument('cronName'),
+            'method' => $input->getOption('method'),
+            'schedule' => $input->getOption('schedule'),
+            'group' => $input->getOption('group')
+        ]);
+    }
 }

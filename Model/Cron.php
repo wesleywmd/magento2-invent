@@ -4,53 +4,21 @@ namespace Wesleywmd\Invent\Model;
 use Wesleywmd\Invent\Api\ComponentInterface;
 use Wesleywmd\Invent\Api\DataInterface;
 use Wesleywmd\Invent\Helper\FileHelper;
-use Wesleywmd\Invent\Helper\PathHelper;
-use Wesleywmd\Invent\Model\XmlParser\DomFactory;
-use Wesleywmd\Invent\Model\XmlParser\Location;
+use Wesleywmd\Invent\Model\Component\AbstractComponent;
 
-class Cron implements ComponentInterface
+class Cron extends AbstractComponent implements ComponentInterface
 {
-    private $phpRenderer;
-
-    private $fileHelper;
-
-    private $location;
-
-    private $xmlRenderer;
-
     public function __construct(
-        Cron\PhpRenderer $phpRenderer,
         FileHelper $fileHelper,
-        Location $location,
+        Cron\PhpRenderer $phpRenderer, 
         Cron\XmlRenderer $xmlRenderer
     ) {
-        $this->phpRenderer = $phpRenderer;
-        $this->fileHelper = $fileHelper;
-        $this->location = $location;
-        $this->xmlRenderer = $xmlRenderer;
+        parent::__construct($fileHelper, $phpRenderer, $xmlRenderer);
     }
 
     public function addToModule(DataInterface $data)
     {
-        /** @var Cron/Data $data */
-        if (!is_dir($data->getModuleName()->getPath())) {
-            throw new \Exception('Module does not exist');
-        }
-
         $this->createPhpFile($data);
         $this->createXmlFile($data);
-    }
-
-    private function createPhpFile(Cron\Data $data)
-    {
-        $contents = $this->phpRenderer->getContents($data);
-        $this->fileHelper->saveFile($data->getPath(), $contents);
-    }
-
-    private function createXmlFile(Cron\Data $data)
-    {
-        $location = $this->location->getPath($data->getModuleName(), Location::TYPE_CRONTAB, Location::AREA_GLOBAL);
-        $contents = $this->xmlRenderer->getContents($location, $data);
-        $this->fileHelper->saveFile($location, $contents, true);
     }
 }

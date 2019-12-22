@@ -17,16 +17,15 @@ class Data extends AbstractData implements DataInterface
 
     public function __construct(ModuleName $moduleName, $cronName, $method, $schedule, $group)
     {
-        $this->moduleName = $moduleName;
+        $directories = explode('/', $cronName);
+        $className = ucfirst(array_pop($directories));
+        $directories = array_map( function($dir) { return ucfirst($dir); }, $directories);
+        $directories = array_merge(['Cron'], $directories);
+        parent::__construct($moduleName, $className, $directories);
         $this->cronName = $cronName;
         $this->method = $method;
         $this->schedule = $schedule;
         $this->group = $group;
-
-        $this->directories = explode('/', $this->cronName);
-        $this->className = ucfirst(array_pop($this->directories));
-        $this->directories = array_map( function($dir) { return ucfirst($dir); }, $this->directories);
-        $this->directories = array_merge(['Cron'], $this->directories);
     }
 
     public function getCronName()
@@ -48,9 +47,9 @@ class Data extends AbstractData implements DataInterface
     {
         return $this->group;
     }
-    
+
     public function getJobName()
     {
-        return $this->moduleName->getSlug(array_merge($this->directories,[$this->cronName]));
+        return $this->moduleName->getSlug(array_merge($this->directories,[$this->className]));
     }
 }
