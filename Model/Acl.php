@@ -3,60 +3,20 @@ namespace Wesleywmd\Invent\Model;
 
 use Wesleywmd\Invent\Api\ComponentInterface;
 use Wesleywmd\Invent\Api\DataInterface;
-use Wesleywmd\Invent\Helper\AclHelper;
 use Wesleywmd\Invent\Helper\FileHelper;
-use Wesleywmd\Invent\Model\XmlParser\DomFactory;
-use Wesleywmd\Invent\Model\XmlParser\Location;
+use Wesleywmd\Invent\Model\Component\AbstractComponent;
 
-class Acl implements ComponentInterface
+class Acl extends AbstractComponent implements ComponentInterface
 {
-    private $fileHelper;
-
-    private $domFactory;
-
-    private $location;
-
-    private $aclHelper;
-
     public function __construct(
         FileHelper $fileHelper,
-        DomFactory $domFactory,
-        Location $location,
-        AclHelper $aclHelper
+        Acl\XmlRenderer $xmlRenderer
     ) {
-        $this->fileHelper = $fileHelper;
-        $this->domFactory = $domFactory;
-        $this->location = $location;
-        $this->aclHelper = $aclHelper;
+        parent::__construct($fileHelper, null, $xmlRenderer);
     }
 
     public function addToModule(DataInterface $data)
     {
-        /** @var Acl\Data $data */
-        $location = $this->location->getPath($data->getModuleName(), Location::TYPE_ACL, Location::AREA_GLOBAL);
-        $dom = $this->domFactory->create($location, Location::TYPE_ACL)
-            ->updateElement('acl')
-            ->updateElement('resources', null, null, null, ['acl']);
-        $parents = $this->aclHelper->getParents($data->getParentAcl());
-        $prev = null;
-        $xpath = ['acl', 'resources'];
-        foreach ($parents as $parent) {
-            if (!is_null($prev)) {
-                $xpath = array_merge($xpath, ['resource[@id="'.$prev.'"]']);
-            }
-            $dom->updateElement('resource', 'id', $parent, null, $xpath);
-            $prev = $parent;
-        }
-        if (!is_null($prev)) {
-            $xpath = array_merge($xpath, ['resource[@id="'.$prev.'"]']);
-        }
-        $dom->updateElement('resource', 'id', $data->getResource(), null, $xpath)
-            ->updateAttributes([
-                'title' => $data->getTitle(),
-                'translate' => 'title',
-                'sortOrder' => $data->getSortOrder()
-            ], array_merge($xpath, ['resource[@id="'.$data->getResource().'"]']));
-        $contents = $dom->print();
-        $this->fileHelper->saveFile($location, $contents, true);
+        $this->createXmlFile($data);
     }
 }

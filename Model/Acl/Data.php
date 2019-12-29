@@ -2,12 +2,11 @@
 namespace Wesleywmd\Invent\Model\Acl;
 
 use Wesleywmd\Invent\Api\DataInterface;
+use Wesleywmd\Invent\Model\Component\AbstractData;
 use Wesleywmd\Invent\Model\ModuleName;
 
-class Data implements DataInterface
+class Data extends AbstractData implements DataInterface
 {
-    private $moduleName;
-
     private $aclName;
 
     private $parentAcl;
@@ -18,16 +17,11 @@ class Data implements DataInterface
 
     public function __construct(ModuleName $moduleName, $aclName, $parentAcl = null, $title = null, $sortOrder = 10)
     {
-        $this->moduleName = $moduleName;
+        parent::__construct($moduleName, '', []);
         $this->aclName = $aclName;
         $this->parentAcl = $parentAcl;
         $this->title = $title;
         $this->sortOrder = $sortOrder;
-    }
-
-    public function getModuleName()
-    {
-        return $this->moduleName;
     }
 
     public function getAclName()
