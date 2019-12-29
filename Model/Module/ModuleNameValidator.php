@@ -2,7 +2,7 @@
 namespace Wesleywmd\Invent\Model\Module;
 
 use Magento\Setup\Console\InputValidationException;
-use Wesleywmd\Invent\Console\AbstractValidator;
+use Wesleywmd\Invent\Model\Component\AbstractValidator;
 use Wesleywmd\Invent\Model\ModuleNameException;
 use Wesleywmd\Invent\Model\ModuleNameFactory;
 

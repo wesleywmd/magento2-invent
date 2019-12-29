@@ -1,8 +1,7 @@
 <?php
 namespace Wesleywmd\Invent\Model\Acl;
 
-use Magento\Setup\Console\InputValidationException;
-use Wesleywmd\Invent\Console\AbstractValidator;
+use Wesleywmd\Invent\Model\Component\AbstractValidator;
 
 class TitleValidator extends AbstractValidator
 {
