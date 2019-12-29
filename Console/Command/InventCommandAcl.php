@@ -17,7 +17,7 @@ use Wesleywmd\Invent\Model\ModuleNameFactory;
 abstract class InventCommandAcl extends InventCommandBase
 {
     protected $aclHelper;
-    
+
     protected $aclNameValidator;
 
     public function __construct(
@@ -35,25 +35,29 @@ abstract class InventCommandAcl extends InventCommandBase
 
     protected function verifyAclOption(InventStyle $io, $option)
     {
-        if (!$this->aclHelper->findInTree($io->getInput()->getOption($option))) {
-            if (is_null($io->getInput()->getOption($option))) {
-                $io->comment('Looks like you didn\'t specify a '.$option.' resource. Lets find the correct one together');
-            } else {
-                $io->comment('Looks like you picked an invalid '.$option.' resource. Lets find the correct one together');
-                $io->getInput()->setOption($option, null);
+        if ($this->aclHelper->findInTree($io->getInput()->getOption($option))) {
+            $io->comment('Looks like you picked an existing '.$option.' resource. Lets find the correct one together.');
+            $io->getInput()->setOption($option, null);
+        }
+
+        if (is_null($io->getInput()->getOption($option))) {
+            $io->comment('Looks like you didn\'t specify a '.$option.' resource. Lets find the correct one together.');
+        } else {
+            $io->comment('Looks like you picked an invalid '.$option.' resource. Lets find the correct one together.');
+            $io->getInput()->setOption($option, null);
+        }
+
+        $options = $this->aclHelper->getParentOptions('Magento_Backend::admin');
+        $stop = [];
+        while (!empty($options)) {
+            sort($options);
+            $parent = $io->choice('Which resource would you like?', array_merge($stop, $options));
+            if ($parent === 'Stop Here') {
+                break;
             }
-            $options = $this->aclHelper->getParentOptions('Magento_Backend::admin');
-            $stop = [];
-            while (!empty($options)) {
-                sort($options);
-                $parent = $io->choice('Which resource would you like?', array_merge($stop, $options));
-                if ($parent === 'Stop Here') {
-                    break;
-                }
-                $io->getInput()->setOption($option, $parent);
-                $options = $this->aclHelper->getParentOptions($parent);
-                $stop = ['Stop Here'];
-            }
+            $io->getInput()->setOption($option, $parent);
+            $options = $this->aclHelper->getParentOptions($parent);
+            $stop = ['Stop Here'];
         }
     }
 }

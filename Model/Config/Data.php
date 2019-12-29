@@ -2,12 +2,11 @@
 namespace Wesleywmd\Invent\Model\Config;
 
 use Wesleywmd\Invent\Api\DataInterface;
+use Wesleywmd\Invent\Model\Component\AbstractData;
 use Wesleywmd\Invent\Model\ModuleName;
 
-class Data implements DataInterface
+class Data extends AbstractData implements DataInterface
 {
-    private $moduleName;
-
     private $sectionId;
 
     private $groupId;
@@ -87,7 +86,7 @@ class Data implements DataInterface
         $fieldShowInStore = 1,
         $fieldComment = 1
     ) {
-        $this->moduleName = $moduleName;
+        parent::__construct($moduleName, '', []);
         list($this->sectionId, $this->groupId, $this->fieldId) = explode('/', $configName);
         $this->tabId = $tabId;
         $this->tabLabel = $tabLabel;
@@ -112,11 +111,6 @@ class Data implements DataInterface
         $this->fieldShowInWebsite = $fieldShowInWebsite;
         $this->fieldShowInStore = $fieldShowInStore;
         $this->fieldComment = $fieldComment;
-    }
-
-    public function getModuleName()
-    {
-        return $this->moduleName;
     }
 
     public function getSectionId()
