@@ -10,6 +10,8 @@ class Data extends AbstractData implements DataInterface
     private $modelName;
 
     private $columns;
+    
+    private $tableName;
 
     private $noEntityId;
 
@@ -17,17 +19,15 @@ class Data extends AbstractData implements DataInterface
 
     private $noUpdatedAt;
 
-    public function __construct(ModuleName $moduleName, $modelName, $columns, $noEntityId, $noCreatedAt, $noUpdatedAt)
+    public function __construct(ModuleName $moduleName, $modelName, $columns, $tableName, $noEntityId, $noCreatedAt, $noUpdatedAt)
     {
-        $this->moduleName = $moduleName;
+        parent::__construct($moduleName, $modelName, ['Model']);
         $this->modelName = $modelName;
         $this->columns = $columns;
+        $this->tableName = $tableName;
         $this->noEntityId = $noEntityId;
         $this->noCreatedAt = $noCreatedAt;
         $this->noUpdatedAt = $noUpdatedAt;
-        $this->className = $modelName;
-        $this->directories = ['Model'];
-
     }
 
     public function getModelName()
@@ -54,22 +54,25 @@ class Data extends AbstractData implements DataInterface
     {
         return $this->noUpdatedAt;
     }
-
-    public function getModelVarName()
+    
+    public function getVar()
     {
         return strtolower($this->modelName);
     }
-
-    public function getModelIdVarName()
+    
+    public function getIdVar()
     {
-        return $this->getModelVarName().'Id';
+        return $this->getVar().'Id';
     }
-
-    public function getTableName()
+    
+    public function getTable()
     {
+        if (!is_null($this->tableName)) {
+            return $this->tableName;
+        }
         return $this->moduleName->getSlug([$this->modelName]);
     }
-
+    
     public function getInterfaceInstance()
     {
         return $this->moduleName->getNamespace(['Api', 'Data', $this->modelName.'Interface']);
@@ -78,6 +81,16 @@ class Data extends AbstractData implements DataInterface
     public function getRepositoryInterfaceInstance()
     {
         return $this->moduleName->getNamespace(['Api', $this->modelName.'RepositoryInterface']);
+    }
+
+    public function getRepositoryInstance()
+    {
+        return $this->moduleName->getNamespace(['Model', $this->modelName.'Repository']);
+    }
+
+    public function getSearchResultsInterfaceInstance()
+    {
+        return $this->moduleName->getNamespace(['Api', 'Data', $this->modelName.'SearchResultsInterface']);
     }
 
     public function getSearchResultsInterfaceFactoryInstance()
@@ -103,5 +116,35 @@ class Data extends AbstractData implements DataInterface
     public function getInterfaceName()
     {
         return $this->modelName.'Interface';
+    }
+    
+    public function getInterfacePath()
+    {
+        return $this->moduleName->getPath(['Api','Data', $this->modelName.'Interface.php']);
+    }
+    
+    public function getResourceModelPath()
+    {
+        return $this->moduleName->getPath(['Model', 'ResourceModel', $this->modelName.'.php']);
+    }
+    
+    public function getCollectionPath()
+    {
+        return $this->moduleName->getPath(['Model', 'ResourceModel', $this->modelName, 'Collection.php']);
+    }
+
+    public function getSearchResultsInterfacePath()
+    {
+        return $this->moduleName->getPath(['Api', 'Data', $this->modelName.'SearchResultsInterface.php']);
+    }
+
+    public function getRepositoryInterfacePath()
+    {
+        return $this->moduleName->getPath(['Api', $this->modelName.'RepositoryInterface.php']);
+    }
+
+    public function getRepositoryPath()
+    {
+        return $this->moduleName->getPath(['Model', $this->modelName.'Repository.php']);
     }
 }

@@ -4,15 +4,11 @@ namespace Wesleywmd\Invent\Model;
 use Wesleywmd\Invent\Api\ComponentInterface;
 use Wesleywmd\Invent\Api\DataInterface;
 use Wesleywmd\Invent\Helper\FileHelper;
-use Wesleywmd\Invent\Helper\PathHelper;
-use Wesleywmd\Invent\Model\Model\InterfacePhpRenderer;
-use Wesleywmd\Invent\Model\XmlParser\DomFactory;
+use Wesleywmd\Invent\Model\Component\AbstractComponent;
 use Wesleywmd\Invent\Model\XmlParser\Location;
 
-class Model implements ComponentInterface
+class Model extends AbstractComponent implements ComponentInterface
 {
-    private $phpRenderer;
-
     private $interfacePhpRenderer;
 
     private $resourcePhpRenderer;
@@ -29,15 +25,8 @@ class Model implements ComponentInterface
 
     private $preferenceDataFactory;
 
-    private $fileHelper;
-
-    private $pathHelper;
-
-    private $domFactory;
-
-    private $location;
-
     public function __construct(
+        FileHelper $fileHelper,
         Model\PhpRenderer $phpRenderer,
         Model\InterfacePhpRenderer $interfacePhpRenderer,
         Model\ResourcePhpRenderer $resourcePhpRenderer,
@@ -45,14 +34,11 @@ class Model implements ComponentInterface
         Model\SearchResultsInterfacePhpRenderer $searchResultsInterfacePhpRenderer,
         Model\RepositoryInterfacePhpRenderer $repositoryInterfacePhpRenderer,
         Model\RepositoryPhpRenderer $repositoryPhpRenderer,
+        Model\XmlRenderer $xmlRenderer,
         Preference $preference,
-        Preference\DataFactory $preferenceDataFactory,
-        FileHelper $fileHelper,
-        PathHelper $pathHelper,
-        DomFactory $domFactory,
-        Location $location
+        Preference\DataFactory $preferenceDataFactory
     ) {
-        $this->phpRenderer = $phpRenderer;
+        parent::__construct($fileHelper, $phpRenderer, $xmlRenderer);
         $this->interfacePhpRenderer = $interfacePhpRenderer;
         $this->resourcePhpRenderer = $resourcePhpRenderer;
         $this->collectionPhpRenderer = $collectionPhpRenderer;
@@ -61,167 +47,94 @@ class Model implements ComponentInterface
         $this->repositoryPhpRenderer = $repositoryPhpRenderer;
         $this->preference = $preference;
         $this->preferenceDataFactory = $preferenceDataFactory;
-        $this->fileHelper = $fileHelper;
-        $this->pathHelper = $pathHelper;
-        $this->domFactory = $domFactory;
-        $this->location = $location;
     }
 
     public function addToModule(DataInterface $data)
     {
-        if (!$this->pathHelper->fullPathExists($data->getModuleName())) {
-            throw new \Exception('Module does not exist');
-        }
+        /** @var Model\Data $data */
+        $this->createPhpFile($data);
         $this->createInterfacePhpFile($data);
-        $this->createModelPhpFile($data);
-        $this->createModelResourcePhpFile($data);
+        $this->createResourceModelPhpFile($data);
         $this->createCollectionPhpFile($data);
         $this->createSearchResultsInterfacePhpFile($data);
         $this->createRepositoryInterfacePhpFile($data);
         $this->createRepositoryPhpFile($data);
-        $this->createDiXmlFile($data);
-        $this->createSchemaXmlFile($data);
+        $this->createXmlFile($data);
+        $this->createModelPreference($data);
+        $this->createSearchResultsPreference($data);
+        $this->createRepositoryPreference($data);
     }
 
-    private function createInterfacePhpFile(Model\Data $data)
+    private function createInterfacePhpFile(DataInterface $data)
     {
-        $location = $this->pathHelper->fullPath($data->getModuleName(), ['Api','Data', $data->getModelName().'Interface.php']);
+        /** @var Model\Data $data */
         $contents = $this->interfacePhpRenderer->getContents($data);
-        $this->fileHelper->saveFile($location, $contents);
+        $this->fileHelper->saveFile($data->getInterfacePath(), $contents);
     }
 
-    private function createModelPhpFile(Model\Data $data)
+    private function createResourceModelPhpFile(DataInterface $data)
     {
-        $contents = $this->phpRenderer->getContents($data);
-        $this->fileHelper->saveFile($data->getPath(), $contents);
-    }
-
-    private function createModelResourcePhpFile(Model\Data $data)
-    {
-        $location = $this->pathHelper->fullPath($data->getModuleName(), ['Model', 'ResourceModel', $data->getModelName().'.php']);
+        /** @var Model\Data $data */
         $contents = $this->resourcePhpRenderer->getContents($data);
-        $this->fileHelper->saveFile($location, $contents);
+        $this->fileHelper->saveFile($data->getResourceModelPath(), $contents);
     }
 
-    private function createCollectionPhpFile(Model\Data $data)
+    private function createCollectionPhpFile(DataInterface $data)
     {
-        $location = $this->pathHelper->fullPath($data->getModuleName(), ['Model', 'ResourceModel', $data->getModelName(), 'Collection.php']);
+        /** @var Model\Data $data */
         $contents = $this->collectionPhpRenderer->getContents($data);
-        $this->fileHelper->saveFile($location, $contents);
+        $this->fileHelper->saveFile($data->getCollectionPath(), $contents);
     }
 
-    private function createSearchResultsInterfacePhpFile(Model\Data $data)
+    private function createSearchResultsInterfacePhpFile(DataInterface $data)
     {
-        $location = $this->pathHelper->fullPath($data->getModuleName(), ['Api', 'Data', $data->getModelName().'SearchResultsInterface.php']);
+        /** @var Model\Data $data */
         $contents = $this->searchResultsInterfacePhpRenderer->getContents($data);
-        $this->fileHelper->saveFile($location, $contents);
+        $this->fileHelper->saveFile($data->getSearchResultsInterfacePath(), $contents);
     }
 
-    private function createRepositoryInterfacePhpFile(Model\Data $data)
+    private function createRepositoryInterfacePhpFile(DataInterface $data)
     {
-        $location = $this->pathHelper->fullPath($data->getModuleName(), ['Api', $data->getModelName().'RepositoryInterface.php']);
+        /** @var Model\Data $data */
         $contents = $this->repositoryInterfacePhpRenderer->getContents($data);
-        $this->fileHelper->saveFile($location, $contents);
+        $this->fileHelper->saveFile($data->getRepositoryInterfacePath(), $contents);
     }
 
-    private function createRepositoryPhpFile(Model\Data $data)
+    private function createRepositoryPhpFile(DataInterface $data)
     {
-        $location = $this->pathHelper->fullPath($data->getModuleName(), ['Model', $data->getModelName().'Repository.php']);
+        /** @var Model\Data $data */
         $contents = $this->repositoryPhpRenderer->getContents($data);
-        $contents = str_replace('$this->resource->save($'.$data->getModelVarName().')', '$this->resource->save($'.$data->getModelVarName().');', $contents);
-        $contents = str_replace('$this->resource->delete($'.$data->getModelVarName().')', '$this->resource->delete($'.$data->getModelVarName().');', $contents);
-        $this->fileHelper->saveFile($location, $contents);
+        $contents = str_replace('$this->resource->save($'.$data->getVar().')', '$this->resource->save($'.$data->getVar().');', $contents);
+        $contents = str_replace('$this->resource->delete($'.$data->getVar().')', '$this->resource->delete($'.$data->getVar().');', $contents);
+        $this->fileHelper->saveFile($data->getRepositoryPath(), $contents);
     }
 
-    private function createDiXmlFile(Model\Data $data)
+    private function createPreference(ModuleName $moduleName, $for, $type)
     {
-        $modelPreferenceData = $this->preferenceDataFactory->create([
-            'moduleName' => $data->getModuleName(),
-            'for' => $data->getModuleName()->getNamespace(['Api','Data',$data->getModelName().'Interface']),
-            'type' => $data->getModuleName()->getNamespace(['Model',$data->getModelName()]),
+        $preferenceData = $this->preferenceDataFactory->create([
+            'moduleName' => $moduleName,
+            'for' => $for,
+            'type' => $type,
             'area' => Location::AREA_GLOBAL
         ]);
-        $this->preference->addToModule($modelPreferenceData);
-
-        $searchResultsPreferenceData = $this->preferenceDataFactory->create([
-            'moduleName' => $data->getModuleName(),
-            'for' => $data->getModuleName()->getNamespace(['Api','Data',$data->getModelName().'SearchResultsInterface']),
-            'type' => 'Magento\Framework\Api\SearchResults',
-            'area' => Location::AREA_GLOBAL
-        ]);
-        $this->preference->addToModule($searchResultsPreferenceData);
-
-        $repositoryPreferenceData = $this->preferenceDataFactory->create([
-            'moduleName' => $data->getModuleName(),
-            'for' => $data->getModuleName()->getNamespace(['Api',$data->getModelName().'RepositoryInterface']),
-            'type' => $data->getModuleName()->getNamespace(['Model',$data->getModelName().'Repository']),
-            'area' => Location::AREA_GLOBAL
-        ]);
-        $this->preference->addToModule($repositoryPreferenceData);
+        $this->preference->addToModule($preferenceData);
     }
 
-    private function createSchemaXmlFile(Model\Data $data)
+    private function createModelPreference(DataInterface $data)
     {
-        $location = $this->location->getPath($data->getModuleName(), Location::TYPE_DB_SCHEMA, Location::AREA_GLOBAL);
-        $dom = $this->domFactory->create($location, Location::TYPE_DB_SCHEMA)
-            ->updateElement('table', 'name', $data->getTableName())
-            ->updateAttributes([
-                'resource' => 'default',
-                'engine' => 'innodb',
-                'comment' => str_replace('\\', ' ', $data->getModuleName()->getNamespace([$data->getModelName()]))
-            ], ['table[@name="'.$data->getTableName().'"]']);
+        /** @var Model\Data $data */
+        $this->createPreference($data->getModuleName(), $data->getInterfaceInstance(), $data->getInstance());
+    }
 
-        if (!$data->getNoEntityId()) {
-            $dom->updateElement('column', 'name', 'entity_id', null, ['table[@name="'.$data->getTableName().'"]'])
-                ->updateAttributes([
-                    'xsi:type' => 'smallint',
-                    'padding' => '6',
-                    'unsigned' => 'false',
-                    'nullable' => 'false',
-                    'identity' => 'true',
-                    'comment' => 'Entity ID'
-                ], ['table[@name="'.$data->getTableName().'"]', 'column[@name="entity_id"]']);
-        }
+    private function createSearchResultsPreference(DataInterface $data)
+    {
+        /** @var Model\Data $data */
+        $this->createPreference($data->getModuleName(), $data->getSearchResultsInterfaceInstance(), 'Magento\Framework\Api\SearchResults');
+    }
 
-        foreach ($data->getColumns() as $column) {
-            $dom->updateElement('column', 'name', $column, null, ['table[@name="'.$data->getTableName().'"]'])
-                ->updateAttributes([
-                    'xsi:type' => 'varchar',
-                    'length' => '32',
-                    'nullable' => 'false',
-                    'comment' => implode(' ', array_map( function($piece) { return ucfirst($piece); }, explode('_', $column))),
-                ], ['table[@name="'.$data->getTableName().'"]', 'column[@name="'.$column.'"]']);
-        }
-
-        if (!$data->getNoCreatedAt()) {
-            $dom->updateElement('column', 'name', 'created_at', null, ['table[@name="'.$data->getTableName().'"]'])
-                ->updateAttributes([
-                    'xsi:type' => 'timestamp',
-                    'on_update' => 'false',
-                    'nullable' => 'false',
-                    'default' => 'CURRENT_TIMESTAMP',
-                    'comment' => 'Created At'
-                ], ['table[@name="'.$data->getTableName().'"]', 'column[@name="created_at"]']);
-        }
-
-        if (!$data->getNoUpdatedAt()) {
-            $dom->updateElement('column', 'name', 'updated_at', null, ['table[@name="'.$data->getTableName().'"]'])
-                ->updateAttributes([
-                    'xsi:type' => 'timestamp',
-                    'on_update' => 'true',
-                    'nullable' => 'false',
-                    'default' => 'CURRENT_TIMESTAMP',
-                    'comment' => 'Updated At'
-                ], ['table[@name="'.$data->getTableName().'"]', 'column[@name="updated_at"]']);
-        }
-
-        if (!$data->getNoEntityId()) {
-            $dom->updateElement('constraint', 'referenceId', 'PRIMARY', null, ['table[@name="' . $data->getTableName() . '"]'])
-                ->updateAttribute('xsi:type', 'primary', ['table[@name="' . $data->getTableName() . '"]', 'constraint[@referenceId="PRIMARY"]'])
-                ->updateElement('column', 'name', 'entity_id', null, ['table[@name="' . $data->getTableName() . '"]', 'constraint[@referenceId="PRIMARY"]']);
-        }
-        
-        $contents = $dom->print();
-        $this->fileHelper->saveFile($location, $contents, true);
+    private function createRepositoryPreference(DataInterface $data)
+    {
+        /** @var Model\Data $data */
+        $this->createPreference($data->getModuleName(), $data->getRepositoryInterfaceInstance(), $data->getRepositoryInstance());
     }
 }

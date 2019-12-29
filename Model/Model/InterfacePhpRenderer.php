@@ -4,8 +4,6 @@ namespace Wesleywmd\Invent\Model\Model;
 use Wesleywmd\Invent\Api\DataInterface;
 use Wesleywmd\Invent\Api\PhpRendererInterface;
 use Wesleywmd\Invent\Model\Component\AbstractPhpRenderer;
-use Wesleywmd\Invent\Model\PhpParser\PhpBuilder;
-use Wesleywmd\Invent\Model\PhpParser\PrettyPrinter;
 
 class InterfacePhpRenderer extends AbstractPhpRenderer implements PhpRendererInterface
 {
@@ -19,7 +17,7 @@ class InterfacePhpRenderer extends AbstractPhpRenderer implements PhpRendererInt
     {
         /** @var Data $data */
         $interface = $this->phpBuilder->interface($data->getInterfaceName())
-            ->addStmt($this->phpBuilder->const('DB_MAIN_TABLE', $data->getTableName()));
+            ->addStmt($this->phpBuilder->const('DB_MAIN_TABLE', $data->getTable()));
         if (!$data->getNoEntityId()) {
             $interface->addStmt($this->phpBuilder->const('ENTITY_ID', 'entity_id'))
                 ->addStmt($this->phpBuilder->methodGetter('entity_id'))

@@ -4,8 +4,6 @@ namespace Wesleywmd\Invent\Model\Model;
 use Wesleywmd\Invent\Api\DataInterface;
 use Wesleywmd\Invent\Api\PhpRendererInterface;
 use Wesleywmd\Invent\Model\Component\AbstractPhpRenderer;
-use Wesleywmd\Invent\Model\PhpParser\PhpBuilder;
-use Wesleywmd\Invent\Model\PhpParser\PrettyPrinter;
 
 class SearchResultsInterfacePhpRenderer extends AbstractPhpRenderer implements PhpRendererInterface
 {

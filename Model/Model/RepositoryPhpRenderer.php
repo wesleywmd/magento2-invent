@@ -1,13 +1,9 @@
 <?php
 namespace Wesleywmd\Invent\Model\Model;
 
-use PhpParser\Node\Expr\BooleanNot;
-use PhpParser\Node\Stmt\If_;
 use Wesleywmd\Invent\Api\DataInterface;
 use Wesleywmd\Invent\Api\PhpRendererInterface;
 use Wesleywmd\Invent\Model\Component\AbstractPhpRenderer;
-use Wesleywmd\Invent\Model\PhpParser\PhpBuilder;
-use Wesleywmd\Invent\Model\PhpParser\PrettyPrinter;
 
 class RepositoryPhpRenderer extends AbstractPhpRenderer implements PhpRendererInterface
 {
@@ -43,8 +39,8 @@ class RepositoryPhpRenderer extends AbstractPhpRenderer implements PhpRendererIn
         return $this->phpBuilder->class($data->getModelName().'Repository')
             ->implement($data->getModelName().'RepositoryInterface')
             ->addStmt($this->phpBuilder->property('resource')->makePrivate())
-            ->addStmt($this->phpBuilder->property($data->getModelVarName().'Factory')->makePrivate())
-            ->addStmt($this->phpBuilder->property($data->getModelVarName().'CollectionFactory')->makePrivate())
+            ->addStmt($this->phpBuilder->property($data->getVar().'Factory')->makePrivate())
+            ->addStmt($this->phpBuilder->property($data->getVar().'CollectionFactory')->makePrivate())
             ->addStmt($this->phpBuilder->property('collectionProcessor')->makePrivate())
             ->addStmt($this->phpBuilder->property('searchResultsFactory')->makePrivate())
             ->addStmt($this->phpBuilder->property('searchCriteriaFactory')->makePrivate())
@@ -52,8 +48,8 @@ class RepositoryPhpRenderer extends AbstractPhpRenderer implements PhpRendererIn
             ->addStmt($this->phpBuilder->property('filterGroupFactory')->makePrivate())
             ->addStmt($this->phpBuilder->constructor([
                 'resource' => $data->getResourceModelName(),
-                $data->getModelVarName().'Factory' => $data->getModelName().'Factory',
-                $data->getModelVarName().'CollectionFactory' => 'CollectionFactory',
+                $data->getVar().'Factory' => $data->getModelName().'Factory',
+                $data->getVar().'CollectionFactory' => 'CollectionFactory',
                 'collectionProcessor' => 'CollectionProcessorInterface',
                 'searchResultsFactory' => $data->getModelName().'SearchResultsInterfaceFactory',
                 'searchCriteriaFactory' => 'SearchCriteriaFactory',
@@ -69,7 +65,7 @@ class RepositoryPhpRenderer extends AbstractPhpRenderer implements PhpRendererIn
 
     private function getSaveMethodStatement(Data $data)
     {
-        $modelVar = $this->phpBuilder->var($data->getModelVarName());
+        $modelVar = $this->phpBuilder->var($data->getVar());
         $exceptionVar = $this->phpBuilder->var('exception');
         $throwNewStmt = $this->phpBuilder->throwNew('CouldNotSaveException', [
             $this->getTranslateFuncCall('Could not save the '.$data->getModelName().': %1', [
@@ -79,7 +75,7 @@ class RepositoryPhpRenderer extends AbstractPhpRenderer implements PhpRendererIn
         ]);
         return $this->phpBuilder->method('save')
             ->makePublic()
-            ->addParam($this->phpBuilder->param($data->getModelVarName())->setType($data->getInterfaceName()))
+            ->addParam($this->phpBuilder->param($data->getVar())->setType($data->getInterfaceName()))
             ->addStmt($this->phpBuilder->tryCatch([
                 $this->phpBuilder->methodCall($this->getThisFetch('resource'), 'save', [
                     $this->phpBuilder->nodeArg($modelVar)
@@ -92,17 +88,17 @@ class RepositoryPhpRenderer extends AbstractPhpRenderer implements PhpRendererIn
 
     private function getGetByIdMethodStatement(Data $data)
     {
-        $modelVar = $this->phpBuilder->var($data->getModelVarName());
-        $modelIdVar = $this->phpBuilder->var($data->getModelIdVarName());
+        $modelVar = $this->phpBuilder->var($data->getVar());
+        $modelIdVar = $this->phpBuilder->var($data->getIdVar());
         $exceptionVar = $this->phpBuilder->var('exception');
-        $createMethodCall = $this->phpBuilder->methodCall($this->getThisFetch( $data->getModelVarName().'Factory'), 'create');
+        $createMethodCall = $this->phpBuilder->methodCall($this->getThisFetch( $data->getVar().'Factory'), 'create');
         $throwNewStmt = $this->phpBuilder->throwNew('NoSuchEntityException', [
             $this->getTranslateFuncCall($data->getModelName().' with id "%1" does not exist.', [$modelIdVar])
         ]);
         $booleanNot = $this->phpBuilder->booleanNot($this->phpBuilder->methodCall($modelVar, 'getId'));
         return $this->phpBuilder->method('getById')
             ->makePublic()
-            ->addParam($this->phpBuilder->param($data->getModelIdVarName()))
+            ->addParam($this->phpBuilder->param($data->getIdVar()))
             ->addStmt($this->phpBuilder->assign($modelVar, $createMethodCall))
             ->addStmt($this->phpBuilder->methodCall($this->getThisFetch('resource'), 'load', [$modelVar, $modelIdVar]))
             ->addStmt($this->phpBuilder->if($booleanNot, ['stmts' => [$throwNewStmt]]))
@@ -118,7 +114,7 @@ class RepositoryPhpRenderer extends AbstractPhpRenderer implements PhpRendererIn
             ->makePublic()
             ->addParam($this->phpBuilder->param('searchCriteria')->setType('SearchCriteriaInterface'))
             ->addStmt($this->phpBuilder->assign($collectionVar,
-                $this->phpBuilder->methodCall($this->getThisFetch($data->getModelVarName().'CollectionFactory'), 'create')
+                $this->phpBuilder->methodCall($this->getThisFetch($data->getVar().'CollectionFactory'), 'create')
             ))
             ->addStmt($this->phpBuilder->methodCall(
                 $this->getThisFetch('collectionProcessor'), 'process', [$searchCriteriaVar, $collectionVar])
@@ -145,10 +141,10 @@ class RepositoryPhpRenderer extends AbstractPhpRenderer implements PhpRendererIn
         ]);
         return $this->phpBuilder->method('delete')
             ->makePublic()
-            ->addParam($this->phpBuilder->param($data->getModelVarName())->setType($data->getModelName() . 'Interface'))
+            ->addParam($this->phpBuilder->param($data->getVar())->setType($data->getModelName() . 'Interface'))
             ->addStmt($this->phpBuilder->tryCatch([
                 $this->phpBuilder->methodCall($this->getThisFetch('resource'), 'delete', [
-                    $this->phpBuilder->nodeArg($this->phpBuilder->var($data->getModelVarName()))
+                    $this->phpBuilder->nodeArg($this->phpBuilder->var($data->getVar()))
                 ])
             ], [
                 $this->phpBuilder->catch('\Exception', 'exception', [$throwNewStmt])
@@ -160,10 +156,10 @@ class RepositoryPhpRenderer extends AbstractPhpRenderer implements PhpRendererIn
     {
         return $this->phpBuilder->method('deleteById')
             ->makePublic()
-            ->addParam($this->phpBuilder->param($data->getModelIdVarName()))
+            ->addParam($this->phpBuilder->param($data->getIdVar()))
             ->addStmt($this->phpBuilder->returnStmt($this->phpBuilder->methodCall($this->phpBuilder->var('this'), 'delete', [
                 $this->phpBuilder->methodCall($this->phpBuilder->var('this'), 'getById', [
-                    $this->phpBuilder->var($data->getModelIdVarName())
+                    $this->phpBuilder->var($data->getIdVar())
                 ])
             ])));
     }

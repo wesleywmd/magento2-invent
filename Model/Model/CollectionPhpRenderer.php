@@ -4,8 +4,6 @@ namespace Wesleywmd\Invent\Model\Model;
 use Wesleywmd\Invent\Api\DataInterface;
 use Wesleywmd\Invent\Api\PhpRendererInterface;
 use Wesleywmd\Invent\Model\Component\AbstractPhpRenderer;
-use Wesleywmd\Invent\Model\PhpParser\PhpBuilder;
-use Wesleywmd\Invent\Model\PhpParser\PrettyPrinter;
 
 class CollectionPhpRenderer extends AbstractPhpRenderer implements PhpRendererInterface
 {
@@ -38,7 +36,7 @@ class CollectionPhpRenderer extends AbstractPhpRenderer implements PhpRendererIn
                 ->setDefault($data->getModuleName()->getSlug([$data->getModelName(), 'collection']))
             )
             ->addStmt($this->phpBuilder->property('_eventObject')->makeProtected()
-                ->setDefault($data->getModelVarName().'_collection')
+                ->setDefault($data->getVar().'_collection')
             )
             ->addStmt($this->phpBuilder->method('_construct')->makeProtected()
                 ->addStmt($this->phpBuilder->methodCall($this->phpBuilder->var('this'), '_init', [

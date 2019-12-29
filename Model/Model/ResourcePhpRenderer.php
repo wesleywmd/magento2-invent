@@ -4,8 +4,6 @@ namespace Wesleywmd\Invent\Model\Model;
 use Wesleywmd\Invent\Api\DataInterface;
 use Wesleywmd\Invent\Api\PhpRendererInterface;
 use Wesleywmd\Invent\Model\Component\AbstractPhpRenderer;
-use Wesleywmd\Invent\Model\PhpParser\PhpBuilder;
-use Wesleywmd\Invent\Model\PhpParser\PrettyPrinter;
 
 class ResourcePhpRenderer extends AbstractPhpRenderer implements PhpRendererInterface
 {
@@ -24,7 +22,7 @@ class ResourcePhpRenderer extends AbstractPhpRenderer implements PhpRendererInte
         ];
     }
 
-    protected function getClassStatement(Data $data)
+    protected function getClassStatement(DataInterface $data)
     {
         $class = $this->phpBuilder->class($data->getClassName())
             ->extend('AbstractDb')

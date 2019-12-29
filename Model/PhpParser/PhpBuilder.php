@@ -132,7 +132,7 @@ class PhpBuilder extends BuilderFactory
             ->addParam($this->param(lcfirst($methodName)))
             ->addStmt($this->methodCall($this->var('this'),'setData', [
                 $this->classConstFetch($interface, $constName),
-                $this->param(lcfirst($methodName))
+                $this->var(lcfirst($methodName))
             ]))
             ->addStmt($this->returnStmt($this->var('this')));
     }
