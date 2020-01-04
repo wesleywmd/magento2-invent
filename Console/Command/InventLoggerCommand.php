@@ -5,6 +5,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Wesleywmd\Invent\Api\ComponentInterface;
 use Wesleywmd\Invent\Console\InventStyleFactory;
 use Wesleywmd\Invent\Model\Logger;
 use Wesleywmd\Invent\Model\Module\ModuleNameValidator;
@@ -19,7 +20,7 @@ class InventLoggerCommand extends InventCommandBase
     private $loggerNameValidator;
 
     public function __construct(
-        Logger $component,
+        ComponentInterface $component,
         ModuleNameFactory $moduleNameFactory,
         InventStyleFactory $inventStyleFactory,
         ModuleNameValidator $moduleNameValidator,

@@ -15,7 +15,7 @@ class Data extends AbstractData implements DataInterface
 
     private $group;
 
-    public function __construct(ModuleName $moduleName, $cronName, $method, $schedule, $group)
+    public function __construct(ModuleName $moduleName, $cronName, $method = 'execute', $schedule = '* * * * *', $group = 'default')
     {
         $directories = explode('/', $cronName);
         $className = ucfirst(array_pop($directories));

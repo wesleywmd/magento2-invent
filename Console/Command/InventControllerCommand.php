@@ -5,6 +5,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Wesleywmd\Invent\Api\ComponentInterface;
 use Wesleywmd\Invent\Console\InventStyleFactory;
 use Wesleywmd\Invent\Model\Controller;
 use Wesleywmd\Invent\Model\Module\ModuleNameValidator;
@@ -21,7 +22,7 @@ class InventControllerCommand extends InventCommandBase
     private $routerValidator;
 
     public function __construct(
-        Controller $component,
+        ComponentInterface $component,
         ModuleNameFactory $moduleNameFactory,
         InventStyleFactory $inventStyleFactory,
         ModuleNameValidator $moduleNameValidator,

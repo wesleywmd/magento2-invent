@@ -24,7 +24,7 @@ abstract class AbstractXmlRenderer
 
     public function getPath(DataInterface $data)
     {
-        return $this->location->getPath($data->getModuleName(), $this->getType(), $this->getArea());
+        return $this->location->getPath($data->getModuleName(), $this->getType(), $this->getArea($data));
     }
 
     public function getContents(DataInterface $data)
@@ -34,7 +34,7 @@ abstract class AbstractXmlRenderer
         return $dom->print();
     }
 
-    protected function getArea()
+    protected function getArea(DataInterface $data)
     {
         return Location::AREA_GLOBAL;
     }

@@ -19,8 +19,15 @@ class Data extends AbstractData implements DataInterface
 
     private $noUpdatedAt;
 
-    public function __construct(ModuleName $moduleName, $modelName, $columns, $tableName, $noEntityId, $noCreatedAt, $noUpdatedAt)
-    {
+    public function __construct(
+        ModuleName $moduleName, 
+        $modelName, 
+        $columns = [], 
+        $tableName = null, 
+        $noEntityId = false, 
+        $noCreatedAt = false, 
+        $noUpdatedAt = false
+    ) {
         parent::__construct($moduleName, $modelName, ['Model']);
         $this->modelName = $modelName;
         $this->columns = $columns;

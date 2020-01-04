@@ -5,6 +5,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Wesleywmd\Invent\Api\ComponentInterface;
 use Wesleywmd\Invent\Console\InventStyleFactory;
 use Wesleywmd\Invent\Helper\AclHelper;
 use Wesleywmd\Invent\Model\Acl;
@@ -23,7 +24,7 @@ class InventAclCommand extends InventCommandAcl
     private $sortOrderValidator;
 
     public function __construct(
-        Acl $component,
+        ComponentInterface $component,
         ModuleNameFactory $moduleNameFactory,
         InventStyleFactory $inventStyleFactory,
         ModuleNameValidator $moduleNameValidator,

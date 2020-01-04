@@ -17,6 +17,11 @@ abstract class AbstractPhpRenderer
         $this->prettyPrinter = $prettyPrinter;
     }
 
+    public function getPath(DataInterface $data)
+    {
+        return $data->getPath();
+    }
+
     public function getContents(DataInterface $data)
     {
         return $this->prettyPrinter->print([$this->getBuilderNode($data)]);
@@ -45,6 +50,6 @@ abstract class AbstractPhpRenderer
     {
         return [];
     }
-    
+
     abstract protected function getClassStatement(DataInterface $data);
 }

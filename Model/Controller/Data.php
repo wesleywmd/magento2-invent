@@ -13,7 +13,7 @@ class Data extends AbstractData implements DataInterface
 
     private $frontName;
 
-    public function __construct(ModuleName $moduleName, $controllerUrl, $router)
+    public function __construct(ModuleName $moduleName, $controllerUrl, $router = 'standard')
     {
         $directories = array_reverse(explode('/', $controllerUrl));
         $this->frontName = array_pop($directories);

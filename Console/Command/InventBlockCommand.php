@@ -4,6 +4,7 @@ namespace Wesleywmd\Invent\Console\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Wesleywmd\Invent\Api\ComponentInterface;
 use Wesleywmd\Invent\Console\InventStyleFactory;
 use Wesleywmd\Invent\Model\Block;
 use Wesleywmd\Invent\Model\Module\ModuleNameValidator;
@@ -18,7 +19,7 @@ class InventBlockCommand extends InventCommandBase
     private $blockNameValidator;
     
     public function __construct(
-        Block $component, 
+        ComponentInterface $component, 
         ModuleNameFactory $moduleNameFactory, 
         InventStyleFactory $inventStyleFactory, 
         ModuleNameValidator $moduleNameValidator,

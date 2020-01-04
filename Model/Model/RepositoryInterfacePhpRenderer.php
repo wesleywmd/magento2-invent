@@ -7,6 +7,12 @@ use Wesleywmd\Invent\Model\Component\AbstractPhpRenderer;
 
 class RepositoryInterfacePhpRenderer extends AbstractPhpRenderer implements PhpRendererInterface
 {
+    public function getPath(DataInterface $data)
+    {
+        /** @var Data $data */
+        return $data->getRepositoryInterfacePath();
+    }
+    
     protected function getNamespace(DataInterface $data)
     {
         /** @var Data $data */

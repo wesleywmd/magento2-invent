@@ -7,6 +7,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Wesleywmd\Invent\Api\ComponentInterface;
+use Wesleywmd\Invent\Api\DataInterface;
 use Wesleywmd\Invent\Console\InventStyle;
 use Wesleywmd\Invent\Console\InventStyleFactory;
 use Wesleywmd\Invent\Model\Module\ModuleNameValidator;
@@ -48,8 +49,10 @@ abstract class InventCommandBase extends Command
     {
         $io = $this->inventStyleFactory->create(compact('input', 'output'));
         try {
+            $this->beforeAddToModule($io, $this->getData($input));
             $this->component->addToModule($this->getData($input));
             $io->success($this->successMessage);
+            $this->afterAddToModule($io, $this->getData($input));
         } catch (\Exception $e) {
             $io->error($e->getMessage());
             return 1;
@@ -79,6 +82,16 @@ abstract class InventCommandBase extends Command
     {
         $this->addArgument('moduleName', InputArgument::REQUIRED, 'Module Name');
         return $this;
+    }
+
+    protected function beforeAddToModule(InventStyle $io, DataInterface $data)
+    {
+
+    }
+
+    protected function afterAddToModule(InventStyle $io, DataInterface $data)
+    {
+
     }
 
 }

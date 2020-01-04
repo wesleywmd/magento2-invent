@@ -8,23 +8,31 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Wesleywmd\Invent\Api\ComponentInterface;
+use Wesleywmd\Invent\Api\DataInterface;
+use Wesleywmd\Invent\Console\InventStyle;
 use Wesleywmd\Invent\Console\InventStyleFactory;
 use Wesleywmd\Invent\Helper\AclHelper;
+use Wesleywmd\Invent\Model\Acl;
 use Wesleywmd\Invent\Model\Acl\AclNameValidator;
 use Wesleywmd\Invent\Model\Config;
+use Wesleywmd\Invent\Model\Config\Data;
 use Wesleywmd\Invent\Model\Module\ModuleNameValidator;
 use Wesleywmd\Invent\Model\ModuleNameFactory;
 
 class InventConfigCommand extends InventCommandAcl
 {
     private $configDataFactory;
-    
+
     private $tabIdValidator;
-    
+
     private $tabLabelValidator;
+    
+    private $acl;
+    
+    private $aclDataFactory;
 
     public function __construct(
-        Config $component,
+        ComponentInterface $component,
         ModuleNameFactory $moduleNameFactory,
         InventStyleFactory $inventStyleFactory,
         ModuleNameValidator $moduleNameValidator,
@@ -32,12 +40,16 @@ class InventConfigCommand extends InventCommandAcl
         AclNameValidator $aclNameValidator,
         Config\DataFactory $configDataFactory,
         Config\TabIdValidator $tabIdValidator,
-        Config\TabLabelValidator $tabLabelValidator
+        Config\TabLabelValidator $tabLabelValidator,
+        ComponentInterface $acl,
+        Acl\DataFactory $aclDataFactory
     ) {
         parent::__construct($component, $moduleNameFactory, $inventStyleFactory, $moduleNameValidator, $aclHelper, $aclNameValidator);
         $this->configDataFactory = $configDataFactory;
         $this->tabIdValidator = $tabIdValidator;
         $this->tabLabelValidator = $tabLabelValidator;
+        $this->acl = $acl;
+        $this->aclDataFactory = $aclDataFactory;
     }
 
     protected function configure()
@@ -76,7 +88,7 @@ class InventConfigCommand extends InventCommandAcl
         $io = $this->inventStyleFactory->create(compact('input', 'output'));
 
         $this->verifyModuleName($io, 'config');
-        
+
         if (!is_null($input->getOption('tabLabel'))) {
             $question = 'What is the Tab\'s label?';
             $io->askForValidatedOption('tabLabel', $question, null, $this->tabLabelValidator, 3);
@@ -124,5 +136,23 @@ class InventConfigCommand extends InventCommandAcl
             'fieldShowInStore' => $input->getOption('fieldShowInStore'),
             'fieldComment' => $input->getOption('fieldComment')
         ]);
+    }
+
+    protected function afterAddToModule(InventStyle $io, DataInterface $data)
+    {
+        if (is_null($data->getSectionLabel())) {
+            return;
+        }
+
+        /** @var Acl\Data $data */
+        $aclName = explode('::', $data->getSectionResource());
+        $aclData = $this->aclDataFactory->create([
+            'moduleName' => $data->getModuleName(),
+            'aclName' => $aclName[1],
+            'parentAcl' => 'Magento_Config::config',
+            'title' => $data->getSectionLabel(),
+            'sortOrder' => $data->getSectionSortOrder()
+        ]);
+        $this->acl->addToModule($aclData);
     }
 }

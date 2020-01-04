@@ -9,6 +9,7 @@ class Location
     const AREA_GLOBAL = 'global';
     const AREA_FRONTEND = 'frontend';
     const AREA_ADMINHTML = 'adminhtml';
+    const AREA_VIEW = 'view';
 
     const TYPE_MODULE = 'module';
     const TYPE_DI = 'di';
@@ -18,11 +19,13 @@ class Location
     const TYPE_ACL = 'acl';
     const TYPE_MENU = 'menu';
     const TYPE_SYSTEM = 'system';
+    const TYPE_LAYOUT = 'layout';
 
     private $validAreas = [
         self::AREA_FRONTEND,
         self::AREA_ADMINHTML,
-        self::AREA_GLOBAL
+        self::AREA_GLOBAL,
+        self::AREA_VIEW
     ];
 
     private $validTypes = [
@@ -33,7 +36,8 @@ class Location
         self::TYPE_DB_SCHEMA,
         self::TYPE_ACL,
         self::TYPE_MENU,
-        self::TYPE_SYSTEM
+        self::TYPE_SYSTEM,
+        self::TYPE_LAYOUT
     ];
 
     public function getPath(ModuleName $moduleName, $type, $area)

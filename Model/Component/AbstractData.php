@@ -31,7 +31,7 @@ abstract class AbstractData
 
     public function getInstance()
     {
-        return $this->moduleName->getNamespace(array_merge($this->directories,[$this->className]));
+        return $this->moduleName->getNamespace(array_merge($this->directories, [$this->className]));
     }
 
     public function getModuleName()

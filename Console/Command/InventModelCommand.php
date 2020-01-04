@@ -5,28 +5,44 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Wesleywmd\Invent\Api\ComponentInterface;
+use Wesleywmd\Invent\Api\DataInterface;
+use Wesleywmd\Invent\Console\InventStyle;
 use Wesleywmd\Invent\Console\InventStyleFactory;
 use Wesleywmd\Invent\Model\Model;
+use Wesleywmd\Invent\Model\Model\Data;
 use Wesleywmd\Invent\Model\Module\ModuleNameValidator;
+use Wesleywmd\Invent\Model\ModuleName;
 use Wesleywmd\Invent\Model\ModuleNameFactory;
+use Wesleywmd\Invent\Model\Preference;
+use Wesleywmd\Invent\Model\XmlParser\Location;
 
 class InventModelCommand extends InventCommandBase
 {
     private $modelDataFactory;
 
     private $modelNameValidator;
+    
+    private $preference;
+    
+    private $preferenceDataFactory;
+    
 
     public function __construct(
-        Model $component,
+        ComponentInterface $component,
         ModuleNameFactory $moduleNameFactory,
         InventStyleFactory $inventStyleFactory,
         ModuleNameValidator $moduleNameValidator,
         Model\DataFactory $modelDataFactory,
-        Model\ModelNameValidator $modelNameValidator
+        Model\ModelNameValidator $modelNameValidator,
+        ComponentInterface $preference,
+        Preference\DataFactory $preferenceDataFactory
     ) {
         parent::__construct($component, $moduleNameFactory, $inventStyleFactory, $moduleNameValidator);
         $this->modelDataFactory = $modelDataFactory;
         $this->modelNameValidator = $modelNameValidator;
+        $this->preference = $preference;
+        $this->preferenceDataFactory = $preferenceDataFactory;
     }
 
     protected function configure()
@@ -45,9 +61,9 @@ class InventModelCommand extends InventCommandBase
     protected function interact(InputInterface $input, OutputInterface $output)
     {
         $io = $this->inventStyleFactory->create(compact('input', 'output'));
-        
+
         $this->verifyModuleName($io, 'model');
-        
+
         $question = 'What is the model\'s name?';
         $errorMessage = 'Specified Model already exists';
         $this->verifyFileNameArgument($io, $this->modelNameValidator, $question, 'modelName', $errorMessage);
@@ -64,5 +80,23 @@ class InventModelCommand extends InventCommandBase
             'noCreatedAt' => $input->getOption('no-created-at'),
             'noUpdatedAt' => $input->getOption('no-updated-at')
         ]);
+    }
+
+    protected function afterAddToModule(InventStyle $io, DataInterface $data)
+    {
+        $this->createPreference($data->getModuleName(), $data->getInterfaceInstance(), $data->getInstance());
+        $this->createPreference($data->getModuleName(), $data->getSearchResultsInterfaceInstance(), 'Magento\Framework\Api\SearchResults');
+        $this->createPreference($data->getModuleName(), $data->getRepositoryInterfaceInstance(), $data->getRepositoryInstance());
+    }
+
+    protected function createPreference(ModuleName $moduleName, $for, $type)
+    {
+        $preferenceData = $this->preferenceDataFactory->create([
+            'moduleName' => $moduleName,
+            'for' => $for,
+            'type' => $type,
+            'area' => Location::AREA_GLOBAL
+        ]);
+        $this->preference->addToModule($preferenceData);
     }
 }

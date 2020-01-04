@@ -14,7 +14,7 @@ class XmlRenderer extends AbstractXmlRenderer implements XmlRendererInterface
         return Location::TYPE_SYSTEM;
     }
     
-    protected function getArea()
+    protected function getArea(DataInterface $data)
     {
         return Location::AREA_ADMINHTML;
     }

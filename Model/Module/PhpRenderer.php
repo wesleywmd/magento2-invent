@@ -3,8 +3,9 @@ namespace Wesleywmd\Invent\Model\Module;
 
 use Wesleywmd\Invent\Api\DataInterface;
 use Wesleywmd\Invent\Api\PhpRendererInterface;
+use Wesleywmd\Invent\Model\Component\AbstractPhpRenderer;
 
-class PhpRenderer implements PhpRendererInterface
+class PhpRenderer extends AbstractPhpRenderer implements PhpRendererInterface
 {
     public function getContents(DataInterface $data)
     {
@@ -16,5 +17,10 @@ class PhpRenderer implements PhpRendererInterface
             '    __DIR__',
             ');'
         ]);
+    }
+
+    protected function getClassStatement(DataInterface $data)
+    {
+        return $this->phpBuilder->class('Fake');
     }
 }
