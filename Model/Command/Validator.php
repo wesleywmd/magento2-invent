@@ -21,7 +21,7 @@ class Validator extends BaseValidator implements ValidatorInterface
 
         $question = 'What is the console command\'s name?';
         $errorMessage = 'Specified Console Command already exists';
-        $this->verifyFileNameArgument($io, function($value) {
+        $this->verifyFileNameArgument($io, function($commandName) {
             try{
                 $this->validateNotNull($commandName);
                 $this->validateNoWhitespace($commandName);

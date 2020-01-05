@@ -21,11 +21,11 @@ class Validator extends BaseValidator implements ValidatorInterface
 
         $question = 'What is the block\'s name?';
         $errorMessage = 'Specified Block already exists';
-        $this->verifyFileNameArgument($io, function($value) {
+        $this->verifyFileNameArgument($io, function($blockName) {
             try{
-                $this->validateNotNull($value);
-                $this->validateNoWhitespace($value);
-                $this->validateAlphaNumericWithSpecial($value, '\/');
+                $this->validateNotNull($blockName);
+                $this->validateNoWhitespace($blockName);
+                $this->validateAlphaNumericWithSpecial($blockName, '\/');
             } catch(InputValidationException $e) {
                 throw new InputValidationException('blockName: '.$e);
             }

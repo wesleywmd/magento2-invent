@@ -105,7 +105,7 @@
         </arguments>
     </type>
 
-    <virtualType name="controllerComponent" type="Wesleywmd\Invent\Model\Component\BaseComponent">
+    <virtualType name="Wesleywmd\Invent\Model\Controller\Component" type="Wesleywmd\Invent\Model\Component\BaseComponent">
         <arguments>
             <argument name="renderers" xsi:type="array">
                 <item name="phpRenderer" xsi:type="object">Wesleywmd\Invent\Model\Controller\PhpRenderer</item>
@@ -113,11 +113,34 @@
             </argument>
         </arguments>
     </virtualType>
-    <type name="Wesleywmd\Invent\Console\Command\InventControllerCommand">
+    <virtualType name="Wesleywmd\Invent\Console\Command\InventControllerCommandDefinition" type="Wesleywmd\Invent\Model\Component\BaseCommandDefinition">
         <arguments>
-            <argument name="component" xsi:type="object">controllerComponent</argument>
+            <argument name="name" xsi:type="string">invent:controller</argument>
+            <argument name="description" xsi:type="string">Create Controller</argument>
+            <argument name="successMessage" xsi:type="string">Controller Created Successfully!</argument>
+            <argument name="arguments" xsi:type="array">
+                <item name="controllerUrl" xsi:type="array">
+                    <item name="mode" xsi:type="const">Symfony\Component\Console\Input\InputArgument::REQUIRED</item>
+                    <item name="description" xsi:type="string">Controller Url</item>
+                </item>
+            </argument>
+            <argument name="options" xsi:type="array">
+                <item name="router" xsi:type="array">
+                    <item name="mode" xsi:type="const">Symfony\Component\Console\Input\InputArgument::REQUIRED</item>
+                    <item name="description" xsi:type="string">Router to subscribe the controller to</item>
+                    <item name="default" xsi:type="string">standard</item>
+                </item>
+            </argument>
         </arguments>
-    </type>
+    </virtualType>
+    <virtualType name="Wesleywmd\Invent\Console\Command\InventControllerCommand" type="Wesleywmd\Invent\Model\Component\BaseCommand">
+        <arguments>
+            <argument name="commandDefinition" xsi:type="object">Wesleywmd\Invent\Console\Command\InventControllerCommandDefinition</argument>
+            <argument name="component" xsi:type="object">Wesleywmd\Invent\Model\Controller\Component</argument>
+            <argument name="dataFactory" xsi:type="object">Wesleywmd\Invent\Model\Controller\DataFactory</argument>
+            <argument name="validator" xsi:type="object">Wesleywmd\Invent\Model\Controller\Validator</argument>
+        </arguments>
+    </virtualType>
 
     <virtualType name="cronComponent" type="Wesleywmd\Invent\Model\Component\BaseComponent">
         <arguments>
@@ -195,7 +218,7 @@
         <arguments>
             <argument name="component" xsi:type="object">moduleComponent</argument>
             <argument name="block" xsi:type="object">Wesleywmd\Invent\Model\Block\Component</argument>
-            <argument name="controller" xsi:type="object">controllerComponent</argument>
+            <argument name="controller" xsi:type="object">Wesleywmd\Invent\Model\Controller\Component</argument>
             <argument name="command" xsi:type="object">Wesleywmd\Invent\Model\Command\Component</argument>
             <argument name="cron" xsi:type="object">cronComponent</argument>
             <argument name="model" xsi:type="object">modelComponent</argument>
