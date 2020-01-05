@@ -126,7 +126,7 @@
             </argument>
             <argument name="options" xsi:type="array">
                 <item name="router" xsi:type="array">
-                    <item name="mode" xsi:type="const">Symfony\Component\Console\Input\InputArgument::REQUIRED</item>
+                    <item name="mode" xsi:type="const">Symfony\Component\Console\Input\InputOption::VALUE_REQUIRED</item>
                     <item name="description" xsi:type="string">Router to subscribe the controller to</item>
                     <item name="default" xsi:type="string">standard</item>
                 </item>
