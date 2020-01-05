@@ -2,11 +2,11 @@
 namespace Wesleywmd\Invent\Model\Cron;
 
 use Wesleywmd\Invent\Api\DataInterface;
-use Wesleywmd\Invent\Api\PhpRendererInterface;
+use Wesleywmd\Invent\Api\RendererInterface;
 use Wesleywmd\Invent\Model\Component\AbstractPhpRenderer;
 use Wesleywmd\Invent\Model\PhpParser\PhpBuilder;
 
-class PhpRenderer extends AbstractPhpRenderer implements PhpRendererInterface
+class PhpRenderer extends AbstractPhpRenderer implements RendererInterface
 {
     protected function getUseStatements(DataInterface $data)
     {

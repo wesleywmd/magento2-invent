@@ -3,47 +3,36 @@ namespace Wesleywmd\Invent\Model\Component;
 
 use Wesleywmd\Invent\Api\ComponentInterface;
 use Wesleywmd\Invent\Api\DataInterface;
-use Wesleywmd\Invent\Api\PhpRendererInterface;
-use Wesleywmd\Invent\Api\XmlRendererInterface;
-use Wesleywmd\Invent\Helper\FileHelper;
+use Wesleywmd\Invent\Api\RendererInterface;
 
 class BaseComponent implements ComponentInterface
 {
-    protected $fileHelper;
-
-    private $phpRenderers;
-
-    private $xmlRenderers;
+    private $renderers;
 
     public function __construct(
-        FileHelper $fileHelper,
-        array $phpRenderers = [],
-        array $xmlRenderers = []
+        array $renderers = []
     ) {
-        $this->fileHelper = $fileHelper;
-        $this->phpRenderers = $phpRenderers;
-        $this->xmlRenderers = $xmlRenderers;
+        $this->renderers = $renderers;
     }
 
     public function addToModule(DataInterface $data)
     {
-        foreach ($this->phpRenderers as $phpRenderer) {
-            $this->createPhpFile($phpRenderer, $data);
-        }
-        foreach ($this->xmlRenderers as $xmlRenderer) {
-            $this->createXmlFile($xmlRenderer, $data);
-        }
-    }
+        foreach ($this->renderers as $renderer) {
+            if (!is_a($renderer, RendererInterface::class)) {
+                throw new \Exception(get_class($renderer) .' does not implement '. RendererInterface::class);
+            }
 
-    protected function createPhpFile(PhpRendererInterface $phpRenderer, DataInterface $data)
-    {
-        $contents = $phpRenderer->getContents($data);
-        $this->fileHelper->saveFile($phpRenderer->getPath($data), $contents);
-    }
-
-    protected function createXmlFile(XmlRendererInterface $xmlRenderer, DataInterface $data)
-    {
-        $contents = $xmlRenderer->getContents($data);
-        $this->fileHelper->saveFile($xmlRenderer->getPath($data), $contents, true);
+            $location = $renderer->getPath($data);
+            if (is_file($location) && !$renderer->getForce()) {
+                throw new \Exception('File already exists at: '.$location);
+            }
+            
+            $dirname = dirname($location);
+            if (!is_dir($dirname)) {
+                mkdir($dirname, 0777, true);
+            }
+            
+            file_put_contents($location, $renderer->getContents($data), LOCK_EX);
+        }
     }
 }

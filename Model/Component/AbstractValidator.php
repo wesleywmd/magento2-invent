@@ -56,6 +56,13 @@ abstract class AbstractValidator
         }
     }
 
+    public function validateAlphaNumericWithSlash($value)
+    {
+        if (!preg_match('/^[a-zA-Z0-9\/]*$/', $value)) {
+            throw new InputValidationException($this->key.' must only contain alpha-numeric characters or a slash');
+        }
+    }
+
     public function validateAlphaNumericWithSpecial($value, $special)
     {
         if (!preg_match('/^[a-zA-Z0-9'.$special.']*$/', $value)) {

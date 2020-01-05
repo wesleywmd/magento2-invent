@@ -2,12 +2,12 @@
 namespace Wesleywmd\Invent\Model\Logger;
 
 use Wesleywmd\Invent\Api\DataInterface;
-use Wesleywmd\Invent\Api\XmlRendererInterface;
+use Wesleywmd\Invent\Api\RendererInterface;
 use Wesleywmd\Invent\Model\Component\AbstractXmlRenderer;
 use Wesleywmd\Invent\Model\XmlParser\Dom;
 use Wesleywmd\Invent\Model\XmlParser\Location;
 
-class XmlRenderer extends AbstractXmlRenderer implements XmlRendererInterface
+class XmlRenderer extends AbstractXmlRenderer implements RendererInterface
 {
     protected function getType()
     {

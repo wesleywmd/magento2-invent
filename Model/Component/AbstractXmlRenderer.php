@@ -26,6 +26,11 @@ abstract class AbstractXmlRenderer
     {
         return $this->location->getPath($data->getModuleName(), $this->getType(), $this->getArea($data));
     }
+    
+    public function getForce()
+    {
+        return true;
+    }
 
     public function getContents(DataInterface $data)
     {

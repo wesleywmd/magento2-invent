@@ -21,6 +21,11 @@ abstract class AbstractPhpRenderer
     {
         return $data->getPath();
     }
+    
+    public function getForce()
+    {
+        return false;
+    }
 
     public function getContents(DataInterface $data)
     {

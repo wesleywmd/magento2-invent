@@ -2,10 +2,10 @@
 namespace Wesleywmd\Invent\Model\Model;
 
 use Wesleywmd\Invent\Api\DataInterface;
-use Wesleywmd\Invent\Api\PhpRendererInterface;
+use Wesleywmd\Invent\Api\RendererInterface;
 use Wesleywmd\Invent\Model\Component\AbstractPhpRenderer;
 
-class CollectionPhpRenderer extends AbstractPhpRenderer implements PhpRendererInterface
+class CollectionPhpRenderer extends AbstractPhpRenderer implements RendererInterface
 {
     public function getPath(DataInterface $data)
     {

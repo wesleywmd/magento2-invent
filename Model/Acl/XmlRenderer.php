@@ -2,14 +2,14 @@
 namespace Wesleywmd\Invent\Model\Acl;
 
 use Wesleywmd\Invent\Api\DataInterface;
-use Wesleywmd\Invent\Api\XmlRendererInterface;
+use Wesleywmd\Invent\Api\RendererInterface;
 use Wesleywmd\Invent\Helper\AclHelper;
 use Wesleywmd\Invent\Model\Component\AbstractXmlRenderer;
 use Wesleywmd\Invent\Model\XmlParser\Dom;
 use Wesleywmd\Invent\Model\XmlParser\DomFactory;
 use Wesleywmd\Invent\Model\XmlParser\Location;
 
-class XmlRenderer extends AbstractXmlRenderer implements XmlRendererInterface
+class XmlRenderer extends AbstractXmlRenderer implements RendererInterface
 {
     private $aclHelper;
 

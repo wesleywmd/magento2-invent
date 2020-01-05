@@ -21,8 +21,8 @@
 
     <virtualType name="aclComponent" type="Wesleywmd\Invent\Model\Component\BaseComponent">
         <arguments>
-            <argument name="xmlRenderers" xsi:type="array">
-                <item name="baseRenderer" xsi:type="object">Wesleywmd\Invent\Model\Acl\XmlRenderer</item>
+            <argument name="renderers" xsi:type="array">
+                <item name="xmlRenderer" xsi:type="object">Wesleywmd\Invent\Model\Acl\XmlRenderer</item>
             </argument>
         </arguments>
     </virtualType>
@@ -32,39 +32,69 @@
         </arguments>
     </type>
 
-    <virtualType name="blockComponent" type="Wesleywmd\Invent\Model\Component\BaseComponent">
+    <virtualType name="Wesleywmd\Invent\Model\Block\Component" type="Wesleywmd\Invent\Model\Component\BaseComponent">
         <arguments>
-            <argument name="phpRenderers" xsi:type="array">
-                <item name="baseRenderer" xsi:type="object">Wesleywmd\Invent\Model\Block\PhpRenderer</item>
+            <argument name="renderers" xsi:type="array">
+                <item name="phpRenderer" xsi:type="object">Wesleywmd\Invent\Model\Block\PhpRenderer</item>
             </argument>
         </arguments>
     </virtualType>
-    <type name="Wesleywmd\Invent\Console\Command\InventBlockCommand">
+    <virtualType name="Wesleywmd\Invent\Console\Command\InventBlockCommandDefinition" type="Wesleywmd\Invent\Model\Component\BaseCommandDefinition">
         <arguments>
-            <argument name="component" xsi:type="object">blockComponent</argument>
+            <argument name="name" xsi:type="string">invent:block</argument>
+            <argument name="description" xsi:type="string">Create Block</argument>
+            <argument name="successMessage" xsi:type="string">Block Created Successfully!</argument>
+            <argument name="arguments" xsi:type="array">
+                <item name="blockName" xsi:type="array">
+                    <item name="mode" xsi:type="const">Symfony\Component\Console\Input\InputArgument::REQUIRED</item>
+                    <item name="description" xsi:type="string">Block Name</item>
+                </item>
+            </argument>
         </arguments>
-    </type>
+    </virtualType>
+    <virtualType name="Wesleywmd\Invent\Console\Command\InventBlockCommand" type="Wesleywmd\Invent\Model\Component\BaseCommand">
+        <arguments>
+            <argument name="commandDefinition" xsi:type="object">Wesleywmd\Invent\Console\Command\InventBlockCommandDefinition</argument>
+            <argument name="component" xsi:type="object">Wesleywmd\Invent\Model\Block\Component</argument>
+            <argument name="dataFactory" xsi:type="object">Wesleywmd\Invent\Model\Block\DataFactory</argument>
+            <argument name="validator" xsi:type="object">Wesleywmd\Invent\Model\Block\Validator</argument>
+        </arguments>
+    </virtualType>
 
-    <virtualType name="commandComponent" type="Wesleywmd\Invent\Model\Component\BaseComponent">
+    <virtualType name="Wesleywmd\Invent\Model\Command\Component" type="Wesleywmd\Invent\Model\Component\BaseComponent">
         <arguments>
-            <argument name="phpRenderers" xsi:type="array">
-                <item name="baseRenderer" xsi:type="object">Wesleywmd\Invent\Model\Command\PhpRenderer</item>
-            </argument>
-            <argument name="xmlRenderers" xsi:type="array">
-                <item name="baseRenderer" xsi:type="object">Wesleywmd\Invent\Model\Command\XmlRenderer</item>
+            <argument name="renderers" xsi:type="array">
+                <item name="phpRenderer" xsi:type="object">Wesleywmd\Invent\Model\Command\PhpRenderer</item>
+                <item name="xmlRenderer" xsi:type="object">Wesleywmd\Invent\Model\Command\XmlRenderer</item>
             </argument>
         </arguments>
     </virtualType>
-    <type name="Wesleywmd\Invent\Console\Command\InventCommandCommand">
+    <virtualType name="Wesleywmd\Invent\Console\Command\InventCommandCommandDefinition" type="Wesleywmd\Invent\Model\Component\BaseCommandDefinition">
         <arguments>
-            <argument name="component" xsi:type="object">commandComponent</argument>
+            <argument name="name" xsi:type="string">invent:command</argument>
+            <argument name="description" xsi:type="string">Create Console Command</argument>
+            <argument name="successMessage" xsi:type="string">Console Command Created Successfully!</argument>
+            <argument name="arguments" xsi:type="array">
+                <item name="commandName" xsi:type="array">
+                    <item name="mode" xsi:type="const">Symfony\Component\Console\Input\InputArgument::REQUIRED</item>
+                    <item name="description" xsi:type="string">Command Name</item>
+                </item>
+            </argument>
         </arguments>
-    </type>
+    </virtualType>
+    <virtualType name="Wesleywmd\Invent\Console\Command\InventCommandCommand" type="Wesleywmd\Invent\Model\Component\BaseCommand">
+        <arguments>
+            <argument name="commandDefinition" xsi:type="object">Wesleywmd\Invent\Console\Command\InventCommandCommandDefinition</argument>
+            <argument name="component" xsi:type="object">Wesleywmd\Invent\Model\Command\Component</argument>
+            <argument name="dataFactory" xsi:type="object">Wesleywmd\Invent\Model\Command\DataFactory</argument>
+            <argument name="validator" xsi:type="object">Wesleywmd\Invent\Model\Command\Validator</argument>
+        </arguments>
+    </virtualType>
 
     <virtualType name="configComponent" type="Wesleywmd\Invent\Model\Component\BaseComponent">
         <arguments>
-            <argument name="xmlRenderers" xsi:type="array">
-                <item name="baseRenderer" xsi:type="object">Wesleywmd\Invent\Model\Config\XmlRenderer</item>
+            <argument name="renderers" xsi:type="array">
+                <item name="xmlRenderer" xsi:type="object">Wesleywmd\Invent\Model\Config\XmlRenderer</item>
             </argument>
         </arguments>
     </virtualType>
@@ -77,11 +107,9 @@
 
     <virtualType name="controllerComponent" type="Wesleywmd\Invent\Model\Component\BaseComponent">
         <arguments>
-            <argument name="phpRenderers" xsi:type="array">
-                <item name="baseRenderer" xsi:type="object">Wesleywmd\Invent\Model\Controller\PhpRenderer</item>
-            </argument>
-            <argument name="xmlRenderers" xsi:type="array">
-                <item name="baseRenderer" xsi:type="object">Wesleywmd\Invent\Model\Controller\XmlRenderer</item>
+            <argument name="renderers" xsi:type="array">
+                <item name="phpRenderer" xsi:type="object">Wesleywmd\Invent\Model\Controller\PhpRenderer</item>
+                <item name="xmlenderer" xsi:type="object">Wesleywmd\Invent\Model\Controller\XmlRenderer</item>
             </argument>
         </arguments>
     </virtualType>
@@ -93,11 +121,9 @@
 
     <virtualType name="cronComponent" type="Wesleywmd\Invent\Model\Component\BaseComponent">
         <arguments>
-            <argument name="phpRenderers" xsi:type="array">
-                <item name="baseRenderer" xsi:type="object">Wesleywmd\Invent\Model\Cron\PhpRenderer</item>
-            </argument>
-            <argument name="xmlRenderers" xsi:type="array">
-                <item name="baseRenderer" xsi:type="object">Wesleywmd\Invent\Model\Cron\XmlRenderer</item>
+            <argument name="renderers" xsi:type="array">
+                <item name="phpRenderer" xsi:type="object">Wesleywmd\Invent\Model\Cron\PhpRenderer</item>
+                <item name="xmlRenderer" xsi:type="object">Wesleywmd\Invent\Model\Cron\XmlRenderer</item>
             </argument>
         </arguments>
     </virtualType>
@@ -109,12 +135,10 @@
 
     <virtualType name="loggerComponent" type="Wesleywmd\Invent\Model\Component\BaseComponent">
         <arguments>
-            <argument name="phpRenderers" xsi:type="array">
-                <item name="baseRenderer" xsi:type="object">Wesleywmd\Invent\Model\Logger\PhpRenderer</item>
+            <argument name="renderers" xsi:type="array">
+                <item name="phpRenderer" xsi:type="object">Wesleywmd\Invent\Model\Logger\PhpRenderer</item>
                 <item name="handlerRenderer" xsi:type="object">Wesleywmd\Invent\Model\Logger\HandlerPhpRenderer</item>
-            </argument>
-            <argument name="xmlRenderers" xsi:type="array">
-                <item name="baseRenderer" xsi:type="object">Wesleywmd\Invent\Model\Logger\XmlRenderer</item>
+                <item name="xmlRenderer" xsi:type="object">Wesleywmd\Invent\Model\Logger\XmlRenderer</item>
             </argument>
         </arguments>
     </virtualType>
@@ -126,8 +150,8 @@
 
     <virtualType name="menuComponent" type="Wesleywmd\Invent\Model\Component\BaseComponent">
         <arguments>
-            <argument name="xmlRenderers" xsi:type="array">
-                <item name="baseRenderer" xsi:type="object">Wesleywmd\Invent\Model\Menu\XmlRenderer</item>
+            <argument name="renderers" xsi:type="array">
+                <item name="xmlRenderer" xsi:type="object">Wesleywmd\Invent\Model\Menu\XmlRenderer</item>
             </argument>
         </arguments>
     </virtualType>
@@ -140,17 +164,15 @@
 
     <virtualType name="modelComponent" type="Wesleywmd\Invent\Model\Component\BaseComponent">
         <arguments>
-            <argument name="phpRenderers" xsi:type="array">
-                <item name="baseRenderer" xsi:type="object">Wesleywmd\Invent\Model\Model\PhpRenderer</item>
+            <argument name="renderers" xsi:type="array">
+                <item name="phpRenderer" xsi:type="object">Wesleywmd\Invent\Model\Model\PhpRenderer</item>
                 <item name="collectionRenderer" xsi:type="object">Wesleywmd\Invent\Model\Model\CollectionPhpRenderer</item>
                 <item name="interfaceRenderer" xsi:type="object">Wesleywmd\Invent\Model\Model\InterfacePhpRenderer</item>
                 <item name="repositoryInterfaceRenderer" xsi:type="object">Wesleywmd\Invent\Model\Model\RepositoryInterfacePhpRenderer</item>
                 <item name="repositoryRenderer" xsi:type="object">Wesleywmd\Invent\Model\Model\RepositoryPhpRenderer</item>
                 <item name="resourceRenderer" xsi:type="object">Wesleywmd\Invent\Model\Model\ResourcePhpRenderer</item>
                 <item name="searchResultsInterfaceRenderer" xsi:type="object">Wesleywmd\Invent\Model\Model\SearchResultsInterfacePhpRenderer</item>
-            </argument>
-            <argument name="xmlRenderers" xsi:type="array">
-                <item name="baseRenderer" xsi:type="object">Wesleywmd\Invent\Model\Model\XmlRenderer</item>
+                <item name="xmlRenderer" xsi:type="object">Wesleywmd\Invent\Model\Model\XmlRenderer</item>
             </argument>
         </arguments>
     </virtualType>
@@ -163,20 +185,18 @@
 
     <virtualType name="moduleComponent" type="Wesleywmd\Invent\Model\Component\BaseComponent">
         <arguments>
-            <argument name="phpRenderers" xsi:type="array">
-                <item name="baseRenderer" xsi:type="object">Wesleywmd\Invent\Model\Module\PhpRenderer</item>
-            </argument>
-            <argument name="xmlRenderers" xsi:type="array">
-                <item name="baseRenderer" xsi:type="object">Wesleywmd\Invent\Model\Module\XmlRenderer</item>
+            <argument name="renderers" xsi:type="array">
+                <item name="phpRenderer" xsi:type="object">Wesleywmd\Invent\Model\Module\PhpRenderer</item>
+                <item name="xmlRenderer" xsi:type="object">Wesleywmd\Invent\Model\Module\XmlRenderer</item>
             </argument>
         </arguments>
     </virtualType>
     <type name="Wesleywmd\Invent\Console\Command\InventModuleCommand">
         <arguments>
             <argument name="component" xsi:type="object">moduleComponent</argument>
-            <argument name="block" xsi:type="object">blockComponent</argument>
+            <argument name="block" xsi:type="object">Wesleywmd\Invent\Model\Block\Component</argument>
             <argument name="controller" xsi:type="object">controllerComponent</argument>
-            <argument name="command" xsi:type="object">commandComponent</argument>
+            <argument name="command" xsi:type="object">Wesleywmd\Invent\Model\Command\Component</argument>
             <argument name="cron" xsi:type="object">cronComponent</argument>
             <argument name="model" xsi:type="object">modelComponent</argument>
         </arguments>
@@ -184,8 +204,8 @@
 
     <virtualType name="preferenceComponent" type="Wesleywmd\Invent\Model\Component\BaseComponent">
         <arguments>
-            <argument name="xmlRenderers" xsi:type="array">
-                <item name="baseRenderer" xsi:type="object">Wesleywmd\Invent\Model\Preference\XmlRenderer</item>
+            <argument name="renderers" xsi:type="array">
+                <item name="xmlRenderer" xsi:type="object">Wesleywmd\Invent\Model\Preference\XmlRenderer</item>
             </argument>
         </arguments>
     </virtualType>
