@@ -27,6 +27,11 @@ class BaseDataFactory implements DataFactoryInterface
         return $this->objectManager->create($this->instanceName, $this->getData($input));
     }
 
+    public function createFromArray($dataArray)
+    {
+        return $this->objectManager->create($this->instanceName, $dataArray);
+    }
+
     protected function getDataArray(InputInterface $input)
     {
         return [];

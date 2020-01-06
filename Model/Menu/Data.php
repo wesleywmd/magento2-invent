@@ -2,12 +2,11 @@
 namespace Wesleywmd\Invent\Model\Menu;
 
 use Wesleywmd\Invent\Api\DataInterface;
+use Wesleywmd\Invent\Model\Component\AbstractData;
 use Wesleywmd\Invent\Model\ModuleName;
 
-class Data implements DataInterface
+class Data extends AbstractData implements DataInterface
 {
-    private $moduleName;
-
     private $menuName;
 
     private $parentMenu;
@@ -29,18 +28,13 @@ class Data implements DataInterface
         $title = null,
         $sortOrder = 10
     ) {
-        $this->moduleName = $moduleName;
+        parent::__construct($moduleName, '', []);
         $this->menuName = $menuName;
         $this->parentMenu = $parentMenu;
         $this->action = $action;
         $this->resource = $resource;
         $this->title = $title;
         $this->sortOrder = $sortOrder;
-    }
-
-    public function getModuleName()
-    {
-        return $this->moduleName;
     }
 
     public function getMenuName()

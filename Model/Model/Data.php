@@ -28,8 +28,8 @@ class Data extends AbstractData implements DataInterface
         $noCreatedAt = false, 
         $noUpdatedAt = false
     ) {
-        parent::__construct($moduleName, $modelName, ['Model']);
-        $this->modelName = $modelName;
+        parent::__construct($moduleName, ucfirst($modelName), ['Model']);
+        $this->modelName = ucfirst($modelName);
         $this->columns = $columns;
         $this->tableName = $tableName;
         $this->noEntityId = $noEntityId;

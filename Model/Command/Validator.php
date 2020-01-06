@@ -5,14 +5,15 @@ use Magento\Setup\Console\InputValidationException;
 use Wesleywmd\Invent\Api\DataFactoryInterface;
 use Wesleywmd\Invent\Api\ValidatorInterface;
 use Wesleywmd\Invent\Console\InventStyle;
+use Wesleywmd\Invent\Helper\AclHelper;
 use Wesleywmd\Invent\Model\Component\BaseValidator;
 use Wesleywmd\Invent\Model\ModuleNameFactory;
 
 class Validator extends BaseValidator implements ValidatorInterface
 {
-    public function __construct(DataFactory $dataFactory, ModuleNameFactory $moduleNameFactory)
+    public function __construct(DataFactory $dataFactory, ModuleNameFactory $moduleNameFactory, AclHelper $aclHelper)
     {
-        parent::__construct($dataFactory, $moduleNameFactory);
+        parent::__construct($dataFactory, $moduleNameFactory, $aclHelper);
     }
 
     public function validate(InventStyle $io)
@@ -22,13 +23,10 @@ class Validator extends BaseValidator implements ValidatorInterface
         $question = 'What is the console command\'s name?';
         $errorMessage = 'Specified Console Command already exists';
         $this->verifyFileNameArgument($io, function($commandName) {
-            try{
-                $this->validateNotNull($commandName);
-                $this->validateNoWhitespace($commandName);
-                $this->validateAlphaNumericWithSpecial($commandName,':');
-            } catch(InputValidationException $e) {
-                throw new InputValidationException('commandName: '.$e);
-            }
+            $this->validateNotNull($commandName);
+            $this->validateNoWhitespace($commandName);
+            $this->validateAlphaNumericWithSpecial($commandName,':');
+            return $commandName;
         }, $question, 'commandName', $errorMessage);
     }
 }

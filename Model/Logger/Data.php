@@ -13,7 +13,7 @@ class Data extends AbstractData implements DataInterface
 
     private $type;
 
-    public function __construct(ModuleName $moduleName, $loggerName, $fileName = null, $type = 'INFO')
+    public function __construct(ModuleName $moduleName, $loggerName, $fileName = 'error', $type = 'INFO')
     {
         parent::__construct($moduleName, 'Logger', ['Logger']);
         $this->loggerName = $loggerName;
@@ -28,10 +28,7 @@ class Data extends AbstractData implements DataInterface
 
     public function getFileName()
     {
-        if (is_null($this->fileName)) {
-            return '/var/log/'.str_replace('_', '/', $this->moduleName->getSlug()).'.log';
-        }
-        return '/var/log/'.$this->fileName;
+        return '/var/log/'.str_replace('_', '/', $this->moduleName->getSlug([$this->fileName])).'.log';
     }
 
     public function getType()

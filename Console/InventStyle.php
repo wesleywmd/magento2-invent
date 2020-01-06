@@ -371,7 +371,7 @@ class InventStyle extends OutputStyle implements MagentoStyleInterface
                 $this->comment(sprintf($commentFormat, $argument, $validated));
             }
         } catch (InputValidationException $e) {
-            $this->error('Validation Error: ' . $e->getMessage());
+            $this->error('Validation Error ['.$argument.']: '.$e->getMessage());
             $this->askForMissingArgument(
                 $argument,
                 $question,
@@ -398,7 +398,7 @@ class InventStyle extends OutputStyle implements MagentoStyleInterface
                 $validator($this->input->getArgument($argument));
             }
         } catch(InputValidationException $e) {
-            $this->error($e->getMessage());
+            $this->error('Validation Error ['.$argument.']: '.$e->getMessage());
             $this->input->setArgument($argument, null);
         }
         $this->askForMissingArgument($argument, $question, $default, $validator, $maxAttempts, $comment, $commentFormat);
@@ -435,7 +435,7 @@ class InventStyle extends OutputStyle implements MagentoStyleInterface
                 $this->comment(sprintf($commentFormat, $option, $validated));
             }
         } catch (InputValidationException $e) {
-            $this->error('Validation Error: ' . $e->getMessage());
+            $this->error('Validation Error ['.$option.']: '.$e->getMessage());
             $this->askForMissingOption(
                 $option,
                 $question,
@@ -463,7 +463,7 @@ class InventStyle extends OutputStyle implements MagentoStyleInterface
                 $validator($this->input->getOption($option));
             }
         } catch(InputValidationException $e) {
-            $this->error($e->getMessage());
+            $this->error('Validation Error ['.$option.']: '.$e->getMessage());
             $this->input->setOption($option, null);
         }
         $this->askForMissingOption($option, $question, $default, $validator, $maxAttempts, $comment, $commentFormat);

@@ -1,12 +1,16 @@
 <?php
 namespace Wesleywmd\Invent\Model\Component;
 
+use Symfony\Component\Console\Input\InputOption;
+
 class BaseCommandDefinition
 {
+    const REQUIRED_ARRAY = InputOption::VALUE_REQUIRED|InputOption::VALUE_IS_ARRAY;
+
     protected $name;
 
     protected $description;
-    
+
     protected $successMessage;
 
     protected $help;

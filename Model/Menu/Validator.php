@@ -1,5 +1,5 @@
 <?php
-namespace Wesleywmd\Invent\Model\Block;
+namespace Wesleywmd\Invent\Model\Menu;
 
 use Magento\Setup\Console\InputValidationException;
 use Wesleywmd\Invent\Api\DataFactoryInterface;
@@ -18,15 +18,14 @@ class Validator extends BaseValidator implements ValidatorInterface
 
     public function validate(InventStyle $io)
     {
-        $this->verifyModuleName($io, 'block');
+        $this->verifyModuleName($io, 'menu');
 
-        $question = 'What is the block\'s name?';
-        $errorMessage = 'Specified Block already exists';
-        $this->verifyFileNameArgument($io, function($blockName) {
-            $this->validateNotNull($blockName);
-            $this->validateNoWhitespace($blockName);
-            $this->validateAlphaNumericWithSpecial($blockName, '\/');
-            return $blockName;
-        }, $question, 'blockName', $errorMessage);
+        $question = 'What is the name of the menu?';
+        $io->askForValidatedArgument('menuName', $question, null, function($menuName) {
+            $this->validateNotNull($menuName);
+            $this->validateNoWhitespace($menuName);
+            $this->validateAlphaWithSpecial($menuName,'\/');
+            return $menuName;
+        }, 3);
     }
 }

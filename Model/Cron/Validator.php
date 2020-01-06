@@ -1,5 +1,5 @@
 <?php
-namespace Wesleywmd\Invent\Model\Block;
+namespace Wesleywmd\Invent\Model\Cron;
 
 use Magento\Setup\Console\InputValidationException;
 use Wesleywmd\Invent\Api\DataFactoryInterface;
@@ -18,15 +18,15 @@ class Validator extends BaseValidator implements ValidatorInterface
 
     public function validate(InventStyle $io)
     {
-        $this->verifyModuleName($io, 'block');
+        $this->verifyModuleName($io, 'cron');
 
-        $question = 'What is the block\'s name?';
-        $errorMessage = 'Specified Block already exists';
-        $this->verifyFileNameArgument($io, function($blockName) {
-            $this->validateNotNull($blockName);
-            $this->validateNoWhitespace($blockName);
-            $this->validateAlphaNumericWithSpecial($blockName, '\/');
-            return $blockName;
-        }, $question, 'blockName', $errorMessage);
+        $question = 'What is the cron\'s name?';
+        $errorMessage = 'Specified Cron already exists';
+        $this->verifyFileNameArgument($io, function($cronName) {
+            $this->validateNotNull($cronName);
+            $this->validateNoWhitespace($cronName);
+            $this->validateAlphaWithSpecial($cronName,'\/');
+            return $cronName;
+        }, $question, 'cronName', $errorMessage);
     }
 }

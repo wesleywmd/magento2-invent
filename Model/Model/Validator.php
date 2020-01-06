@@ -1,5 +1,5 @@
 <?php
-namespace Wesleywmd\Invent\Model\Block;
+namespace Wesleywmd\Invent\Model\Model;
 
 use Magento\Setup\Console\InputValidationException;
 use Wesleywmd\Invent\Api\DataFactoryInterface;
@@ -18,15 +18,15 @@ class Validator extends BaseValidator implements ValidatorInterface
 
     public function validate(InventStyle $io)
     {
-        $this->verifyModuleName($io, 'block');
+        $this->verifyModuleName($io, 'model');
 
-        $question = 'What is the block\'s name?';
-        $errorMessage = 'Specified Block already exists';
-        $this->verifyFileNameArgument($io, function($blockName) {
-            $this->validateNotNull($blockName);
-            $this->validateNoWhitespace($blockName);
-            $this->validateAlphaNumericWithSpecial($blockName, '\/');
-            return $blockName;
-        }, $question, 'blockName', $errorMessage);
+        $question = 'What is the model\'s name?';
+        $errorMessage = 'Specified Model already exists';
+        $this->verifyFileNameArgument($io, function($modelName) {
+            $this->validateNotNull($modelName);
+            $this->validateNoWhitespace($modelName);
+            $this->validateAlpha($modelName);
+            return $modelName;
+        }, $question, 'modelName', $errorMessage);
     }
 }

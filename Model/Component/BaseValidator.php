@@ -1,9 +1,11 @@
 <?php
 namespace Wesleywmd\Invent\Model\Component;
 
+use Magento\Setup\Console\InputValidationException;
 use Wesleywmd\Invent\Api\DataFactoryInterface;
 use Wesleywmd\Invent\Api\ValidatorInterface;
 use Wesleywmd\Invent\Console\InventStyle;
+use Wesleywmd\Invent\Helper\AclHelper;
 use Wesleywmd\Invent\Model\ModuleNameException;
 use Wesleywmd\Invent\Model\ModuleNameFactory;
 
@@ -12,11 +14,17 @@ class BaseValidator implements ValidatorInterface
     protected $dataFactory;
 
     protected $moduleNameFactory;
+    
+    protected $aclHelper;
 
-    public function __construct(DataFactoryInterface $dataFactory, ModuleNameFactory $moduleNameFactory)
-    {
+    public function __construct(
+        DataFactoryInterface $dataFactory, 
+        ModuleNameFactory $moduleNameFactory, 
+        AclHelper $aclHelper
+    ) {
         $this->dataFactory = $dataFactory;
         $this->moduleNameFactory = $moduleNameFactory;
+        $this->aclHelper = $aclHelper;
     }
 
     public function validate(InventStyle $io)
@@ -27,7 +35,7 @@ class BaseValidator implements ValidatorInterface
     protected function verifyModuleName(InventStyle $io, $to = 'component')
     {
         $question = 'What module do you want to add a '.$to.' to?';
-        $io->askForValidatedArgument('moduleName', $question, null, function($value) {
+        $io->askForValidatedArgument('moduleName', $question, null, function($moduleName) {
             try{
                 $this->validateNotNull($moduleName);
                 $this->validateNoWhitespace($moduleName);
@@ -42,8 +50,9 @@ class BaseValidator implements ValidatorInterface
                     throw new InputValidationException('Specified Module does not exist');
                 }
             } catch(InputValidationException $e) {
-                throw new InputValidationException('moduleName: '.$e);
+                throw new InputValidationException('moduleName: '.$e->getMessage());
             }
+            return $moduleName;
         }, 3);
     }
 
@@ -58,6 +67,34 @@ class BaseValidator implements ValidatorInterface
                 $io->getInput()->setArgument($argument, null);
             }
         } while(is_null($io->getInput()->getArgument($argument)));
+    }
+
+    protected function verifyAclOption(InventStyle $io, $option)
+    {
+        if ($this->aclHelper->findInTree($io->getInput()->getOption($option))) {
+            $io->comment('Looks like you picked an existing '.$option.' resource. Lets find the correct one together.');
+            $io->getInput()->setOption($option, null);
+        }
+
+        if (is_null($io->getInput()->getOption($option))) {
+            $io->comment('Looks like you didn\'t specify a '.$option.' resource. Lets find the correct one together.');
+        } else {
+            $io->comment('Looks like you picked an invalid '.$option.' resource. Lets find the correct one together.');
+            $io->getInput()->setOption($option, null);
+        }
+
+        $options = $this->aclHelper->getParentOptions('Magento_Backend::admin');
+        $stop = [];
+        while (!empty($options)) {
+            sort($options);
+            $parent = $io->choice('Which resource would you like?', array_merge($stop, $options));
+            if ($parent === 'Stop Here') {
+                break;
+            }
+            $io->getInput()->setOption($option, $parent);
+            $options = $this->aclHelper->getParentOptions($parent);
+            $stop = ['Stop Here'];
+        }
     }
 
     public function validateNotNull($value)

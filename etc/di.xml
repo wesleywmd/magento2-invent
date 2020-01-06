@@ -3,34 +3,64 @@
     <type name="Magento\Framework\Console\CommandList">
         <arguments>
             <argument name="commands" xsi:type="array">
-                <item name="invent_acl" xsi:type="object">Wesleywmd\Invent\Console\Command\InventAclCommand</item>
-                <item name="invent_block" xsi:type="object">Wesleywmd\Invent\Console\Command\InventBlockCommand</item>
-                <item name="invent_command" xsi:type="object">Wesleywmd\Invent\Console\Command\InventCommandCommand</item>
-                <item name="invent_config" xsi:type="object">Wesleywmd\Invent\Console\Command\InventConfigCommand</item>
-                <item name="invent_controller" xsi:type="object">Wesleywmd\Invent\Console\Command\InventControllerCommand</item>
-                <item name="invent_cron" xsi:type="object">Wesleywmd\Invent\Console\Command\InventCronCommand</item>
-                <item name="invent_logger" xsi:type="object">Wesleywmd\Invent\Console\Command\InventLoggerCommand</item>
-                <item name="invent_menu" xsi:type="object">Wesleywmd\Invent\Console\Command\InventMenuCommand</item>
-                <item name="invent_model" xsi:type="object">Wesleywmd\Invent\Console\Command\InventModelCommand</item>
-                <item name="invent_module" xsi:type="object">Wesleywmd\Invent\Console\Command\InventModuleCommand</item>
-                <item name="invent_preference" xsi:type="object">Wesleywmd\Invent\Console\Command\InventPreferenceCommand</item>
+                <item name="invent_acl" xsi:type="object">Wesleywmd\Invent\Model\Acl\Command</item>
+                <item name="invent_block" xsi:type="object">Wesleywmd\Invent\Model\Block\Command</item>
+                <item name="invent_command" xsi:type="object">Wesleywmd\Invent\Model\Command\Command</item>
+                <item name="invent_config" xsi:type="object">Wesleywmd\Invent\Model\Config\Command</item>
+                <item name="invent_controller" xsi:type="object">Wesleywmd\Invent\Model\Controller\Command</item>
+                <item name="invent_cron" xsi:type="object">Wesleywmd\Invent\Model\Cron\Command</item>
+                <item name="invent_logger" xsi:type="object">Wesleywmd\Invent\Model\Logger\Command</item>
+                <item name="invent_menu" xsi:type="object">Wesleywmd\Invent\Model\Menu\Command</item>
+                <item name="invent_model" xsi:type="object">Wesleywmd\Invent\Model\Model\Command</item>
+                <item name="invent_module" xsi:type="object">Wesleywmd\Invent\Model\Module\Command</item>
+                <item name="invent_preference" xsi:type="object">Wesleywmd\Invent\Model\Preference\Command</item>
                 <!--<item name="invent_admin_crud" xsi:type="object">Wesleywmd\Invent\Console\Command\InventAdminCrudCommand</item>-->
             </argument>
         </arguments>
     </type>
 
-    <virtualType name="aclComponent" type="Wesleywmd\Invent\Model\Component\BaseComponent">
+    <virtualType name="Wesleywmd\Invent\Model\Acl\Component" type="Wesleywmd\Invent\Model\Component\BaseComponent">
         <arguments>
             <argument name="renderers" xsi:type="array">
                 <item name="xmlRenderer" xsi:type="object">Wesleywmd\Invent\Model\Acl\XmlRenderer</item>
             </argument>
         </arguments>
     </virtualType>
-    <type name="Wesleywmd\Invent\Console\Command\InventAclCommand">
+    <virtualType name="Wesleywmd\Invent\Model\Acl\CommandDefinition" type="Wesleywmd\Invent\Model\Component\BaseCommandDefinition">
         <arguments>
-            <argument name="component" xsi:type="object">aclComponent</argument>
+            <argument name="name" xsi:type="string">invent:acl</argument>
+            <argument name="description" xsi:type="string">Create ACL</argument>
+            <argument name="successMessage" xsi:type="string">ACL Created Successfully!</argument>
+            <argument name="arguments" xsi:type="array">
+                <item name="aclName" xsi:type="array">
+                    <item name="mode" xsi:type="const">Symfony\Component\Console\Input\InputArgument::REQUIRED</item>
+                    <item name="description" xsi:type="string">ACL Name</item>
+                </item>
+            </argument>
+            <argument name="options" xsi:type="array">
+                <item name="parent" xsi:type="array">
+                    <item name="mode" xsi:type="const">Symfony\Component\Console\Input\InputOption::VALUE_REQUIRED</item>
+                    <item name="description" xsi:type="string">Parent ACL Name</item>
+                </item>
+                <item name="title" xsi:type="array">
+                    <item name="mode" xsi:type="const">Symfony\Component\Console\Input\InputOption::VALUE_REQUIRED</item>
+                    <item name="description" xsi:type="string">ACL Title</item>
+                </item>
+                <item name="sortOrder" xsi:type="array">
+                    <item name="mode" xsi:type="const">Symfony\Component\Console\Input\InputOption::VALUE_REQUIRED</item>
+                    <item name="description" xsi:type="string">ACL Sort Order</item>
+                </item>
+            </argument>
         </arguments>
-    </type>
+    </virtualType>
+    <virtualType name="Wesleywmd\Invent\Model\Acl\Command" type="Wesleywmd\Invent\Model\Component\BaseCommand">
+        <arguments>
+            <argument name="commandDefinition" xsi:type="object">Wesleywmd\Invent\Model\Acl\CommandDefinition</argument>
+            <argument name="component" xsi:type="object">Wesleywmd\Invent\Model\Acl\Component</argument>
+            <argument name="dataFactory" xsi:type="object">Wesleywmd\Invent\Model\Acl\DataFactory</argument>
+            <argument name="validator" xsi:type="object">Wesleywmd\Invent\Model\Acl\Validator</argument>
+        </arguments>
+    </virtualType>
 
     <virtualType name="Wesleywmd\Invent\Model\Block\Component" type="Wesleywmd\Invent\Model\Component\BaseComponent">
         <arguments>
@@ -39,7 +69,7 @@
             </argument>
         </arguments>
     </virtualType>
-    <virtualType name="Wesleywmd\Invent\Console\Command\InventBlockCommandDefinition" type="Wesleywmd\Invent\Model\Component\BaseCommandDefinition">
+    <virtualType name="Wesleywmd\Invent\Model\Block\CommandDefinition" type="Wesleywmd\Invent\Model\Component\BaseCommandDefinition">
         <arguments>
             <argument name="name" xsi:type="string">invent:block</argument>
             <argument name="description" xsi:type="string">Create Block</argument>
@@ -52,9 +82,9 @@
             </argument>
         </arguments>
     </virtualType>
-    <virtualType name="Wesleywmd\Invent\Console\Command\InventBlockCommand" type="Wesleywmd\Invent\Model\Component\BaseCommand">
+    <virtualType name="Wesleywmd\Invent\Model\Block\Command" type="Wesleywmd\Invent\Model\Component\BaseCommand">
         <arguments>
-            <argument name="commandDefinition" xsi:type="object">Wesleywmd\Invent\Console\Command\InventBlockCommandDefinition</argument>
+            <argument name="commandDefinition" xsi:type="object">Wesleywmd\Invent\Model\Block\CommandDefinition</argument>
             <argument name="component" xsi:type="object">Wesleywmd\Invent\Model\Block\Component</argument>
             <argument name="dataFactory" xsi:type="object">Wesleywmd\Invent\Model\Block\DataFactory</argument>
             <argument name="validator" xsi:type="object">Wesleywmd\Invent\Model\Block\Validator</argument>
@@ -69,7 +99,7 @@
             </argument>
         </arguments>
     </virtualType>
-    <virtualType name="Wesleywmd\Invent\Console\Command\InventCommandCommandDefinition" type="Wesleywmd\Invent\Model\Component\BaseCommandDefinition">
+    <virtualType name="Wesleywmd\Invent\Model\Command\CommandDefinition" type="Wesleywmd\Invent\Model\Component\BaseCommandDefinition">
         <arguments>
             <argument name="name" xsi:type="string">invent:command</argument>
             <argument name="description" xsi:type="string">Create Console Command</argument>
@@ -82,38 +112,168 @@
             </argument>
         </arguments>
     </virtualType>
-    <virtualType name="Wesleywmd\Invent\Console\Command\InventCommandCommand" type="Wesleywmd\Invent\Model\Component\BaseCommand">
+    <virtualType name="Wesleywmd\Invent\Model\Command\Command" type="Wesleywmd\Invent\Model\Component\BaseCommand">
         <arguments>
-            <argument name="commandDefinition" xsi:type="object">Wesleywmd\Invent\Console\Command\InventCommandCommandDefinition</argument>
+            <argument name="commandDefinition" xsi:type="object">Wesleywmd\Invent\Model\Command\CommandDefinition</argument>
             <argument name="component" xsi:type="object">Wesleywmd\Invent\Model\Command\Component</argument>
             <argument name="dataFactory" xsi:type="object">Wesleywmd\Invent\Model\Command\DataFactory</argument>
             <argument name="validator" xsi:type="object">Wesleywmd\Invent\Model\Command\Validator</argument>
         </arguments>
     </virtualType>
 
-    <virtualType name="configComponent" type="Wesleywmd\Invent\Model\Component\BaseComponent">
+    <virtualType name="Wesleywmd\Invent\Model\Config\Component" type="Wesleywmd\Invent\Model\Component\BaseComponent">
         <arguments>
             <argument name="renderers" xsi:type="array">
                 <item name="xmlRenderer" xsi:type="object">Wesleywmd\Invent\Model\Config\XmlRenderer</item>
             </argument>
         </arguments>
     </virtualType>
-    <type name="Wesleywmd\Invent\Console\Command\InventConfigCommand">
+    <virtualType name="Wesleywmd\Invent\Model\Config\CommandDefinition" type="Wesleywmd\Invent\Model\Component\BaseCommandDefinition">
         <arguments>
-            <argument name="component" xsi:type="object">configComponent</argument>
-            <argument name="acl" xsi:type="object">aclComponent</argument>
+            <argument name="name" xsi:type="string">invent:config</argument>
+            <argument name="description" xsi:type="string">Create Config</argument>
+            <argument name="successMessage" xsi:type="string">Config Created Successfully!</argument>
+            <argument name="arguments" xsi:type="array">
+                <item name="configName" xsi:type="array">
+                    <item name="mode" xsi:type="const">Symfony\Component\Console\Input\InputArgument::REQUIRED</item>
+                    <item name="description" xsi:type="string">Config Name</item>
+                </item>
+            </argument>
+            <argument name="options" xsi:type="array">
+                <item name="tabId" xsi:type="array">
+                    <item name="mode" xsi:type="const">Symfony\Component\Console\Input\InputOption::VALUE_REQUIRED</item>
+                    <item name="description" xsi:type="string">New Tab ID</item>
+                </item>
+                <item name="tabLabel" xsi:type="array">
+                    <item name="mode" xsi:type="const">Symfony\Component\Console\Input\InputOption::VALUE_REQUIRED</item>
+                    <item name="description" xsi:type="string">New Tab Label</item>
+                </item>
+                <item name="tabSortOrder" xsi:type="array">
+                    <item name="mode" xsi:type="const">Symfony\Component\Console\Input\InputOption::VALUE_REQUIRED</item>
+                    <item name="description" xsi:type="string">New Tab Sort Order</item>
+                    <item name="default" xsi:type="number">10</item>
+                </item>
+                <item name="sectionLabel" xsi:type="array">
+                    <item name="mode" xsi:type="const">Symfony\Component\Console\Input\InputOption::VALUE_REQUIRED</item>
+                    <item name="description" xsi:type="string">New Section Label</item>
+                </item>
+                <item name="sectionSortOrder" xsi:type="array">
+                    <item name="mode" xsi:type="const">Symfony\Component\Console\Input\InputOption::VALUE_REQUIRED</item>
+                    <item name="description" xsi:type="string">New Section Sort Order</item>
+                    <item name="default" xsi:type="number">10</item>
+                </item>
+                <item name="sectionShowInDefault" xsi:type="array">
+                    <item name="mode" xsi:type="const">Symfony\Component\Console\Input\InputOption::VALUE_REQUIRED</item>
+                    <item name="description" xsi:type="string">New Section ShowInDefault</item>
+                    <item name="default" xsi:type="number">1</item>
+                </item>
+                <item name="sectionShowInWebsite" xsi:type="array">
+                    <item name="mode" xsi:type="const">Symfony\Component\Console\Input\InputOption::VALUE_REQUIRED</item>
+                    <item name="description" xsi:type="string">New Section ShowInWebsite</item>
+                    <item name="default" xsi:type="number">1</item>
+                </item>
+                <item name="sectionShowInStore" xsi:type="array">
+                    <item name="mode" xsi:type="const">Symfony\Component\Console\Input\InputOption::VALUE_REQUIRED</item>
+                    <item name="description" xsi:type="string">New Section ShowInStore</item>
+                    <item name="default" xsi:type="number">1</item>
+                </item>
+                <item name="sectionClass" xsi:type="array">
+                    <item name="mode" xsi:type="const">Symfony\Component\Console\Input\InputOption::VALUE_REQUIRED</item>
+                    <item name="description" xsi:type="string">New Section Class</item>
+                    <item name="default" xsi:type="string">separator-top</item>
+                </item>
+                <item name="sectionTab" xsi:type="array">
+                    <item name="mode" xsi:type="const">Symfony\Component\Console\Input\InputOption::VALUE_REQUIRED</item>
+                    <item name="description" xsi:type="string">New Section Tab</item>
+                </item>
+                <item name="sectionResource" xsi:type="array">
+                    <item name="mode" xsi:type="const">Symfony\Component\Console\Input\InputOption::VALUE_REQUIRED</item>
+                    <item name="description" xsi:type="string">New Section Resource</item>
+                </item>
+                <item name="groupLabel" xsi:type="array">
+                    <item name="mode" xsi:type="const">Symfony\Component\Console\Input\InputOption::VALUE_REQUIRED</item>
+                    <item name="description" xsi:type="string">New Group Label</item>
+                </item>
+                <item name="groupSortOrder" xsi:type="array">
+                    <item name="mode" xsi:type="const">Symfony\Component\Console\Input\InputOption::VALUE_REQUIRED</item>
+                    <item name="description" xsi:type="string">New Group Sort Order</item>
+                    <item name="default" xsi:type="number">10</item>
+                </item>
+                <item name="groupShowInDefault" xsi:type="array">
+                    <item name="mode" xsi:type="const">Symfony\Component\Console\Input\InputOption::VALUE_REQUIRED</item>
+                    <item name="description" xsi:type="string">New Group ShowInDefault</item>
+                    <item name="default" xsi:type="number">1</item>
+                </item>
+                <item name="groupShowInWebsite" xsi:type="array">
+                    <item name="mode" xsi:type="const">Symfony\Component\Console\Input\InputOption::VALUE_REQUIRED</item>
+                    <item name="description" xsi:type="string">New Group ShowInWebsite</item>
+                    <item name="default" xsi:type="number">1</item>
+                </item>
+                <item name="groupShowInStore" xsi:type="array">
+                    <item name="mode" xsi:type="const">Symfony\Component\Console\Input\InputOption::VALUE_REQUIRED</item>
+                    <item name="description" xsi:type="string">New Group ShowInStore</item>
+                    <item name="default" xsi:type="number">1</item>
+                </item>
+                <item name="fieldLabel" xsi:type="array">
+                    <item name="mode" xsi:type="const">Symfony\Component\Console\Input\InputOption::VALUE_REQUIRED</item>
+                    <item name="description" xsi:type="string">New Field Label</item>
+                </item>
+                <item name="fieldType" xsi:type="array">
+                    <item name="mode" xsi:type="const">Symfony\Component\Console\Input\InputOption::VALUE_REQUIRED</item>
+                    <item name="description" xsi:type="string">New Field type</item>
+                    <item name="default" xsi:type="string">text</item>
+                </item>
+                <item name="fieldSortOrder" xsi:type="array">
+                    <item name="mode" xsi:type="const">Symfony\Component\Console\Input\InputOption::VALUE_REQUIRED</item>
+                    <item name="description" xsi:type="string">New Field Sort Order</item>
+                    <item name="default" xsi:type="number">10</item>
+                </item>
+                <item name="fieldShowInDefault" xsi:type="array">
+                    <item name="mode" xsi:type="const">Symfony\Component\Console\Input\InputOption::VALUE_REQUIRED</item>
+                    <item name="description" xsi:type="string">New Field ShowInDefault</item>
+                    <item name="default" xsi:type="number">1</item>
+                </item>
+                <item name="fieldShowInWebsite" xsi:type="array">
+                    <item name="mode" xsi:type="const">Symfony\Component\Console\Input\InputOption::VALUE_REQUIRED</item>
+                    <item name="description" xsi:type="string">New Field ShowInWebsite</item>
+                    <item name="default" xsi:type="number">1</item>
+                </item>
+                <item name="fieldShowInStore" xsi:type="array">
+                    <item name="mode" xsi:type="const">Symfony\Component\Console\Input\InputOption::VALUE_REQUIRED</item>
+                    <item name="description" xsi:type="string">New Field ShowInStore</item>
+                    <item name="default" xsi:type="number">1</item>
+                </item>
+                <item name="fieldComment" xsi:type="array">
+                    <item name="mode" xsi:type="const">Symfony\Component\Console\Input\InputOption::VALUE_REQUIRED</item>
+                    <item name="description" xsi:type="string">New Field Comment</item>
+                </item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <type name="Wesleywmd\Invent\Model\Config\Interceptor">
+        <arguments>
+            <argument name="aclComponent" xsi:type="object">Wesleywmd\Invent\Model\Acl\Component</argument>
         </arguments>
     </type>
+    <virtualType name="Wesleywmd\Invent\Model\Config\Command" type="Wesleywmd\Invent\Model\Component\BaseCommand">
+        <arguments>
+            <argument name="commandDefinition" xsi:type="object">Wesleywmd\Invent\Model\Config\CommandDefinition</argument>
+            <argument name="component" xsi:type="object">Wesleywmd\Invent\Model\Config\Component</argument>
+            <argument name="dataFactory" xsi:type="object">Wesleywmd\Invent\Model\Config\DataFactory</argument>
+            <argument name="validator" xsi:type="object">Wesleywmd\Invent\Model\Config\Validator</argument>
+            <argument name="interceptor" xsi:type="object">Wesleywmd\Invent\Model\Config\Interceptor</argument>
+        </arguments>
+    </virtualType>
 
     <virtualType name="Wesleywmd\Invent\Model\Controller\Component" type="Wesleywmd\Invent\Model\Component\BaseComponent">
         <arguments>
             <argument name="renderers" xsi:type="array">
                 <item name="phpRenderer" xsi:type="object">Wesleywmd\Invent\Model\Controller\PhpRenderer</item>
-                <item name="xmlenderer" xsi:type="object">Wesleywmd\Invent\Model\Controller\XmlRenderer</item>
+                <item name="xmlRenderer" xsi:type="object">Wesleywmd\Invent\Model\Controller\XmlRenderer</item>
             </argument>
         </arguments>
     </virtualType>
-    <virtualType name="Wesleywmd\Invent\Console\Command\InventControllerCommandDefinition" type="Wesleywmd\Invent\Model\Component\BaseCommandDefinition">
+    <virtualType name="Wesleywmd\Invent\Model\Controller\CommandDefinition" type="Wesleywmd\Invent\Model\Component\BaseCommandDefinition">
         <arguments>
             <argument name="name" xsi:type="string">invent:controller</argument>
             <argument name="description" xsi:type="string">Create Controller</argument>
@@ -133,16 +293,16 @@
             </argument>
         </arguments>
     </virtualType>
-    <virtualType name="Wesleywmd\Invent\Console\Command\InventControllerCommand" type="Wesleywmd\Invent\Model\Component\BaseCommand">
+    <virtualType name="Wesleywmd\Invent\Model\Controller\Command" type="Wesleywmd\Invent\Model\Component\BaseCommand">
         <arguments>
-            <argument name="commandDefinition" xsi:type="object">Wesleywmd\Invent\Console\Command\InventControllerCommandDefinition</argument>
+            <argument name="commandDefinition" xsi:type="object">Wesleywmd\Invent\Model\Controller\CommandDefinition</argument>
             <argument name="component" xsi:type="object">Wesleywmd\Invent\Model\Controller\Component</argument>
             <argument name="dataFactory" xsi:type="object">Wesleywmd\Invent\Model\Controller\DataFactory</argument>
             <argument name="validator" xsi:type="object">Wesleywmd\Invent\Model\Controller\Validator</argument>
         </arguments>
     </virtualType>
 
-    <virtualType name="cronComponent" type="Wesleywmd\Invent\Model\Component\BaseComponent">
+    <virtualType name="Wesleywmd\Invent\Model\Cron\Component" type="Wesleywmd\Invent\Model\Component\BaseComponent">
         <arguments>
             <argument name="renderers" xsi:type="array">
                 <item name="phpRenderer" xsi:type="object">Wesleywmd\Invent\Model\Cron\PhpRenderer</item>
@@ -150,42 +310,147 @@
             </argument>
         </arguments>
     </virtualType>
-    <type name="Wesleywmd\Invent\Console\Command\InventCronCommand">
+    <virtualType name="Wesleywmd\Invent\Model\Cron\CommandDefinition" type="Wesleywmd\Invent\Model\Component\BaseCommandDefinition">
         <arguments>
-            <argument name="component" xsi:type="object">cronComponent</argument>
+            <argument name="name" xsi:type="string">invent:cron</argument>
+            <argument name="description" xsi:type="string">Create Cron</argument>
+            <argument name="successMessage" xsi:type="string">Cron Created Successfully!</argument>
+            <argument name="arguments" xsi:type="array">
+                <item name="cronName" xsi:type="array">
+                    <item name="mode" xsi:type="const">Symfony\Component\Console\Input\InputArgument::REQUIRED</item>
+                    <item name="description" xsi:type="string">Cron Name</item>
+                </item>
+            </argument>
+            <argument name="options" xsi:type="array">
+                <item name="method" xsi:type="array">
+                    <item name="mode" xsi:type="const">Symfony\Component\Console\Input\InputOption::VALUE_REQUIRED</item>
+                    <item name="description" xsi:type="string">Method Name</item>
+                    <item name="default" xsi:type="string">execute</item>
+                </item>
+                <item name="schedule" xsi:type="array">
+                    <item name="mode" xsi:type="const">Symfony\Component\Console\Input\InputOption::VALUE_REQUIRED</item>
+                    <item name="description" xsi:type="string">Cron Schedule</item>
+                    <item name="default" xsi:type="string">* * * * *</item>
+                </item>
+                <item name="group" xsi:type="array">
+                    <item name="mode" xsi:type="const">Symfony\Component\Console\Input\InputOption::VALUE_REQUIRED</item>
+                    <item name="description" xsi:type="string">Cron Runtime Group</item>
+                    <item name="default" xsi:type="string">default</item>
+                </item>
+            </argument>
         </arguments>
-    </type>
+    </virtualType>
+    <virtualType name="Wesleywmd\Invent\Model\Cron\Command" type="Wesleywmd\Invent\Model\Component\BaseCommand">
+        <arguments>
+            <argument name="commandDefinition" xsi:type="object">Wesleywmd\Invent\Model\Cron\CommandDefinition</argument>
+            <argument name="component" xsi:type="object">Wesleywmd\Invent\Model\Cron\Component</argument>
+            <argument name="dataFactory" xsi:type="object">Wesleywmd\Invent\Model\Cron\DataFactory</argument>
+            <argument name="validator" xsi:type="object">Wesleywmd\Invent\Model\Cron\Validator</argument>
+        </arguments>
+    </virtualType>
 
-    <virtualType name="loggerComponent" type="Wesleywmd\Invent\Model\Component\BaseComponent">
+    <virtualType name="Wesleywmd\Invent\Model\Logger\Component" type="Wesleywmd\Invent\Model\Component\BaseComponent">
         <arguments>
             <argument name="renderers" xsi:type="array">
                 <item name="phpRenderer" xsi:type="object">Wesleywmd\Invent\Model\Logger\PhpRenderer</item>
-                <item name="handlerRenderer" xsi:type="object">Wesleywmd\Invent\Model\Logger\HandlerPhpRenderer</item>
+                <item name="handlerPhpRenderer" xsi:type="object">Wesleywmd\Invent\Model\Logger\HandlerPhpRenderer</item>
                 <item name="xmlRenderer" xsi:type="object">Wesleywmd\Invent\Model\Logger\XmlRenderer</item>
             </argument>
         </arguments>
     </virtualType>
-    <type name="Wesleywmd\Invent\Console\Command\InventLoggerCommand">
+    <virtualType name="Wesleywmd\Invent\Model\Logger\CommandDefinition" type="Wesleywmd\Invent\Model\Component\BaseCommandDefinition">
         <arguments>
-            <argument name="component" xsi:type="object">loggerComponent</argument>
+            <argument name="name" xsi:type="string">invent:logger</argument>
+            <argument name="description" xsi:type="string">Create Logger</argument>
+            <argument name="successMessage" xsi:type="string">Logger Created Successfully!</argument>
+            <argument name="arguments" xsi:type="array">
+                <item name="loggerName" xsi:type="array">
+                    <item name="mode" xsi:type="const">Symfony\Component\Console\Input\InputArgument::REQUIRED</item>
+                    <item name="description" xsi:type="string">Logger Name</item>
+                </item>
+            </argument>
+            <argument name="options" xsi:type="array">
+                <item name="fileName" xsi:type="array">
+                    <item name="mode" xsi:type="const">Symfony\Component\Console\Input\InputOption::VALUE_REQUIRED</item>
+                    <item name="description" xsi:type="string">File Name</item>
+                    <item name="default" xsi:type="string">error</item>
+                </item>
+                <item name="type" xsi:type="array">
+                    <item name="mode" xsi:type="const">Symfony\Component\Console\Input\InputOption::VALUE_REQUIRED</item>
+                    <item name="description" xsi:type="string">Logger Type</item>
+                    <item name="default" xsi:type="string">INFO</item>
+                </item>
+            </argument>
         </arguments>
-    </type>
+    </virtualType>
+    <virtualType name="Wesleywmd\Invent\Model\Logger\Command" type="Wesleywmd\Invent\Model\Component\BaseCommand">
+        <arguments>
+            <argument name="commandDefinition" xsi:type="object">Wesleywmd\Invent\Model\Logger\CommandDefinition</argument>
+            <argument name="component" xsi:type="object">Wesleywmd\Invent\Model\Logger\Component</argument>
+            <argument name="dataFactory" xsi:type="object">Wesleywmd\Invent\Model\Logger\DataFactory</argument>
+            <argument name="validator" xsi:type="object">Wesleywmd\Invent\Model\Logger\Validator</argument>
+        </arguments>
+    </virtualType>
 
-    <virtualType name="menuComponent" type="Wesleywmd\Invent\Model\Component\BaseComponent">
+    <virtualType name="Wesleywmd\Invent\Model\Menu\Component" type="Wesleywmd\Invent\Model\Component\BaseComponent">
         <arguments>
             <argument name="renderers" xsi:type="array">
                 <item name="xmlRenderer" xsi:type="object">Wesleywmd\Invent\Model\Menu\XmlRenderer</item>
             </argument>
         </arguments>
     </virtualType>
-    <type name="Wesleywmd\Invent\Console\Command\InventMenuCommand">
+    <virtualType name="Wesleywmd\Invent\Model\Menu\CommandDefinition" type="Wesleywmd\Invent\Model\Component\BaseCommandDefinition">
         <arguments>
-            <argument name="component" xsi:type="object">menuComponent</argument>
-            <argument name="acl" xsi:type="object">aclComponent</argument>
+            <argument name="name" xsi:type="string">invent:menu</argument>
+            <argument name="description" xsi:type="string">Create Admin Menu</argument>
+            <argument name="successMessage" xsi:type="string">Admin Menu Created Successfully!</argument>
+            <argument name="arguments" xsi:type="array">
+                <item name="menuName" xsi:type="array">
+                    <item name="mode" xsi:type="const">Symfony\Component\Console\Input\InputArgument::REQUIRED</item>
+                    <item name="description" xsi:type="string">Menu Name</item>
+                </item>
+            </argument>
+            <argument name="options" xsi:type="array">
+                <item name="parent" xsi:type="array">
+                    <item name="mode" xsi:type="const">Symfony\Component\Console\Input\InputOption::VALUE_REQUIRED</item>
+                    <item name="description" xsi:type="string">Parent Menu Name</item>
+                </item>
+                <item name="title" xsi:type="array">
+                    <item name="mode" xsi:type="const">Symfony\Component\Console\Input\InputOption::VALUE_REQUIRED</item>
+                    <item name="description" xsi:type="string">Menu Title</item>
+                </item>
+                <item name="sortOrder" xsi:type="array">
+                    <item name="mode" xsi:type="const">Symfony\Component\Console\Input\InputOption::VALUE_REQUIRED</item>
+                    <item name="description" xsi:type="string">Sort Order</item>
+                    <item name="default" xsi:type="number">10</item>
+                </item>
+                <item name="action" xsi:type="array">
+                    <item name="mode" xsi:type="const">Symfony\Component\Console\Input\InputOption::VALUE_REQUIRED</item>
+                    <item name="description" xsi:type="string">Menu Action</item>
+                </item>
+                <item name="resource" xsi:type="array">
+                    <item name="mode" xsi:type="const">Symfony\Component\Console\Input\InputOption::VALUE_REQUIRED</item>
+                    <item name="description" xsi:type="string">ACL Resource</item>
+                </item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <type name="Wesleywmd\Invent\Model\Menu\Interceptor">
+        <arguments>
+            <argument name="aclComponent" xsi:type="object">Wesleywmd\Invent\Model\Acl\Component</argument>
         </arguments>
     </type>
+    <virtualType name="Wesleywmd\Invent\Model\Menu\Command" type="Wesleywmd\Invent\Model\Component\BaseCommand">
+        <arguments>
+            <argument name="commandDefinition" xsi:type="object">Wesleywmd\Invent\Model\Menu\CommandDefinition</argument>
+            <argument name="component" xsi:type="object">Wesleywmd\Invent\Model\Menu\Component</argument>
+            <argument name="dataFactory" xsi:type="object">Wesleywmd\Invent\Model\Menu\DataFactory</argument>
+            <argument name="validator" xsi:type="object">Wesleywmd\Invent\Model\Menu\Validator</argument>
+            <argument name="interceptor" xsi:type="object">Wesleywmd\Invent\Model\Menu\Interceptor</argument>
+        </arguments>
+    </virtualType>
 
-    <virtualType name="modelComponent" type="Wesleywmd\Invent\Model\Component\BaseComponent">
+    <virtualType name="Wesleywmd\Invent\Model\Model\Component" type="Wesleywmd\Invent\Model\Component\BaseComponent">
         <arguments>
             <argument name="renderers" xsi:type="array">
                 <item name="phpRenderer" xsi:type="object">Wesleywmd\Invent\Model\Model\PhpRenderer</item>
@@ -199,14 +464,57 @@
             </argument>
         </arguments>
     </virtualType>
-    <type name="Wesleywmd\Invent\Console\Command\InventModelCommand">
+    <virtualType name="Wesleywmd\Invent\Model\Model\CommandDefinition" type="Wesleywmd\Invent\Model\Component\BaseCommandDefinition">
         <arguments>
-            <argument name="component" xsi:type="object">modelComponent</argument>
-            <argument name="preference" xsi:type="object">preferenceComponent</argument>
+            <argument name="name" xsi:type="string">invent:model</argument>
+            <argument name="description" xsi:type="string">Create Model</argument>
+            <argument name="successMessage" xsi:type="string">Model Created Successfully!</argument>
+            <argument name="arguments" xsi:type="array">
+                <item name="modelName" xsi:type="array">
+                    <item name="mode" xsi:type="const">Symfony\Component\Console\Input\InputArgument::REQUIRED</item>
+                    <item name="description" xsi:type="string">Model Name</item>
+                </item>
+            </argument>
+            <argument name="options" xsi:type="array">
+                <item name="column" xsi:type="array">
+                    <item name="mode" xsi:type="const">Wesleywmd\Invent\Model\Component\BaseCommandDefinition::REQUIRED_ARRAY</item>
+                    <item name="description" xsi:type="string">Columns on database table</item>
+                </item>
+                <item name="tableName" xsi:type="array">
+                    <item name="mode" xsi:type="const">Symfony\Component\Console\Input\InputOption::VALUE_REQUIRED</item>
+                    <item name="description" xsi:type="string">Database Name</item>
+                </item>
+                <item name="no-entity-id" xsi:type="array">
+                    <item name="mode" xsi:type="const">Symfony\Component\Console\Input\InputOption::VALUE_NONE</item>
+                    <item name="description" xsi:type="string">Removes standard entity_id column</item>
+                </item>
+                <item name="no-created-at" xsi:type="array">
+                    <item name="mode" xsi:type="const">Symfony\Component\Console\Input\InputOption::VALUE_NONE</item>
+                    <item name="description" xsi:type="string">Removes standard created_at column</item>
+                </item>
+                <item name="no-updated-at" xsi:type="array">
+                    <item name="mode" xsi:type="const">Symfony\Component\Console\Input\InputOption::VALUE_NONE</item>
+                    <item name="description" xsi:type="string">Removes standard updated_at column</item>
+                </item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <type name="Wesleywmd\Invent\Model\Model\Interceptor">
+        <arguments>
+            <argument name="preferenceComponent" xsi:type="object">Wesleywmd\Invent\Model\Preference\Component</argument>
         </arguments>
     </type>
+    <virtualType name="Wesleywmd\Invent\Model\Model\Command" type="Wesleywmd\Invent\Model\Component\BaseCommand">
+        <arguments>
+            <argument name="commandDefinition" xsi:type="object">Wesleywmd\Invent\Model\Model\CommandDefinition</argument>
+            <argument name="component" xsi:type="object">Wesleywmd\Invent\Model\Model\Component</argument>
+            <argument name="dataFactory" xsi:type="object">Wesleywmd\Invent\Model\Model\DataFactory</argument>
+            <argument name="validator" xsi:type="object">Wesleywmd\Invent\Model\Model\Validator</argument>
+            <argument name="interceptor" xsi:type="object">Wesleywmd\Invent\Model\Model\Interceptor</argument>
+        </arguments>
+    </virtualType>
 
-    <virtualType name="moduleComponent" type="Wesleywmd\Invent\Model\Component\BaseComponent">
+    <virtualType name="Wesleywmd\Invent\Model\Module\Component" type="Wesleywmd\Invent\Model\Component\BaseComponent">
         <arguments>
             <argument name="renderers" xsi:type="array">
                 <item name="phpRenderer" xsi:type="object">Wesleywmd\Invent\Model\Module\PhpRenderer</item>
@@ -214,27 +522,90 @@
             </argument>
         </arguments>
     </virtualType>
-    <type name="Wesleywmd\Invent\Console\Command\InventModuleCommand">
+    <virtualType name="Wesleywmd\Invent\Model\Module\CommandDefinition" type="Wesleywmd\Invent\Model\Component\BaseCommandDefinition">
         <arguments>
-            <argument name="component" xsi:type="object">moduleComponent</argument>
-            <argument name="block" xsi:type="object">Wesleywmd\Invent\Model\Block\Component</argument>
-            <argument name="controller" xsi:type="object">Wesleywmd\Invent\Model\Controller\Component</argument>
-            <argument name="command" xsi:type="object">Wesleywmd\Invent\Model\Command\Component</argument>
-            <argument name="cron" xsi:type="object">cronComponent</argument>
-            <argument name="model" xsi:type="object">modelComponent</argument>
+            <argument name="name" xsi:type="string">invent:module</argument>
+            <argument name="description" xsi:type="string">Create Module</argument>
+            <argument name="successMessage" xsi:type="string">Module Created Successfully!</argument>
+            <argument name="options" xsi:type="array">
+                <item name="block" xsi:type="array">
+                    <item name="mode" xsi:type="const">Wesleywmd\Invent\Model\Component\BaseCommandDefinition::REQUIRED_ARRAY</item>
+                    <item name="description" xsi:type="string">Blocks to add</item>
+                </item>
+                <item name="command" xsi:type="array">
+                    <item name="mode" xsi:type="const">Wesleywmd\Invent\Model\Component\BaseCommandDefinition::REQUIRED_ARRAY</item>
+                    <item name="description" xsi:type="string">Commands to add</item>
+                </item>
+                <item name="controller" xsi:type="array">
+                    <item name="mode" xsi:type="const">Wesleywmd\Invent\Model\Component\BaseCommandDefinition::REQUIRED_ARRAY</item>
+                    <item name="description" xsi:type="string">Controllers to add</item>
+                </item>
+                <item name="cron" xsi:type="array">
+                    <item name="mode" xsi:type="const">Wesleywmd\Invent\Model\Component\BaseCommandDefinition::REQUIRED_ARRAY</item>
+                    <item name="description" xsi:type="string">Crons to add</item>
+                </item>
+                <item name="model" xsi:type="array">
+                    <item name="mode" xsi:type="const">Wesleywmd\Invent\Model\Component\BaseCommandDefinition::REQUIRED_ARRAY</item>
+                    <item name="description" xsi:type="string">Models to add</item>
+                </item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <type name="Wesleywmd\Invent\Model\Module\Interceptor">
+        <arguments>
+            <argument name="blockComponent" xsi:type="object">Wesleywmd\Invent\Model\Block\Component</argument>
+            <argument name="commandComponent" xsi:type="object">Wesleywmd\Invent\Model\Command\Component</argument>
+            <argument name="controllerComponent" xsi:type="object">Wesleywmd\Invent\Model\Controller\Component</argument>
+            <argument name="cronComponent" xsi:type="object">Wesleywmd\Invent\Model\Cron\Component</argument>
+            <argument name="modelComponent" xsi:type="object">Wesleywmd\Invent\Model\Model\Component</argument>
         </arguments>
     </type>
+    <virtualType name="Wesleywmd\Invent\Model\Module\Command" type="Wesleywmd\Invent\Model\Component\BaseCommand">
+        <arguments>
+            <argument name="commandDefinition" xsi:type="object">Wesleywmd\Invent\Model\Module\CommandDefinition</argument>
+            <argument name="component" xsi:type="object">Wesleywmd\Invent\Model\Module\Component</argument>
+            <argument name="dataFactory" xsi:type="object">Wesleywmd\Invent\Model\Module\DataFactory</argument>
+            <argument name="validator" xsi:type="object">Wesleywmd\Invent\Model\Module\Validator</argument>
+            <argument name="interceptor" xsi:type="object">Wesleywmd\Invent\Model\Module\Interceptor</argument>
+        </arguments>
+    </virtualType>
 
-    <virtualType name="preferenceComponent" type="Wesleywmd\Invent\Model\Component\BaseComponent">
+    <virtualType name="Wesleywmd\Invent\Model\Preference\Component" type="Wesleywmd\Invent\Model\Component\BaseComponent">
         <arguments>
             <argument name="renderers" xsi:type="array">
                 <item name="xmlRenderer" xsi:type="object">Wesleywmd\Invent\Model\Preference\XmlRenderer</item>
             </argument>
         </arguments>
     </virtualType>
-    <type name="Wesleywmd\Invent\Console\Command\InventPreferenceCommand">
+    <virtualType name="Wesleywmd\Invent\Model\Preference\CommandDefinition" type="Wesleywmd\Invent\Model\Component\BaseCommandDefinition">
         <arguments>
-            <argument name="component" xsi:type="object">preferenceComponent</argument>
+            <argument name="name" xsi:type="string">invent:preference</argument>
+            <argument name="description" xsi:type="string">Create Preference</argument>
+            <argument name="successMessage" xsi:type="string">Preference Created Successfully!</argument>
+            <argument name="arguments" xsi:type="array">
+                <item name="for" xsi:type="array">
+                    <item name="mode" xsi:type="const">Symfony\Component\Console\Input\InputArgument::REQUIRED</item>
+                    <item name="description" xsi:type="string">Object the preference is for</item>
+                </item>
+                <item name="type" xsi:type="array">
+                    <item name="mode" xsi:type="const">Symfony\Component\Console\Input\InputArgument::REQUIRED</item>
+                    <item name="description" xsi:type="string">Object to use for the preference</item>
+                </item>
+            </argument>
+            <argument name="options" xsi:type="array">
+                <item name="area" xsi:type="array">
+                    <item name="mode" xsi:type="const">Symfony\Component\Console\Input\InputOption::VALUE_REQUIRED</item>
+                    <item name="description" xsi:type="string">DI load area</item>
+                </item>
+            </argument>
         </arguments>
-    </type>
+    </virtualType>
+    <virtualType name="Wesleywmd\Invent\Model\Preference\Command" type="Wesleywmd\Invent\Model\Component\BaseCommand">
+        <arguments>
+            <argument name="commandDefinition" xsi:type="object">Wesleywmd\Invent\Model\Preference\CommandDefinition</argument>
+            <argument name="component" xsi:type="object">Wesleywmd\Invent\Model\Preference\Component</argument>
+            <argument name="dataFactory" xsi:type="object">Wesleywmd\Invent\Model\Preference\DataFactory</argument>
+            <argument name="validator" xsi:type="object">Wesleywmd\Invent\Model\Preference\Validator</argument>
+        </arguments>
+    </virtualType>
 </config>
