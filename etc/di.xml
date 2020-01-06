@@ -530,23 +530,27 @@
             <argument name="options" xsi:type="array">
                 <item name="block" xsi:type="array">
                     <item name="mode" xsi:type="const">Wesleywmd\Invent\Model\Component\BaseCommandDefinition::REQUIRED_ARRAY</item>
-                    <item name="description" xsi:type="string">Blocks to add</item>
+                    <item name="description" xsi:type="string">Blocks to add (Can add multiple)</item>
                 </item>
                 <item name="command" xsi:type="array">
                     <item name="mode" xsi:type="const">Wesleywmd\Invent\Model\Component\BaseCommandDefinition::REQUIRED_ARRAY</item>
-                    <item name="description" xsi:type="string">Commands to add</item>
+                    <item name="description" xsi:type="string">Commands to add (Can add multiple)</item>
                 </item>
                 <item name="controller" xsi:type="array">
                     <item name="mode" xsi:type="const">Wesleywmd\Invent\Model\Component\BaseCommandDefinition::REQUIRED_ARRAY</item>
-                    <item name="description" xsi:type="string">Controllers to add</item>
+                    <item name="description" xsi:type="string">Controllers to add (Can add multiple)</item>
                 </item>
                 <item name="cron" xsi:type="array">
                     <item name="mode" xsi:type="const">Wesleywmd\Invent\Model\Component\BaseCommandDefinition::REQUIRED_ARRAY</item>
-                    <item name="description" xsi:type="string">Crons to add</item>
+                    <item name="description" xsi:type="string">Crons to add (Can add multiple)</item>
+                </item>
+                <item name="logger" xsi:type="array">
+                    <item name="mode" xsi:type="const">Symfony\Component\Console\Input\InputOption::VALUE_REQUIRED</item>
+                    <item name="description" xsi:type="string">Logger to add (Only can specify one logger)</item>
                 </item>
                 <item name="model" xsi:type="array">
                     <item name="mode" xsi:type="const">Wesleywmd\Invent\Model\Component\BaseCommandDefinition::REQUIRED_ARRAY</item>
-                    <item name="description" xsi:type="string">Models to add</item>
+                    <item name="description" xsi:type="string">Models to add (Can add multiple)</item>
                 </item>
             </argument>
         </arguments>
@@ -558,6 +562,7 @@
             <argument name="controllerComponent" xsi:type="object">Wesleywmd\Invent\Model\Controller\Component</argument>
             <argument name="cronComponent" xsi:type="object">Wesleywmd\Invent\Model\Cron\Component</argument>
             <argument name="modelComponent" xsi:type="object">Wesleywmd\Invent\Model\Model\Component</argument>
+            <argument name="loggerComponent" xsi:type="object">Wesleywmd\Invent\Model\Logger\Component</argument>
         </arguments>
     </type>
     <virtualType name="Wesleywmd\Invent\Model\Module\Command" type="Wesleywmd\Invent\Model\Component\BaseCommand">

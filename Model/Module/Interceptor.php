@@ -11,32 +11,37 @@ use Wesleywmd\Invent\Model\Command;
 use Wesleywmd\Invent\Model\Component\BaseInterceptor;
 use Wesleywmd\Invent\Model\Controller;
 use Wesleywmd\Invent\Model\Cron;
+use Wesleywmd\Invent\Model\Logger;
 use Wesleywmd\Invent\Model\Model;
 use Wesleywmd\Invent\Model\ModuleNameFactory;
 
 class Interceptor extends BaseInterceptor implements InterceptorInterface
 {
     private $moduleNameFactory;
-    
+
     private $blockDataFactory;
-    
+
     private $blockComponent;
-    
+
     private $commandDataFactory;
-    
+
     private $commandComponent;
-    
+
     private $controllerDataFactory;
-    
+
     private $controllerComponent;
-    
+
     private $cronDataFactory;
-    
+
     private $cronComponent;
-    
+
     private $modelDataFactory;
-    
+
     private $modelComponent;
+
+    private $loggerDataFactory;
+
+    private $loggerComponent;
 
     public function __construct(
         ModuleNameFactory $moduleNameFactory,
@@ -49,7 +54,9 @@ class Interceptor extends BaseInterceptor implements InterceptorInterface
         Cron\DataFactory $cronDataFactory,
         ComponentInterface $cronComponent,
         Model\DataFactory $modelDataFactory,
-        ComponentInterface $modelComponent
+        ComponentInterface $modelComponent,
+        Logger\DataFactory $loggerDataFactory,
+        ComponentInterface $loggerComponent
     ) {
         $this->moduleNameFactory = $moduleNameFactory;
         $this->blockDataFactory = $blockDataFactory;
@@ -62,6 +69,8 @@ class Interceptor extends BaseInterceptor implements InterceptorInterface
         $this->cronComponent = $cronComponent;
         $this->modelDataFactory = $modelDataFactory;
         $this->modelComponent = $modelComponent;
+        $this->loggerDataFactory = $loggerDataFactory;
+        $this->loggerComponent = $loggerComponent;
     }
 
     public function after(InventStyle $io, DataInterface $data)
@@ -71,11 +80,16 @@ class Interceptor extends BaseInterceptor implements InterceptorInterface
         $this->addComponents($io, 'controller', 'controllerUrl', $this->controllerComponent, $this->controllerDataFactory);
         $this->addComponents($io, 'cron', 'cronName', $this->cronComponent, $this->cronDataFactory);
         $this->addComponents($io, 'model', 'modelName', $this->modelComponent, $this->modelDataFactory);
+        $this->addComponents($io, 'logger', 'loggerName', $this->loggerComponent, $this->loggerDataFactory);
     }
 
     private function addComponents(InventStyle $io, $option, $nameKey, ComponentInterface $component, DataFactoryInterface $dataFactory)
     {
-        foreach( $io->getInput()->getOption($option) as $name ) {
+        $options = $io->getInput()->getOption($option);
+        if (!is_array($options)) {
+            $options = [$options];
+        }
+        foreach( $options as $name ) {
             $data = $dataFactory->createFromArray([
                 'moduleName' => $this->moduleNameFactory->create($io->getInput()->getArgument('moduleName')),
                 $nameKey => $name
