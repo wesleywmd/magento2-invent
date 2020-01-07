@@ -1,5 +1,5 @@
 <?php
-namespace Wesleywmd\Invent\Model\Cron;
+namespace Wesleywmd\Invent\Model\Cron\Renderer;
 
 use Wesleywmd\Invent\Api\DataInterface;
 use Wesleywmd\Invent\Api\RendererInterface;
@@ -7,7 +7,7 @@ use Wesleywmd\Invent\Model\Component\AbstractXmlRenderer;
 use Wesleywmd\Invent\Model\XmlParser\Dom;
 use Wesleywmd\Invent\Model\XmlParser\Location;
 
-class XmlRenderer extends AbstractXmlRenderer implements RendererInterface
+class CrontabXml extends AbstractXmlRenderer implements RendererInterface
 {
     protected function getType()
     {

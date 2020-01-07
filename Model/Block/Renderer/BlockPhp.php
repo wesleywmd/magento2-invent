@@ -1,11 +1,11 @@
 <?php
-namespace Wesleywmd\Invent\Model\Block;
+namespace Wesleywmd\Invent\Model\Block\Renderer;
 
 use Wesleywmd\Invent\Api\DataInterface;
 use Wesleywmd\Invent\Api\RendererInterface;
 use Wesleywmd\Invent\Model\Component\AbstractPhpRenderer;
 
-class PhpRenderer extends AbstractPhpRenderer implements RendererInterface
+class BlockPhp extends AbstractPhpRenderer implements RendererInterface
 {
     protected function getUseStatements(DataInterface $data)
     {

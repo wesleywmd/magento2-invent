@@ -1,5 +1,5 @@
 <?php
-namespace Wesleywmd\Invent\Model\Acl;
+namespace Wesleywmd\Invent\Model\Acl\Renderer;
 
 use Wesleywmd\Invent\Api\DataInterface;
 use Wesleywmd\Invent\Api\RendererInterface;
@@ -9,7 +9,7 @@ use Wesleywmd\Invent\Model\XmlParser\Dom;
 use Wesleywmd\Invent\Model\XmlParser\DomFactory;
 use Wesleywmd\Invent\Model\XmlParser\Location;
 
-class XmlRenderer extends AbstractXmlRenderer implements RendererInterface
+class AclXml extends AbstractXmlRenderer implements RendererInterface
 {
     private $aclHelper;
 

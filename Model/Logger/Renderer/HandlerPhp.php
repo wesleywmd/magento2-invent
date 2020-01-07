@@ -1,11 +1,11 @@
 <?php
-namespace Wesleywmd\Invent\Model\Logger;
+namespace Wesleywmd\Invent\Model\Logger\Renderer;
 
 use Wesleywmd\Invent\Api\DataInterface;
 use Wesleywmd\Invent\Api\RendererInterface;
 use Wesleywmd\Invent\Model\Component\AbstractPhpRenderer;
 
-class HandlerPhpRenderer extends AbstractPhpRenderer implements RendererInterface
+class HandlerPhp extends AbstractPhpRenderer implements RendererInterface
 {
     public function getPath(DataInterface $data)
     {

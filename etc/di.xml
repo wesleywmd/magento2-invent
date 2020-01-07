@@ -22,7 +22,7 @@
     <virtualType name="Wesleywmd\Invent\Model\Acl\Component" type="Wesleywmd\Invent\Model\Component\BaseComponent">
         <arguments>
             <argument name="renderers" xsi:type="array">
-                <item name="xmlRenderer" xsi:type="object">Wesleywmd\Invent\Model\Acl\XmlRenderer</item>
+                <item name="aclXml" xsi:type="object">Wesleywmd\Invent\Model\Acl\Renderer\AclXml</item>
             </argument>
         </arguments>
     </virtualType>
@@ -65,7 +65,7 @@
     <virtualType name="Wesleywmd\Invent\Model\Block\Component" type="Wesleywmd\Invent\Model\Component\BaseComponent">
         <arguments>
             <argument name="renderers" xsi:type="array">
-                <item name="phpRenderer" xsi:type="object">Wesleywmd\Invent\Model\Block\PhpRenderer</item>
+                <item name="blockPhp" xsi:type="object">Wesleywmd\Invent\Model\Block\Renderer\BlockPhp</item>
             </argument>
         </arguments>
     </virtualType>
@@ -94,8 +94,8 @@
     <virtualType name="Wesleywmd\Invent\Model\Command\Component" type="Wesleywmd\Invent\Model\Component\BaseComponent">
         <arguments>
             <argument name="renderers" xsi:type="array">
-                <item name="phpRenderer" xsi:type="object">Wesleywmd\Invent\Model\Command\PhpRenderer</item>
-                <item name="xmlRenderer" xsi:type="object">Wesleywmd\Invent\Model\Command\XmlRenderer</item>
+                <item name="commandPhp" xsi:type="object">Wesleywmd\Invent\Model\Command\Renderer\CommandPhp</item>
+                <item name="diXml" xsi:type="object">Wesleywmd\Invent\Model\Command\Renderer\DiXml</item>
             </argument>
         </arguments>
     </virtualType>
@@ -124,7 +124,7 @@
     <virtualType name="Wesleywmd\Invent\Model\Config\Component" type="Wesleywmd\Invent\Model\Component\BaseComponent">
         <arguments>
             <argument name="renderers" xsi:type="array">
-                <item name="xmlRenderer" xsi:type="object">Wesleywmd\Invent\Model\Config\XmlRenderer</item>
+                <item name="systemXml" xsi:type="object">Wesleywmd\Invent\Model\Config\Renderer\SystemXml</item>
             </argument>
         </arguments>
     </virtualType>
@@ -268,8 +268,8 @@
     <virtualType name="Wesleywmd\Invent\Model\Controller\Component" type="Wesleywmd\Invent\Model\Component\BaseComponent">
         <arguments>
             <argument name="renderers" xsi:type="array">
-                <item name="phpRenderer" xsi:type="object">Wesleywmd\Invent\Model\Controller\PhpRenderer</item>
-                <item name="xmlRenderer" xsi:type="object">Wesleywmd\Invent\Model\Controller\XmlRenderer</item>
+                <item name="controllerPhp" xsi:type="object">Wesleywmd\Invent\Model\Controller\Renderer\ControllerPhp</item>
+                <item name="routeXml" xsi:type="object">Wesleywmd\Invent\Model\Controller\Renderer\RouteXml</item>
             </argument>
         </arguments>
     </virtualType>
@@ -305,8 +305,8 @@
     <virtualType name="Wesleywmd\Invent\Model\Cron\Component" type="Wesleywmd\Invent\Model\Component\BaseComponent">
         <arguments>
             <argument name="renderers" xsi:type="array">
-                <item name="phpRenderer" xsi:type="object">Wesleywmd\Invent\Model\Cron\PhpRenderer</item>
-                <item name="xmlRenderer" xsi:type="object">Wesleywmd\Invent\Model\Cron\XmlRenderer</item>
+                <item name="cronPhp" xsi:type="object">Wesleywmd\Invent\Model\Cron\Renderer\CronPhp</item>
+                <item name="crontabXml" xsi:type="object">Wesleywmd\Invent\Model\Cron\Renderer\CrontabXml</item>
             </argument>
         </arguments>
     </virtualType>
@@ -352,9 +352,9 @@
     <virtualType name="Wesleywmd\Invent\Model\Logger\Component" type="Wesleywmd\Invent\Model\Component\BaseComponent">
         <arguments>
             <argument name="renderers" xsi:type="array">
-                <item name="phpRenderer" xsi:type="object">Wesleywmd\Invent\Model\Logger\PhpRenderer</item>
-                <item name="handlerPhpRenderer" xsi:type="object">Wesleywmd\Invent\Model\Logger\HandlerPhpRenderer</item>
-                <item name="xmlRenderer" xsi:type="object">Wesleywmd\Invent\Model\Logger\XmlRenderer</item>
+                <item name="loggerPhp" xsi:type="object">Wesleywmd\Invent\Model\Logger\Renderer\LoggerPhp</item>
+                <item name="handlerPhp" xsi:type="object">Wesleywmd\Invent\Model\Logger\Renderer\HandlerPhp</item>
+                <item name="diXml" xsi:type="object">Wesleywmd\Invent\Model\Logger\Renderer\DiXml</item>
             </argument>
         </arguments>
     </virtualType>
@@ -395,7 +395,7 @@
     <virtualType name="Wesleywmd\Invent\Model\Menu\Component" type="Wesleywmd\Invent\Model\Component\BaseComponent">
         <arguments>
             <argument name="renderers" xsi:type="array">
-                <item name="xmlRenderer" xsi:type="object">Wesleywmd\Invent\Model\Menu\XmlRenderer</item>
+                <item name="menuXml" xsi:type="object">Wesleywmd\Invent\Model\Menu\Renderer\MenuXml</item>
             </argument>
         </arguments>
     </virtualType>
@@ -453,14 +453,14 @@
     <virtualType name="Wesleywmd\Invent\Model\Model\Component" type="Wesleywmd\Invent\Model\Component\BaseComponent">
         <arguments>
             <argument name="renderers" xsi:type="array">
-                <item name="phpRenderer" xsi:type="object">Wesleywmd\Invent\Model\Model\PhpRenderer</item>
-                <item name="collectionRenderer" xsi:type="object">Wesleywmd\Invent\Model\Model\CollectionPhpRenderer</item>
-                <item name="interfaceRenderer" xsi:type="object">Wesleywmd\Invent\Model\Model\InterfacePhpRenderer</item>
-                <item name="repositoryInterfaceRenderer" xsi:type="object">Wesleywmd\Invent\Model\Model\RepositoryInterfacePhpRenderer</item>
-                <item name="repositoryRenderer" xsi:type="object">Wesleywmd\Invent\Model\Model\RepositoryPhpRenderer</item>
-                <item name="resourceRenderer" xsi:type="object">Wesleywmd\Invent\Model\Model\ResourcePhpRenderer</item>
-                <item name="searchResultsInterfaceRenderer" xsi:type="object">Wesleywmd\Invent\Model\Model\SearchResultsInterfacePhpRenderer</item>
-                <item name="xmlRenderer" xsi:type="object">Wesleywmd\Invent\Model\Model\XmlRenderer</item>
+                <item name="modelPhp" xsi:type="object">Wesleywmd\Invent\Model\Model\Renderer\ModelPhp</item>
+                <item name="collectionPhp" xsi:type="object">Wesleywmd\Invent\Model\Model\Renderer\CollectionPhp</item>
+                <item name="interfacePhp" xsi:type="object">Wesleywmd\Invent\Model\Model\Renderer\InterfacePhp</item>
+                <item name="repositoryInterfacePhp" xsi:type="object">Wesleywmd\Invent\Model\Model\Renderer\RepositoryInterfacePhp</item>
+                <item name="repositoryPhp" xsi:type="object">Wesleywmd\Invent\Model\Model\Renderer\RepositoryPhp</item>
+                <item name="resourcePhp" xsi:type="object">Wesleywmd\Invent\Model\Model\Renderer\ResourcePhp</item>
+                <item name="searchResultsInterfacePhp" xsi:type="object">Wesleywmd\Invent\Model\Model\Renderer\SearchResultsInterfacePhp</item>
+                <item name="dbSchemaXml" xsi:type="object">Wesleywmd\Invent\Model\Model\Renderer\DbSchemaXml</item>
             </argument>
         </arguments>
     </virtualType>
@@ -517,8 +517,8 @@
     <virtualType name="Wesleywmd\Invent\Model\Module\Component" type="Wesleywmd\Invent\Model\Component\BaseComponent">
         <arguments>
             <argument name="renderers" xsi:type="array">
-                <item name="phpRenderer" xsi:type="object">Wesleywmd\Invent\Model\Module\PhpRenderer</item>
-                <item name="xmlRenderer" xsi:type="object">Wesleywmd\Invent\Model\Module\XmlRenderer</item>
+                <item name="registrationPhp" xsi:type="object">Wesleywmd\Invent\Model\Module\Renderer\RegistrationPhp</item>
+                <item name="moduleXml" xsi:type="object">Wesleywmd\Invent\Model\Module\Renderer\ModuleXml</item>
             </argument>
         </arguments>
     </virtualType>
@@ -578,7 +578,7 @@
     <virtualType name="Wesleywmd\Invent\Model\Preference\Component" type="Wesleywmd\Invent\Model\Component\BaseComponent">
         <arguments>
             <argument name="renderers" xsi:type="array">
-                <item name="xmlRenderer" xsi:type="object">Wesleywmd\Invent\Model\Preference\XmlRenderer</item>
+                <item name="xmlRenderer" xsi:type="object">Wesleywmd\Invent\Model\Preference\Renderer\DiXml</item>
             </argument>
         </arguments>
     </virtualType>

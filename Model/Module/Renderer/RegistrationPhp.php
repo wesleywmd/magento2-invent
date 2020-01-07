@@ -1,11 +1,11 @@
 <?php
-namespace Wesleywmd\Invent\Model\Module;
+namespace Wesleywmd\Invent\Model\Module\Renderer;
 
 use Wesleywmd\Invent\Api\DataInterface;
 use Wesleywmd\Invent\Api\RendererInterface;
 use Wesleywmd\Invent\Model\Component\AbstractPhpRenderer;
 
-class PhpRenderer extends AbstractPhpRenderer implements RendererInterface
+class RegistrationPhp extends AbstractPhpRenderer implements RendererInterface
 {
     public function getContents(DataInterface $data)
     {
