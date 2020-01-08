@@ -5,7 +5,7 @@ use Wesleywmd\Invent\Api\RendererInterface;
 use Wesleywmd\Invent\Model\XmlParser\Dom;
 use Wesleywmd\Invent\Model\XmlParser\Location;
 
-class BaseDiXml extends AbstractXmlRenderer implements RendererInterface
+abstract class BaseDiXml extends AbstractXmlRenderer implements RendererInterface
 {
     protected function getType()
     {
@@ -15,7 +15,7 @@ class BaseDiXml extends AbstractXmlRenderer implements RendererInterface
     protected function addType(Dom &$dom, $name, $arguments = [])
     {
         $dom->updateElement('type', 'name', $name, null);
-        $xpath = ['type[@name="'.$name.'"'];
+        $xpath = ['type[@name="'.$name.'"]'];
         if (!empty($arguments)) {
             $dom->updateElement('arguments', null, null, null, $xpath);
             $this->addArguments($dom, $arguments, array_merge($xpath, ['arguments']), 'argument');
@@ -26,7 +26,7 @@ class BaseDiXml extends AbstractXmlRenderer implements RendererInterface
     protected function addVirtualType(Dom &$dom, $name, $type, $arguments = [])
     {
         $dom->updateElement('virtualType', 'name', $name, null);
-        $xpath = ['virtualType[@name="'.$name.'"'];
+        $xpath = ['virtualType[@name="'.$name.'"]'];
         $dom->updateAttribute('xsi:type', $type, $xpath);
         if (!empty($arguments)) {
             $dom->updateElement('arguments', null, null, null, $xpath);

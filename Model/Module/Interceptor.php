@@ -86,6 +86,9 @@ class Interceptor extends BaseInterceptor implements InterceptorInterface
     private function addComponents(InventStyle $io, $option, $nameKey, ComponentInterface $component, DataFactoryInterface $dataFactory)
     {
         $options = $io->getInput()->getOption($option);
+        if (is_null($options)) {
+            return;
+        }
         if (!is_array($options)) {
             $options = [$options];
         }
