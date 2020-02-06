@@ -14,7 +14,7 @@
                 <item name="invent_model" xsi:type="object">Wesleywmd\Invent\Model\Model\Command</item>
                 <item name="invent_module" xsi:type="object">Wesleywmd\Invent\Model\Module\Command</item>
                 <item name="invent_preference" xsi:type="object">Wesleywmd\Invent\Model\Preference\Command</item>
-                <!--<item name="invent_admin_crud" xsi:type="object">Wesleywmd\Invent\Console\Command\InventAdminCrudCommand</item>-->
+                <item name="invent_admin_crud" xsi:type="object">Wesleywmd\Invent\Model\Crud\Command</item>
             </argument>
         </arguments>
     </type>
@@ -346,6 +346,46 @@
             <argument name="component" xsi:type="object">Wesleywmd\Invent\Model\Cron\Component</argument>
             <argument name="dataFactory" xsi:type="object">Wesleywmd\Invent\Model\Cron\DataFactory</argument>
             <argument name="validator" xsi:type="object">Wesleywmd\Invent\Model\Cron\Validator</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="Wesleywmd\Invent\Model\Crud\Component" type="Wesleywmd\Invent\Model\Component\BaseComponent">
+        <arguments>
+            <argument name="renderers" xsi:type="array">
+                <item name="actionsColumnPhp" xsi:type="object">Wesleywmd\Invent\Model\Crud\Renderer\ActionsColumnPhp</item>
+                <item name="backButtonPhp" xsi:type="object">Wesleywmd\Invent\Model\Crud\Renderer\BackButtonPhp</item>
+                <item name="createControllerPhp" xsi:type="object">Wesleywmd\Invent\Model\Crud\Renderer\CreateControllerPhp</item>
+                <item name="indexControllerPhp" xsi:type="object">Wesleywmd\Invent\Model\Crud\Renderer\IndexControllerPhp</item>
+                <item name="resetButtonPhp" xsi:type="object">Wesleywmd\Invent\Model\Crud\Renderer\ResetButtonPhp</item>
+                <item name="saveButtonPhp" xsi:type="object">Wesleywmd\Invent\Model\Crud\Renderer\SaveButtonPhp</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="Wesleywmd\Invent\Model\Crud\CommandDefinition" type="Wesleywmd\Invent\Model\Component\BaseCommandDefinition">
+        <arguments>
+            <argument name="name" xsi:type="string">invent:crud</argument>
+            <argument name="description" xsi:type="string">Create Admin CRUD</argument>
+            <argument name="successMessage" xsi:type="string">Admin CRUD Created Successfully!</argument>
+            <argument name="arguments" xsi:type="array">
+                <item name="modelName" xsi:type="array">
+                    <item name="mode" xsi:type="const">Symfony\Component\Console\Input\InputArgument::REQUIRED</item>
+                    <item name="description" xsi:type="string">Model Name</item>
+                </item>
+            </argument>
+            <argument name="options" xsi:type="array">
+                <item name="no-model" xsi:type="array">
+                    <item name="mode" xsi:type="const">Symfony\Component\Console\Input\InputOption::VALUE_NONE</item>
+                    <item name="description" xsi:type="string">Exclude creating a model</item>
+                </item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="Wesleywmd\Invent\Model\Crud\Command" type="Wesleywmd\Invent\Model\Component\BaseCommand">
+        <arguments>
+            <argument name="commandDefinition" xsi:type="object">Wesleywmd\Invent\Model\Crud\CommandDefinition</argument>
+            <argument name="component" xsi:type="object">Wesleywmd\Invent\Model\Crud\Component</argument>
+            <argument name="dataFactory" xsi:type="object">Wesleywmd\Invent\Model\Crud\DataFactory</argument>
+            <argument name="validator" xsi:type="object">Wesleywmd\Invent\Model\Crud\Validator</argument>
         </arguments>
     </virtualType>
 

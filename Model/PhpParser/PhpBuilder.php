@@ -177,4 +177,17 @@ class PhpBuilder extends BuilderFactory
     {
         return $this->methodCall($this->var('this'), $name, $args);
     }
+
+    public function arrayDimFetch(\PhpParser\Node\Expr $var, \PhpParser\Node\Expr $dim = null, $attributes = [])
+    {
+        return new \PhpParser\Node\Expr\ArrayDimFetch($var, $dim, $attributes);
+    }
+
+    public function arrayMultiDimFetch(\PhpParser\Node\Expr $var, $dims = [], $attributes = [])
+    {
+        foreach ($dims as $dim) {
+            $var = $this->arrayDimFetch($var, $dim, $attributes);
+        }
+        return $var;
+    }
 }
