@@ -1,33 +1,28 @@
 <?php
 namespace Wesleywmd\Invent\Model\Crud\Renderer;
 
-use PhpParser\Node\Expr\Array_;
-use PhpParser\Node\Expr\ArrayDimFetch;
-use PhpParser\Node\Stmt\Continue_;
-use PhpParser\Node\Stmt\Foreach_;
 use Wesleywmd\Invent\Api\DataInterface;
 use Wesleywmd\Invent\Api\RendererInterface;
 use Wesleywmd\Invent\Model\Component\AbstractPhpRenderer;
-use Wesleywmd\Invent\Model\PhpParser\PhpBuilder;
-use Wesleywmd\Invent\Model\PhpParser\PrettyPrinter;
+use Wesleywmd\Invent\Model\Crud;
 
 class ActionsColumnPhp extends AbstractPhpRenderer implements RendererInterface
 {
     public function getPath(DataInterface $data)
     {
+        /** @var Crud\Data $data */
         return $data->getActionsColumnPath();
     }
 
     protected function getNamespace(DataInterface $data)
     {
+        /** @var Crud\Data $data */
         return $data->getActionsColumnNamespace();
     }
 
     protected function getUseStatements(DataInterface $data)
     {
         return [
-            $data->getModuleName()->getNamespace(['Api', 'Data', $data->getModelName().'Interface']),
-            'Creatuity\OptimumImages\Api\Data\ImageInterface',
             'Magento\Framework\UrlInterface',
             'Magento\Framework\View\Element\UiComponent\ContextInterface',
             'Magento\Framework\View\Element\UiComponentFactory',
@@ -37,15 +32,20 @@ class ActionsColumnPhp extends AbstractPhpRenderer implements RendererInterface
 
     protected function getClassStatement(DataInterface $data)
     {
-        return $this->phpBuilder->class($data->getModelName().'Actions')
+        /** @var Crud\Data $data */
+        return $this->phpBuilder->class($data->getModel()->getModelName().'Actions')
             ->extend('Column')
-            ->addStmt($this->getConstructorMethod($data))
-            ->addStmt($this->getPrepareDataSourceMethod($data));
+            ->addStmts([
+                $this->getConstructorMethod(),
+                $this->getPrepareDataSourceMethod(),
+            ]);
+
     }
 
-    protected function getConstructorMethod(DataInterface $data)
+    protected function getConstructorMethod()
     {
-        return $this->phpBuilder->method('__construct')->makePublic()
+        return $this->phpBuilder->method('__construct')
+            ->makePublic()
             ->addParams([
                 $this->phpBuilder->param('context')->setType('ContextInterface'),
                 $this->phpBuilder->param('uiComponentFactory')->setType('UiComponentFactory'),
@@ -53,80 +53,99 @@ class ActionsColumnPhp extends AbstractPhpRenderer implements RendererInterface
                 $this->phpBuilder->param('components')->setType('array')->setDefault([]),
                 $this->phpBuilder->param('data')->setType('array')->setDefault([])
             ])
-            ->addStmt($this->phpBuilder->staticCall('parent', '__construct', [
-                $this->phpBuilder->var('context'),
-                $this->phpBuilder->var('uiComponentFactory'),
-                $this->phpBuilder->var('components'),
-                $this->phpBuilder->var('data')
-            ]))
-            ->addStmt($this->phpBuilder->assign(
-                $this->phpBuilder->thisPropertyFetch('urlBuilder'),
-                $this->phpBuilder->var('urlBuilder')
-            ));
+            ->addStmts([
+                $this->phpBuilder->staticCall('parent', '__construct', [
+                    $this->phpBuilder->var('context'),
+                    $this->phpBuilder->var('uiComponentFactory'),
+                    $this->phpBuilder->var('components'),
+                    $this->phpBuilder->var('data')
+                ]),
+                $this->phpBuilder->assign(
+                    $this->phpBuilder->thisPropertyFetch('urlBuilder'),
+                    $this->phpBuilder->var('urlBuilder')
+                )
+            ]);
     }
 
-    protected function getPrepareDataSourceMethod($data)
+    protected function getPrepareDataSourceMethod()
     {
-        $dataItems = $this->phpBuilder->arrayMultiDimFetch($this->phpBuilder->var('dataSource'), [
+        $dataSourceVar = $this->phpBuilder->var('dataSource');
+        $itemVar = $this->phpBuilder->var('item');
+        $dataItemsVar = $this->phpBuilder->arrayMultiDimFetch($dataSourceVar, [
             $this->phpBuilder->val('data'),
             $this->phpBuilder->val('items')
         ]);
-        return $this->phpBuilder->method('prepareDataSource')->makePublic()
-            ->addParam($this->phpBuilder->param('dataSource')->setType('array'))
-            ->addStmt($this->phpBuilder->if(
-                $this->phpBuilder->booleanNot($this->phpBuilder->funcCall('isset', [$dataItems,])), [
-                    'stmts' => [$this->phpBuilder->returnStmt($this->phpBuilder->var('dataSource'))]
-                ]
-            ))
-            ->addStmt(new Foreach_($dataItems, $this->phpBuilder->var('item'), [
-                'byRef' => true, 'stmts' => [
-                    $this->phpBuilder->if(
-                        $this->phpBuilder->booleanNot(
-                            $this->phpBuilder->funcCall('isset', [
+        return $this->phpBuilder->method('prepareDataSource')
+            ->makePublic()
+            ->addParams([
+                $this->phpBuilder->param('dataSource')->setType('array')
+            ])
+            ->addStmts([
+                $this->phpBuilder->if(
+                    $this->phpBuilder->booleanNot($this->phpBuilder->funcCall('isset', [$dataItemsVar])),
+                    ['stmts' => [$this->phpBuilder->returnStmt($dataSourceVar)]]
+                ),
+                $this->phpBuilder->foreachLoop($dataItemsVar, $itemVar, [
+                    'byRef' => true,
+                    'stmts' => [
+                        $this->phpBuilder->if(
+                            $this->phpBuilder->booleanNot($this->phpBuilder->funcCall('isset', [
                                 $this->phpBuilder->arrayDimFetch(
-                                    $this->phpBuilder->var('item'),
+                                    $itemVar,
                                     $this->phpBuilder->val('entity_id')
                                 )
+                            ])),
+                            ['stmts' => [$this->phpBuilder->continue()]]
+                        ),
+                        $this->phpBuilder->assign(
+                            $this->phpBuilder->arrayMultiDimFetch($itemVar, [
+                                $this->phpBuilder->thisMethodCall('getData', [$this->phpBuilder->val('name')]),
+                                $this->phpBuilder->val('edit')
+                            ]),
+                            $this->phpBuilder->arrayDefine([
+                                $this->phpBuilder->arrayItem($this->getUrlBuilderCall('*/*/edit'), $this->phpBuilder->val('href')),
+                                $this->phpBuilder->arrayItem($this->phpBuilder->translate('Edit'), $this->phpBuilder->val('label')),
+                                $this->phpBuilder->arrayItem($this->phpBuilder->val('false'), $this->phpBuilder->val('hidden')),
                             ])
-                        ), ['stmts' => [new Continue_()]]
-                    ),
-                    $this->phpBuilder->assign(
-                        $this->phpBuilder->arrayMultiDimFetch($this->phpBuilder->var('item'), [
-                            $this->phpBuilder->thisMethodCall('getData',[$this->phpBuilder->val('name')]), 
-                            $this->phpBuilder->val('delete')
-                        ]),
-                        new Array_([])
-                    )
-                ]
-            ]));
+                        ),
+                        $this->phpBuilder->assign(
+                            $this->phpBuilder->arrayMultiDimFetch($itemVar, [
+                                $this->phpBuilder->thisMethodCall('getData', [$this->phpBuilder->val('name')]),
+                                $this->phpBuilder->val('delete')
+                            ]),
+                            $this->phpBuilder->arrayDefine([
+                                $this->phpBuilder->arrayItem($this->getUrlBuilderCall('*/*/delete'), $this->phpBuilder->val('href')),
+                                $this->phpBuilder->arrayItem($this->phpBuilder->translate('Delete'), $this->phpBuilder->val('label')),
+                                $this->phpBuilder->arrayItem($this->phpBuilder->arrayDefine([
+                                    $this->phpBuilder->arrayItem($this->phpBuilder->translate('Delete %1', [
+                                        $this->phpBuilder->arrayDimFetch($itemVar, $this->phpBuilder->val('label'))
+                                    ]), $this->phpBuilder->val('title')),
+                                    $this->phpBuilder->arrayItem($this->phpBuilder->translate('Are you sure you want to delete a %1 record?', [
+                                        $this->phpBuilder->arrayDimFetch($itemVar, $this->phpBuilder->val('label'))
+                                    ]), $this->phpBuilder->val('message'))
+                                ]), $this->phpBuilder->val('confirm')),
+                                $this->phpBuilder->arrayItem($this->phpBuilder->val('false'), $this->phpBuilder->val('hidden')),
+                            ])
+                        ),
+                    ]
+                ]),
+                $this->phpBuilder->returnStmt($dataSourceVar)
+            ]);
     }
 
-
-
-
-
-//    public function prepareDataSource(array $dataSource)
-//    {
-//        if (!isset($dataSource['data']['items'])) {
-//            return $dataSource;
-//        }
-//        foreach( $dataSource['data']['items'] as &$item ) {
-//            if (!isset($item['entity_id'])) {
-//                continue;
-//            }
-//            $item[$this->getData('name')]['delete'] = [
-//                'href' => $this->urlBuilder->getUrl(
-//                    'creatuity_optimumimages/images/delete',
-//                    ['entity_id' => $item['entity_id']]
-//                ),
-//                'label' => __('Delete'),
-//                'confirm' => [
-//                    'title' => __('Delete %1', $item['key']),
-//                    'message' => __('Are you sure you want to delete a %1 record?', $item['key'])
-//                ],
-//                'hidden' => false
-//            ];
-//        }
-//        return $dataSource;
-//    }
+    private function getUrlBuilderCall($url)
+    {
+        return $this->phpBuilder->methodCall(
+            $this->phpBuilder->thisPropertyFetch('urlBuilder'),
+            'getUrl', [
+                $this->phpBuilder->val($url),
+                $this->phpBuilder->arrayDefine([
+                    $this->phpBuilder->arrayItem($this->phpBuilder->arrayDimFetch(
+                        $this->phpBuilder->var('item'),
+                        $this->phpBuilder->val('entity_id')
+                    ))
+                ])
+            ]
+        );
+    }
 }

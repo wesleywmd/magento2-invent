@@ -13,10 +13,16 @@ class MenuXml extends AbstractXmlRenderer implements RendererInterface
     {
         return Location::TYPE_MENU;
     }
-    
+
     protected function getArea(DataInterface $data)
     {
         return Location::AREA_ADMINHTML;
+    }
+
+    public function getContents(DataInterface $data)
+    {
+        $attributes = ['title', 'module', 'sortOrder', 'parent', 'action', 'resource'];
+        return $this->spaceAttributesProperly(parent::getContents($data), $attributes);
     }
 
     protected function updateDom(Dom &$dom, DataInterface $data)

@@ -22,6 +22,16 @@ class Dom
         return str_replace("  ", "    ", $xml->saveXml());
     }
 
+    public function node($name, $attributes = [], $text = null, $xpath = [])
+    {
+        $key = $this->array_key_first($attributes);
+        $value = array_shift($attributes);
+        $this->updateElement($name, $key, $value, $text, $xpath);
+        $newXpath = array_merge($xpath, [$name.(is_null($key)?'':'[@'.$key.'="'.$value.'"]')]);
+        $this->updateAttributes($attributes, $newXpath);
+        return $newXpath;
+    }
+
     public function updateElement($node, $key = null, $value = null, $text = null, $xpath = [])
     {
         $xpath = $this->resolveXpath($xpath);
@@ -59,5 +69,16 @@ class Dom
             $xpath = [$xpath];
         }
         return '/' . implode('/', array_merge([$this->parentNode], $xpath));
+    }
+
+    private function array_key_first($array)
+    {
+        if (!function_exists('array_key_first')) {
+            foreach($array as $key => $unused) {
+                return $key;
+            }
+            return null;
+        }
+        return array_key_first($array);
     }
 }

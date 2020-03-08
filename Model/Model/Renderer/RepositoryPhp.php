@@ -4,6 +4,7 @@ namespace Wesleywmd\Invent\Model\Model\Renderer;
 use Wesleywmd\Invent\Api\DataInterface;
 use Wesleywmd\Invent\Api\RendererInterface;
 use Wesleywmd\Invent\Model\Component\AbstractPhpRenderer;
+use Wesleywmd\Invent\Model\Model\Data;
 
 class RepositoryPhp extends AbstractPhpRenderer implements RendererInterface
 {
@@ -12,11 +13,27 @@ class RepositoryPhp extends AbstractPhpRenderer implements RendererInterface
         /** @var Data $data */
         return $data->getRepositoryPath();
     }
-    
+
     protected function getNamespace(DataInterface $data)
     {
         /** @var Data $data */
         return $data->getModuleName()->getNamespace(['Model']);
+    }
+
+    public function getContents(DataInterface $data)
+    {
+        $contents = parent::getContents($data);
+        $contents = str_replace(
+            '$this->resource->save($'.$data->getVar().')', 
+            '$this->resource->save($'.$data->getVar().');', 
+            $contents
+        );
+        $contents = str_replace(
+            '$this->resource->delete($'.$data->getVar().')', 
+            '$this->resource->delete($'.$data->getVar().');', 
+            $contents
+        );
+        return $contents;
     }
 
     protected function getUseStatements(DataInterface $data)

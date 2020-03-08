@@ -44,6 +44,19 @@ abstract class AbstractXmlRenderer
         return Location::AREA_GLOBAL;
     }
 
+    protected function spaceAttributesProperly($contents, $attributes, $padding = 14)
+    {
+        $spaces = str_pad("\n", $padding);
+        foreach ($attributes as $attribute) {
+            $contents = str_replace(
+                ' '.$attribute.'=',
+                $spaces.$attribute.'=',
+                $contents
+            );
+        }
+        return $contents;
+    }
+
     protected function addKeyedNode(Dom &$dom, $node, $key, $value, $xpath = [])
     {
         $dom->updateElement($node, $key, $value, null, $xpath);

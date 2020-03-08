@@ -96,14 +96,15 @@ class BaseCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $io = $this->inventStyleFactory->create(compact('input', 'output'));
+        $data = $this->dataFactory->create($input);
         try {
             if (!is_null($this->interceptor)) {
-                $this->interceptor->before($io, $this->dataFactory->create($input));
+                $data = $this->interceptor->before($io, $data);
             }
-            $this->component->addToModule($this->dataFactory->create($input));
+            $this->component->addToModule($data);
             $io->success($this->commandDefinition->getSuccessMessage());
             if (!is_null($this->interceptor)) {
-                $this->interceptor->after($io, $this->dataFactory->create($input));
+                $this->interceptor->after($io, $data);
             }
         } catch (\Exception $e) {
             $io->error($e->getMessage());

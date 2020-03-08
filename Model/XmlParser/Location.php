@@ -20,6 +20,8 @@ class Location
     const TYPE_MENU = 'menu';
     const TYPE_SYSTEM = 'system';
     const TYPE_LAYOUT = 'layout';
+    const TYPE_LISTING = 'listing';
+    const TYPE_FORM = 'form';
 
     private $validAreas = [
         self::AREA_FRONTEND,

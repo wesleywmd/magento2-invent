@@ -352,12 +352,24 @@
     <virtualType name="Wesleywmd\Invent\Model\Crud\Component" type="Wesleywmd\Invent\Model\Component\BaseComponent">
         <arguments>
             <argument name="renderers" xsi:type="array">
-                <item name="actionsColumnPhp" xsi:type="object">Wesleywmd\Invent\Model\Crud\Renderer\ActionsColumnPhp</item>
-                <item name="backButtonPhp" xsi:type="object">Wesleywmd\Invent\Model\Crud\Renderer\BackButtonPhp</item>
-                <item name="createControllerPhp" xsi:type="object">Wesleywmd\Invent\Model\Crud\Renderer\CreateControllerPhp</item>
-                <item name="indexControllerPhp" xsi:type="object">Wesleywmd\Invent\Model\Crud\Renderer\IndexControllerPhp</item>
-                <item name="resetButtonPhp" xsi:type="object">Wesleywmd\Invent\Model\Crud\Renderer\ResetButtonPhp</item>
-                <item name="saveButtonPhp" xsi:type="object">Wesleywmd\Invent\Model\Crud\Renderer\SaveButtonPhp</item>
+                <item name="routesXml" xsi:type="object">Wesleywmd\Invent\Model\Crud\Renderer\RoutesXml</item>
+                <item name="diXml" xsi:type="object">Wesleywmd\Invent\Model\Crud\Renderer\DiXml</item>
+                <item name="adminDiXml" xsi:type="object">Wesleywmd\Invent\Model\Crud\Renderer\AdminDiXml</item>
+                <item name="controllerAbstractPhp" xsi:type="object">Wesleywmd\Invent\Model\Crud\Renderer\ControllerAbstractPhp</item>
+                <item name="controllerCreatePhp" xsi:type="object">Wesleywmd\Invent\Model\Crud\Renderer\ControllerCreatePhp</item>
+                <item name="controllerDeletePhp" xsi:type="object">Wesleywmd\Invent\Model\Crud\Renderer\ControllerDeletePhp</item>
+                <item name="controllerEditPhp" xsi:type="object">Wesleywmd\Invent\Model\Crud\Renderer\ControllerEditPhp</item>
+                <item name="controllerIndexPhp" xsi:type="object">Wesleywmd\Invent\Model\Crud\Renderer\ControllerIndexPhp</item>
+                <item name="controllerInlineEditPhp" xsi:type="object">Wesleywmd\Invent\Model\Crud\Renderer\ControllerInlineEditPhp</item>
+                <item name="controllerMassDeletePhp" xsi:type="object">Wesleywmd\Invent\Model\Crud\Renderer\ControllerMassDeletePhp</item>
+                <item name="controllerSavePhp" xsi:type="object">Wesleywmd\Invent\Model\Crud\Renderer\ControllerSavePhp</item>
+<!--                <item name="modelDataProviderPhp" xsi:type="object">Wesleywmd\Invent\Model\Crud\Renderer\ModelDataProviderPhp</item>-->
+<!--                <item name="actionsColumnPhp" xsi:type="object">Wesleywmd\Invent\Model\Crud\Renderer\ActionsColumnPhp</item>-->
+                <item name="layoutCreateXml" xsi:type="object">Wesleywmd\Invent\Model\Crud\Renderer\LayoutCreateXml</item>
+                <item name="layoutEditXml" xsi:type="object">Wesleywmd\Invent\Model\Crud\Renderer\LayoutEditXml</item>
+                <item name="layoutIndexXml" xsi:type="object">Wesleywmd\Invent\Model\Crud\Renderer\LayoutIndexXml</item>
+                <item name="uiListingXml" xsi:type="object">Wesleywmd\Invent\Model\Crud\Renderer\UiListingXml</item>
+                <item name="uiFormXml" xsi:type="object">Wesleywmd\Invent\Model\Crud\Renderer\UiFormXml</item>
             </argument>
         </arguments>
     </virtualType>
@@ -367,25 +379,73 @@
             <argument name="description" xsi:type="string">Create Admin CRUD</argument>
             <argument name="successMessage" xsi:type="string">Admin CRUD Created Successfully!</argument>
             <argument name="arguments" xsi:type="array">
-                <item name="modelName" xsi:type="array">
+                <item name="crudName" xsi:type="array">
                     <item name="mode" xsi:type="const">Symfony\Component\Console\Input\InputArgument::REQUIRED</item>
-                    <item name="description" xsi:type="string">Model Name</item>
+                    <item name="description" xsi:type="string">Crud Name</item>
                 </item>
             </argument>
             <argument name="options" xsi:type="array">
+                <item name="routerFrontName" xsi:type="array">
+                    <item name="mode" xsi:type="const">Symfony\Component\Console\Input\InputOption::VALUE_REQUIRED</item>
+                    <item name="description" xsi:type="string">Adminhtml router front name</item>
+                </item>
                 <item name="no-model" xsi:type="array">
                     <item name="mode" xsi:type="const">Symfony\Component\Console\Input\InputOption::VALUE_NONE</item>
                     <item name="description" xsi:type="string">Exclude creating a model</item>
                 </item>
+                <item name="no-menu" xsi:type="array">
+                    <item name="mode" xsi:type="const">Symfony\Component\Console\Input\InputOption::VALUE_NONE</item>
+                    <item name="description" xsi:type="string">Exclude creating a menu</item>
+                </item>
+                <item name="modelColumn" xsi:type="array">
+                    <item name="mode" xsi:type="const">Wesleywmd\Invent\Model\Component\BaseCommandDefinition::REQUIRED_ARRAY</item>
+                    <item name="description" xsi:type="string">Columns on Database Table</item>
+                </item>
+                <item name="modelTableName" xsi:type="array">
+                    <item name="mode" xsi:type="const">Symfony\Component\Console\Input\InputOption::VALUE_REQUIRED</item>
+                    <item name="description" xsi:type="string">Database Table Name</item>
+                </item>
+                <item name="menuName" xsi:type="array">
+                    <item name="mode" xsi:type="const">Symfony\Component\Console\Input\InputOption::VALUE_REQUIRED</item>
+                    <item name="description" xsi:type="string">Menu Name</item>
+                </item>
+                <item name="menuParent" xsi:type="array">
+                    <item name="mode" xsi:type="const">Symfony\Component\Console\Input\InputOption::VALUE_REQUIRED</item>
+                    <item name="description" xsi:type="string">Parent Menu Name</item>
+                </item>
+                <item name="menuTitle" xsi:type="array">
+                    <item name="mode" xsi:type="const">Symfony\Component\Console\Input\InputOption::VALUE_REQUIRED</item>
+                    <item name="description" xsi:type="string">Menu Title</item>
+                </item>
+                <item name="menuSortOrder" xsi:type="array">
+                    <item name="mode" xsi:type="const">Symfony\Component\Console\Input\InputOption::VALUE_REQUIRED</item>
+                    <item name="description" xsi:type="string">Sort Order</item>
+                    <item name="default" xsi:type="number">10</item>
+                </item>
+                <item name="menuAction" xsi:type="array">
+                    <item name="mode" xsi:type="const">Symfony\Component\Console\Input\InputOption::VALUE_REQUIRED</item>
+                    <item name="description" xsi:type="string">Menu Action</item>
+                </item>
+                <item name="menuResource" xsi:type="array">
+                    <item name="mode" xsi:type="const">Symfony\Component\Console\Input\InputOption::VALUE_REQUIRED</item>
+                    <item name="description" xsi:type="string">ACL Resource</item>
+                </item>
             </argument>
         </arguments>
     </virtualType>
+    <type name="Wesleywmd\Invent\Model\Crud\Interceptor">
+        <arguments>
+            <argument name="modelComponent" xsi:type="object">Wesleywmd\Invent\Model\Model\Component</argument>
+            <argument name="menuComponent" xsi:type="object">Wesleywmd\Invent\Model\Menu\Component</argument>
+        </arguments>
+    </type>
     <virtualType name="Wesleywmd\Invent\Model\Crud\Command" type="Wesleywmd\Invent\Model\Component\BaseCommand">
         <arguments>
             <argument name="commandDefinition" xsi:type="object">Wesleywmd\Invent\Model\Crud\CommandDefinition</argument>
             <argument name="component" xsi:type="object">Wesleywmd\Invent\Model\Crud\Component</argument>
             <argument name="dataFactory" xsi:type="object">Wesleywmd\Invent\Model\Crud\DataFactory</argument>
             <argument name="validator" xsi:type="object">Wesleywmd\Invent\Model\Crud\Validator</argument>
+            <argument name="interceptor" xsi:type="object">Wesleywmd\Invent\Model\Crud\Interceptor</argument>
         </arguments>
     </virtualType>
 
@@ -472,6 +532,10 @@
                     <item name="mode" xsi:type="const">Symfony\Component\Console\Input\InputOption::VALUE_REQUIRED</item>
                     <item name="description" xsi:type="string">ACL Resource</item>
                 </item>
+                <item name="no-acl" xsi:type="array">
+                    <item name="mode" xsi:type="const">Symfony\Component\Console\Input\InputOption::VALUE_REQUIRED</item>
+                    <item name="description" xsi:type="string">Exclude Creating Matching ACLs</item>
+                </item>
             </argument>
         </arguments>
     </virtualType>
@@ -522,7 +586,7 @@
                 </item>
                 <item name="tableName" xsi:type="array">
                     <item name="mode" xsi:type="const">Symfony\Component\Console\Input\InputOption::VALUE_REQUIRED</item>
-                    <item name="description" xsi:type="string">Database Name</item>
+                    <item name="description" xsi:type="string">Database Table Name</item>
                 </item>
                 <item name="no-entity-id" xsi:type="array">
                     <item name="mode" xsi:type="const">Symfony\Component\Console\Input\InputOption::VALUE_NONE</item>

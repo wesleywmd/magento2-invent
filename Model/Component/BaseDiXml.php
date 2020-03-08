@@ -35,10 +35,16 @@ abstract class BaseDiXml extends AbstractXmlRenderer implements RendererInterfac
         return $xpath;
     }
 
+    protected function addPlugin(Dom &$dom, $name, $plugin, $type)
+    {
+        $xpathType = $dom->node('type', ['name'=>$name]);
+        $dom->node('plugin', ['name'=>$plugin, 'type'=>$type], null, $xpathType);
+    }
+
     protected function addPreference(Dom &$dom, $for, $type)
     {
-        $dom->updateElement('preference', 'for', $for);
-        $dom->updateAttribute('type', $type, ['preference[@for="'.$for.'"]']);
+        $dom->updateElement('preference', 'for', $for)
+            ->updateAttribute('type', $type, ['preference[@for="'.$for.'"]']);
     }
 
     private function addArguments(Dom &$dom, $arguments, $xpath, $tag)
@@ -62,7 +68,7 @@ abstract class BaseDiXml extends AbstractXmlRenderer implements RendererInterfac
             if (is_null($value)) {
                 return $this->addArgument($dom, $name, 'null', $value, $xpath, $tag);
             }
-            if (is_array($argument)) {
+            if (is_array($arguments)) {
                 $xpath = $this->addArgument($dom, $name, 'array', null, $xpath, $tag);
                 return $this->addArguments($dom, $value, $xpath, 'item');
             }

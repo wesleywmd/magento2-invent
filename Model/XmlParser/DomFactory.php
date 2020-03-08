@@ -63,7 +63,9 @@ class DomFactory
             Location::TYPE_ACL       => 'urn:magento:framework:Acl/etc/acl.xsd',
             Location::TYPE_MENU      => 'urn:magento:module:Magento_Backend:etc/menu.xsd',
             Location::TYPE_SYSTEM    => 'urn:magento:module:Magento_Config:etc/system_file.xsd',
-            Location::TYPE_LAYOUT    => 'urn:magento:framework:View/Layout/etc/page_configuration.xsd'
+            Location::TYPE_LAYOUT    => 'urn:magento:framework:View/Layout/etc/page_configuration.xsd',
+            Location::TYPE_LISTING   => 'urn:magento:module:Magento_Ui:etc/ui_configuration.xsd',
+            Location::TYPE_FORM      => 'urn:magento:module:Magento_Ui:etc/ui_configuration.xsd'
         ];
         return $xsdLocations[$type];
     }
@@ -79,7 +81,9 @@ class DomFactory
             Location::TYPE_MENU      => 'config',
             Location::TYPE_SYSTEM    => 'config',
             Location::TYPE_DB_SCHEMA => 'schema',
-            Location::TYPE_LAYOUT    => 'page'
+            Location::TYPE_LAYOUT    => 'page',
+            Location::TYPE_LISTING   => 'listing',
+            Location::TYPE_FORM      => 'form'
         ];
         return $xmlNode[$type];
     }

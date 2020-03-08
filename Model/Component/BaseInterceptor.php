@@ -9,7 +9,7 @@ class BaseInterceptor implements InterceptorInterface
 {
     public function before(InventStyle $io, DataInterface $data)
     {
-        return;
+        return $data;
     }
     
     public function after(InventStyle $io, DataInterface $data)

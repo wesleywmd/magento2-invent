@@ -20,12 +20,12 @@ class Data extends AbstractData implements DataInterface
     private $noUpdatedAt;
 
     public function __construct(
-        ModuleName $moduleName, 
-        $modelName, 
-        $columns = [], 
-        $tableName = null, 
-        $noEntityId = false, 
-        $noCreatedAt = false, 
+        ModuleName $moduleName,
+        $modelName,
+        $columns = [],
+        $tableName = null,
+        $noEntityId = false,
+        $noCreatedAt = false,
         $noUpdatedAt = false
     ) {
         parent::__construct($moduleName, ucfirst($modelName), ['Model']);
@@ -61,17 +61,22 @@ class Data extends AbstractData implements DataInterface
     {
         return $this->noUpdatedAt;
     }
-    
+
     public function getVar()
     {
         return strtolower($this->modelName);
     }
-    
+
     public function getIdVar()
     {
         return $this->getVar().'Id';
     }
-    
+
+    public function getRepositoryVar()
+    {
+        return $this->getVar().'Repository';
+    }
+
     public function getTable()
     {
         if (!is_null($this->tableName)) {

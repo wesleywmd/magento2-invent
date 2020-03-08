@@ -12,8 +12,10 @@ class DataFactory extends BaseDataFactory implements DataFactoryInterface
     protected function getDataArray(InputInterface $input)
     {
         return [
-            'modelName' => $input->getArgument('modelName'),
-            'noModel' => $input->getOption('no-model')
+            'crudName' => $input->getArgument('crudName'),
+            'routerFrontName' => $input->getOption('routerFrontName'),
+            'noModel' => $input->getOption('no-model'),
+            'noMenu' => $input->getOption('no-menu')
         ];
     }
 }

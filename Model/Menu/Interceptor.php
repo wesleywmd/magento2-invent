@@ -26,18 +26,19 @@ class Interceptor extends BaseInterceptor implements InterceptorInterface
 
     public function after(InventStyle $io, DataInterface $data)
     {
-        if ($this->aclHelper->findInTree($data->getResource())) {
-            return;
+        if (!$data->getNoAcl()) {
+            if ($this->aclHelper->findInTree($data->getResource())) {
+                return;
+            }
+            $aclName = explode('::', $data->getResource());
+            $aclData = $this->aclDataFactory->createFromArray([
+                'moduleName' => $data->getModuleName(),
+                'aclName' => $aclName[1],
+                'parentAcl' => $data->getParentMenu(),
+                'title' => $data->getTitle(),
+                'sortOrder' => $data->getSortOrder()
+            ]);
+            $this->aclComponent->addToModule($aclData);
         }
-
-        $aclName = explode('::', $data->getResource());
-        $aclData = $this->aclDataFactory->createFromArray([
-            'moduleName' => $data->getModuleName(),
-            'aclName' => $aclName[1],
-            'parentAcl' => $data->getParentMenu(),
-            'title' => $data->getTitle(),
-            'sortOrder' => $data->getSortOrder()
-        ]);
-        $this->aclComponent->addToModule($aclData);
     }
 }

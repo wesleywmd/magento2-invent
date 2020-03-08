@@ -1,8 +1,8 @@
 <?php
 namespace Wesleywmd\Invent\Model\PhpParser;
 
-use PhpParser\Builder;
 use PhpParser\BuilderFactory;
+use PhpParser\Node;
 
 class PhpBuilder extends BuilderFactory
 {
@@ -15,40 +15,45 @@ class PhpBuilder extends BuilderFactory
     const MAGIC_CONST_NAMESPACE = 'namespace';
     const MAGIC_CONST_TRAIT = 'trait';
 
-    public function assign($var, $expr, $attributes = [])
+    public function assign(Node\Expr $var, Node\Expr $expr, array $attributes = [])
     {
-        return new \PhpParser\Node\Expr\Assign($var, $expr, $attributes = []);
+        return new Node\Expr\Assign($var, $expr, $attributes);
     }
 
-    public function returnStmt(\PhpParser\Node\Expr $expr = null, array $attributes = [])
+    public function assignSimple($var, $val, array $attributes = [])
     {
-        return new \PhpParser\Node\Stmt\Return_($expr, $attributes);
+        return $this->assign($this->var($var), $this->val($val), $attributes);
+    }
+
+    public function returnStmt(Node\Expr $expr = null, array $attributes = [])
+    {
+        return new Node\Stmt\Return_($expr, $attributes);
     }
 
     public function nodeArg($value, $byRef = false, $unpack = false, $attributes = [])
     {
-        return new \PhpParser\Node\Arg($value, $byRef, $unpack, $attributes);
+        return new Node\Arg($value, $byRef, $unpack, $attributes);
     }
 
     public function magicConstant($type, $attributes = [])
     {
         switch ($type) {
             case self::MAGIC_CONST_CLASS:
-                return new \PhpParser\Node\Scalar\MagicConst\Class_($attributes);
+                return new Node\Scalar\MagicConst\Class_($attributes);
             case self::MAGIC_CONST_DIR:
-                return new \PhpParser\Node\Scalar\MagicConst\Dir($attributes);
+                return new Node\Scalar\MagicConst\Dir($attributes);
             case self::MAGIC_CONST_FILE:
-                return new \PhpParser\Node\Scalar\MagicConst\File($attributes);
+                return new Node\Scalar\MagicConst\File($attributes);
             case self::MAGIC_CONST_FUNCTION:
-                return new \PhpParser\Node\Scalar\MagicConst\Function_($attributes);
+                return new Node\Scalar\MagicConst\Function_($attributes);
             case self::MAGIC_CONST_LINE:
-                return new \PhpParser\Node\Scalar\MagicConst\Line($attributes);
+                return new Node\Scalar\MagicConst\Line($attributes);
             case self::MAGIC_CONST_METHOD:
-                return new \PhpParser\Node\Scalar\MagicConst\Method($attributes);
+                return new Node\Scalar\MagicConst\Method($attributes);
             case self::MAGIC_CONST_NAMESPACE:
-                return new \PhpParser\Node\Scalar\MagicConst\Namespace_($attributes);
+                return new Node\Scalar\MagicConst\Namespace_($attributes);
             case self::MAGIC_CONST_TRAIT:
-                return new \PhpParser\Node\Scalar\MagicConst\Trait_($attributes);
+                return new Node\Scalar\MagicConst\Trait_($attributes);
             default:
                 throw new \Exception('Magic Constant Type [' . $type . '] does not exist');
         }
@@ -83,8 +88,8 @@ class PhpBuilder extends BuilderFactory
 
     public function const($name, $value, $flags = 0, $attributes = [], $stmtAttributes = [])
     {
-        return new \PhpParser\Node\Stmt\ClassConst([
-            new \PhpParser\Node\Const_($name, $this->val($value), $attributes)
+        return new Node\Stmt\ClassConst([
+            new Node\Const_($name, $this->val($value), $attributes)
         ], $flags, $stmtAttributes);
     }
 
@@ -139,33 +144,48 @@ class PhpBuilder extends BuilderFactory
 
     public function name($name)
     {
-        return new \PhpParser\Node\Name($name);
+        return new Node\Name($name);
     }
 
     public function throwNew($name, $args = [], $attributes = [], $throwAttributes = [])
     {
-        $new_ = new \PhpParser\Node\Expr\New_($this->name($name), $args, $attributes);
-        return new \PhpParser\Node\Stmt\Throw_($new_, $throwAttributes);
+        $new_ = new Node\Expr\New_($this->name($name), $args, $attributes);
+        return new Node\Stmt\Throw_($new_, $throwAttributes);
     }
 
     public function catch($type, $var, $stmts = [], $attributes = [])
     {
-        return new \PhpParser\Node\Stmt\Catch_([$this->name($type)], $this->var($var), $stmts, $attributes);
+        return new Node\Stmt\Catch_([$this->name($type)], $this->var($var), $stmts, $attributes);
     }
 
-    public function tryCatch($stmts, $catches, \PhpParser\Node\Stmt\Finally_ $finally = null, $attributes = [])
+    public function tryCatch($stmts, $catches, Node\Stmt\Finally_ $finally = null, $attributes = [])
     {
-        return new \PhpParser\Node\Stmt\TryCatch($stmts, $catches, $finally, $attributes);
+        return new Node\Stmt\TryCatch($stmts, $catches, $finally, $attributes);
     }
 
-    public function booleanNot(\PhpParser\Node\Expr $expr, $attributes = [])
+    public function booleanNot(Node\Expr $expr, $attributes = [])
     {
-        return new \PhpParser\Node\Expr\BooleanNot($expr, $attributes);
+        return new Node\Expr\BooleanNot($expr, $attributes);
     }
 
-    public function if(\PhpParser\Node\Expr $cond, $subNodes = [], $attributes = [])
+    public function identical(Node\Expr $left, Node\Expr $right, array $attributes = [])
     {
-        return new \PhpParser\Node\Stmt\If_($cond, $subNodes, $attributes);
+        return new Node\Expr\BinaryOp\Identical($left, $right, $attributes);
+    }
+
+    public function if(Node\Expr $cond, $subNodes = [], $attributes = [])
+    {
+        return new Node\Stmt\If_($cond, $subNodes, $attributes);
+    }
+
+    public function elseif(Node\Expr $cond, $stmts = [], $attributes = [])
+    {
+        return new Node\Stmt\ElseIf_($cond, $stmts, $attributes);
+    }
+
+    public function else(array $stmts = [], array $attributes = [])
+    {
+        return new Node\Stmt\Else_($stmts, $attributes);
     }
 
     public function thisPropertyFetch($name)
@@ -178,16 +198,45 @@ class PhpBuilder extends BuilderFactory
         return $this->methodCall($this->var('this'), $name, $args);
     }
 
-    public function arrayDimFetch(\PhpParser\Node\Expr $var, \PhpParser\Node\Expr $dim = null, $attributes = [])
+    public function arrayDefine(array $items = [], array $attributes = [])
     {
-        return new \PhpParser\Node\Expr\ArrayDimFetch($var, $dim, $attributes);
+        $attributes = array_merge(['kind' => Node\Expr\Array_::KIND_SHORT], $attributes);
+        return new Node\Expr\Array_($items, $attributes);
     }
 
-    public function arrayMultiDimFetch(\PhpParser\Node\Expr $var, $dims = [], $attributes = [])
+    public function arrayItem(Node\Expr $value, Node\Expr $key = null, bool $byRef = false, array $attributes = [], bool $unpack = false)
+    {
+        return new Node\Expr\ArrayItem($value, $key, $byRef, $attributes, $unpack);
+    }
+
+    public function arrayDimFetch(Node\Expr $var, Node\Expr $dim = null, $attributes = [])
+    {
+        return new Node\Expr\ArrayDimFetch($var, $dim, $attributes);
+    }
+
+    public function arrayMultiDimFetch(Node\Expr $var, $dims = [], $attributes = [])
     {
         foreach ($dims as $dim) {
             $var = $this->arrayDimFetch($var, $dim, $attributes);
         }
         return $var;
+    }
+
+    public function foreachLoop(Node\Expr $expr, Node\Expr $valueVar, array $subNodes = [], array $attributes = [])
+    {
+        return new Node\Stmt\Foreach_($expr, $valueVar, $subNodes, $attributes);
+    }
+
+    public function continue(Node\Expr $num = null, array $attributes = [])
+    {
+        return new Node\Stmt\Continue_($num, $attributes);
+    }
+
+    public function translate($phrase, $args = [])
+    {
+        if (is_string($phrase)) {
+            $phrase = $this->val($phrase);
+        }
+        return $this->funcCall('__', array_merge([$phrase], $args));
     }
 }

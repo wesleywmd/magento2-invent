@@ -19,6 +19,8 @@ class Data extends AbstractData implements DataInterface
 
     private $sortOrder;
 
+    private $noAcl;
+
     public function __construct(
         ModuleName $moduleName,
         $menuName,
@@ -26,7 +28,8 @@ class Data extends AbstractData implements DataInterface
         $action,
         $resource = null,
         $title = null,
-        $sortOrder = 10
+        $sortOrder = 10,
+        $noAcl = false
     ) {
         parent::__construct($moduleName, '', []);
         $this->menuName = $menuName;
@@ -35,6 +38,7 @@ class Data extends AbstractData implements DataInterface
         $this->resource = $resource;
         $this->title = $title;
         $this->sortOrder = $sortOrder;
+        $this->noAcl = $noAcl;
     }
 
     public function getMenuName()
@@ -76,5 +80,10 @@ class Data extends AbstractData implements DataInterface
     public function getMenuResource()
     {
         return $this->moduleName->getName().'::'.$this->menuName;
+    }
+
+    public function getNoAcl()
+    {
+        return $this->noAcl;
     }
 }
