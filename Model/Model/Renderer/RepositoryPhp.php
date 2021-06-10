@@ -69,7 +69,7 @@ class RepositoryPhp extends AbstractPhpRenderer implements RendererInterface
             ->addStmt($this->getDeleteByIdMethodStatement($data));
     }
 
-    private function getSaveMethodStatement(Data $data)
+    private function getSaveMethodStatement(DataInterface $data)
     {
         $modelVar = $this->phpBuilder->var($data->getVar());
         $exceptionVar = $this->phpBuilder->var('exception');
@@ -92,7 +92,7 @@ class RepositoryPhp extends AbstractPhpRenderer implements RendererInterface
             ->addStmt($this->phpBuilder->returnStmt($modelVar));
     }
 
-    private function getGetByIdMethodStatement(Data $data)
+    private function getGetByIdMethodStatement(DataInterface $data)
     {
         $modelVar = $this->phpBuilder->var($data->getVar());
         $modelIdVar = $this->phpBuilder->var($data->getIdVar());
@@ -111,7 +111,7 @@ class RepositoryPhp extends AbstractPhpRenderer implements RendererInterface
             ->addStmt($this->phpBuilder->returnStmt($modelVar));
     }
 
-    private function getGetListMethodStatement(Data $data)
+    private function getGetListMethodStatement(DataInterface $data)
     {
         $collectionVar = $this->phpBuilder->var('collection');
         $searchCriteriaVar = $this->phpBuilder->var('searchCriteria');
@@ -138,7 +138,7 @@ class RepositoryPhp extends AbstractPhpRenderer implements RendererInterface
             ->addStmt($this->phpBuilder->returnStmt($searchResultsVar));
     }
 
-    private function getDeleteMethodStatement(Data $data)
+    private function getDeleteMethodStatement(DataInterface $data)
     {
         $throwNewStmt = $this->phpBuilder->throwNew('CouldNotDeleteException', [
             $this->getTranslateFuncCall('Could not delete the '.$data->getModelName().': %1', [
@@ -158,7 +158,7 @@ class RepositoryPhp extends AbstractPhpRenderer implements RendererInterface
             ->addStmt($this->phpBuilder->returnStmt($this->phpBuilder->val(true)));
     }
 
-    private function getDeleteByIdMethodStatement(Data $data)
+    private function getDeleteByIdMethodStatement(DataInterface $data)
     {
         return $this->phpBuilder->method('deleteById')
             ->makePublic()
